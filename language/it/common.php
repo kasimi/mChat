@@ -32,9 +32,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-// Adding the permissions
 $lang = array_merge($lang, array(
-
 	'MCHAT_TITLE'				=> 'Mini Chat',
 	'MCHAT_ADD'					=> 'Invia',
 	'MCHAT_IN'					=> 'in',
@@ -47,7 +45,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_CLEAN'				=> 'Cancella',
 	'MCHAT_CLEANED'				=> 'Tutti i messaggi sono stati rimossi',
 	'MCHAT_CLEAR_INPUT'			=> 'Reset',
-	'MCHAT_COPYRIGHT'			=> '<a href="http://rmcgirr83.org">RMcGirr83</a> &copy; <a href="http://www.dmzx-web.net" title="www.dmzx-web.net">dmzx</a> - traduzione <a href="http://brunino.altervista.org">BruninoIt</a>',
+	'MCHAT_COPYRIGHT'			=> '<a href="http://rmcgirr83.org">RMcGirr83</a> &copy; <a href="http://www.dmzx-web.net" title="www.dmzx-web.net">dmzx</a>',
 	'MCHAT_CUSTOM_BBCODES'		=> 'Modifica BBCode',
 	'MCHAT_DELALLMESS'			=> 'Rimuovere tutti i messaggi?',
 	'MCHAT_DELCONFIRM'			=> 'Confermi la rimozione?',
