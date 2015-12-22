@@ -53,14 +53,14 @@ class functions_mchat
 	*/
 	function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $mchat_table, $mchat_config_table, $mchat_sessions_table)
 	{
-		$this->template 			= $template;
-		$this->user 				= $user;
-		$this->auth 				= $auth;
-		$this->log 					= $log;
-		$this->db 					= $db;
-		$this->cache 				= $cache;
-		$this->mchat_table 			= $mchat_table;
-		$this->mchat_config_table 	= $mchat_config_table;
+		$this->template				= $template;
+		$this->user					= $user;
+		$this->auth					= $auth;
+		$this->log					= $log;
+		$this->db					= $db;
+		$this->cache				= $cache;
+		$this->mchat_table			= $mchat_table;
+		$this->mchat_config_table	= $mchat_config_table;
 		$this->mchat_sessions_table = $mchat_sessions_table;
 	}
 
@@ -139,7 +139,7 @@ class functions_mchat
 		$this->db->sql_query($sql);
 
 		// Add the user into the sessions upon first visit
-		if ($on_page && ($this->user->data['user_id'] != ANONYMOUS && !$this->user->data['is_bot']))
+		if ($on_page && $this->user->data['user_id'] != ANONYMOUS && !$this->user->data['is_bot'])
 		{
 			$this->mchat_sessions($session_time);
 		}
@@ -203,7 +203,7 @@ class functions_mchat
 	{
 		$check_time = time() - (int) $session_time;
 		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
-			WHERE user_lastupdate <' . $check_time;
+			WHERE user_lastupdate < ' . $check_time;
 		$this->db->sql_query($sql);
 
 		// Insert user into the mChat sessions table
@@ -211,7 +211,7 @@ class functions_mchat
 		{
 			$sql = 'SELECT *
 				FROM ' . $this->mchat_sessions_table . '
-				WHERE user_id =' . (int) $this->user->data['user_id'];
+				WHERE user_id = ' . (int) $this->user->data['user_id'];
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -222,7 +222,7 @@ class functions_mchat
 			{
 				$sql = 'UPDATE ' . $this->mchat_sessions_table . '
 					SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-					WHERE user_id =' . (int) $this->user->data['user_id'];
+					WHERE user_id = ' . (int) $this->user->data['user_id'];
 			}
 			else
 			{
@@ -307,7 +307,6 @@ class functions_mchat
 			}
 		}
 
-		// From /includes/functions_display.php
 		display_custom_bbcodes();
 	}
 

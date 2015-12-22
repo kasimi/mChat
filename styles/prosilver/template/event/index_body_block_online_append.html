@@ -1,1 +1,4 @@
-<!-- INCLUDE mchat_stats.html -->
+<!-- IF MCHAT_ENABLE and MCHAT_INDEX_STATS and U_MCHAT -->
+	<h3><a href="{U_MCHAT}#mChat">{L_WHO_IS_CHATTING}</a></h3>
+	<p>{MCHAT_INDEX_USERS_COUNT} {MCHAT_ONLINE_EXPLAIN}<br />{MCHAT_INDEX_USERS_LIST}</p>
+<!-- ENDIF -->
