@@ -61,25 +61,25 @@ class admin_controller
 	* @param \phpbb\db\driver\driver_interface	$db
 	* @param \phpbb\cache\service				$cache
 	* @param \phpbb\request\request				$request
-	* @param \phpbb\extension\manager 			$phpbb_extension_manager
+	* @param \phpbb\extension\manager			$phpbb_extension_manager
 	* @param string								$phpbb_root_path
 	* @param string								$phpEx
 	* @param string								$mchat_config_table
 	*/
 	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, \phpbb\extension\manager $phpbb_extension_manager, $phpbb_root_path, $phpEx, $mchat_config_table)
 	{
-		$this->functions_mchat 			= $functions_mchat;
-		$this->config 					= $config;
-		$this->template 				= $template;
-		$this->log 						= $log;
-		$this->user 					= $user;
-		$this->db 						= $db;
-		$this->cache 					= $cache;
-		$this->request 					= $request;
-		$this->phpbb_extension_manager 	= $phpbb_extension_manager;
-		$this->phpbb_root_path 			= $phpbb_root_path;
-		$this->php_ext 					= $phpEx;
-		$this->mchat_config_table 		= $mchat_config_table;
+		$this->functions_mchat			= $functions_mchat;
+		$this->config					= $config;
+		$this->template					= $template;
+		$this->log						= $log;
+		$this->user						= $user;
+		$this->db						= $db;
+		$this->cache					= $cache;
+		$this->request					= $request;
+		$this->phpbb_extension_manager	= $phpbb_extension_manager;
+		$this->phpbb_root_path			= $phpbb_root_path;
+		$this->php_ext					= $phpEx;
+		$this->mchat_config_table		= $mchat_config_table;
 	}
 
 	/**
@@ -94,7 +94,7 @@ class admin_controller
 
 		$mchat_row = array(
 			'location'			=> $this->request->variable('mchat_location', 0),
-			'refresh' 			=> $this->request->variable('mchat_refresh', 0),
+			'refresh'			=> $this->request->variable('mchat_refresh', 0),
 			'message_limit'		=> $this->request->variable('mchat_message_limit', 0),
 			'message_num'		=> $this->request->variable('mchat_message_num', 0),
 			'archive_limit'		=> $this->request->variable('mchat_archive_limit', 0),
@@ -252,8 +252,8 @@ class admin_controller
 			'MCHAT_NEW_POSTS_EDIT'			=> ($mchat_new_posts_edit) ? true : false,
 			'MCHAT_NEW_POSTS_QUOTE'			=> ($mchat_new_posts_quote) ? true : false,
 			'MCHAT_PAUSE_ON_INPUT'			=> !empty($mchat_row['pause_on_input']) ? $mchat_row['pause_on_input'] : $mchat_config['pause_on_input'],
-			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang['MCHAT_BBCODES_DISALLOWED_EXPLAIN'], '<a href="' . append_sid("{$this->phpbb_root_path}index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'		=> sprintf($this->user->lang['MCHAT_USER_TIMEOUT_EXPLAIN'],'<a href="' . append_sid("{$this->phpbb_root_path}index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
+			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang['MCHAT_BBCODES_DISALLOWED_EXPLAIN'], '<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
+			'L_MCHAT_TIMEOUT_EXPLAIN'		=> sprintf($this->user->lang['MCHAT_USER_TIMEOUT_EXPLAIN'],'<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
 			'S_MCHAT_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 			'S_CUSTOM_DATEFORMAT'			=> $s_custom,
 
