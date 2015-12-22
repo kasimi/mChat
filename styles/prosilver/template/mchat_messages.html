@@ -12,7 +12,7 @@
 		{mchatrow.MCHAT_USERNAME_FULL} - {mchatrow.MCHAT_TIME}
 	</div>
 	<div class="mchat-message-icons">
-		<!-- IF MCHAT_ALLOW_PM and mchatrow.MCHAT_PM and mchatrow.U_VIEWPROFILE --><a href="{mchatrow.MCHAT_PM}" title="{L_MCHAT_SEND_PM}"><img src="{BOARD_URL}ext/dmzx/mchat/styles/prosilver/theme/images/message.gif" alt="{L_MCHAT_SEND_PM}" title="{L_MCHAT_SEND_PM}" /></a><!-- ENDIF -->
+		<!-- IF MCHAT_ALLOW_PM and mchatrow.MCHAT_PM and mchatrow.U_VIEWPROFILE --><a href="{mchatrow.MCHAT_PM}" title="{L_MCHAT_SEND_PM}"><img src="{EXT_URL}styles/prosilver/theme/images/message.gif" alt="{L_MCHAT_SEND_PM}" title="{L_MCHAT_SEND_PM}" /></a><!-- ENDIF -->
 		<!-- IF MCHAT_ALLOW_LIKE and not MCHAT_ARCHIVE_MODE and not mchatrow.MCHAT_IS_POSTER --><img src="{EXT_URL}styles/prosilver/theme/images/like.png" alt="{L_REPLY_WITH_LIKE}" title="{L_REPLY_WITH_LIKE}" data-mchat-action="like" /></a><!-- ENDIF -->
 		<!-- IF MCHAT_ALLOW_QUOTE and not MCHAT_ARCHIVE_MODE and not mchatrow.MCHAT_IS_POSTER --><img src="{EXT_URL}styles/prosilver/theme/images/quota.png" alt="{L_REPLY_WITH_QUOTE}" title="{L_REPLY_WITH_QUOTE}" data-mchat-action="quote" /><!-- ENDIF -->
 		<!-- IF MCHAT_ALLOW_IP --><a href="{mchatrow.MCHAT_U_IP}" onclick="popup(this.href, 750, 500); return false;"><img src="{EXT_URL}styles/prosilver/theme/images/ip.gif" alt="{L_MCHAT_IP} {mchatrow.MCHAT_USER_IP}" title="{L_MCHAT_IP} {mchatrow.MCHAT_USER_IP}" /></a><!-- ENDIF -->
