@@ -82,7 +82,7 @@ class listener implements EventSubscriberInterface
 
 	public function add_page_viewonline($event)
 	{
-		if (strrpos($event['row']['session_page'], 'app.' . $this->phpEx . '/chat') === 0)
+		if (strrpos($event['row']['session_page'], 'app.' . $this->phpEx . '/mchat') === 0)
 		{
 			$event['location'] = $this->user->lang('MCHAT_TITLE');
 			$event['location_url'] = $this->controller_helper->route('dmzx_mchat_controller');
