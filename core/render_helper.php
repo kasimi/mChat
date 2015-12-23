@@ -298,6 +298,7 @@ class render_helper
 			'MCHAT_USERS_COUNT'				=> $mchat_users['mchat_users_count'],
 			'MCHAT_USERS_LIST'				=> $mchat_users['online_userlist'],
 			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
+			'STYLE_PATH'					=> generate_board_url() . '/styles/' . $this->user->style['style_path'],
 		));
 
 		if (!$on_index)
