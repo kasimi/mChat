@@ -9,6 +9,12 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
+ if (!String.prototype.startsWith) {
+	String.prototype.startsWith = function(searchString, position) {
+		position = position || 0;
+		return this.indexOf(searchString, position) === position;
+	};
+}
 jQuery(function($) {
 	var hasFocus = true;
 	if (!mChat.archiveMode) {

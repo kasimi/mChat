@@ -6,7 +6,7 @@
 
 <!-- INCLUDEJS jquery.titlealert.min.js -->
 <!-- INCLUDEJS jquery_cookie_mini.js -->
-<!-- INCLUDEJS mchat.js -->
+<!-- INCLUDEJS mchat.min.js -->
 
 <!-- IF MCHAT_ARCHIVE_MODE and (.pagination or MCHAT_TOTAL_MESSAGES) -->
 <div class="action-bar top">
@@ -99,7 +99,7 @@
 				<!-- INCLUDE mchat_whois.html -->
 			<!-- ENDIF -->
 
-			<form id="postform" method="POST">
+			<form id="postform" action="{MCHAT_FILE_NAME}" method="POST">
 				<div class="mchat-panel">
 					<noscript><div class="mchat-alert">{L_MCHAT_NOJAVASCRIPT}</div></noscript>
 					<!-- IF MCHAT_ALLOW_USE -->
