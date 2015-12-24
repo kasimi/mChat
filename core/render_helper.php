@@ -101,7 +101,7 @@ class render_helper
 	public function render_data_for_page($on_index)
 	{
 		// If mChat is used on the index by a user without an avatar, a default avatar is used.
-		// However, T_THEME_PATH points to ./../styles/... because the controller at /chat is called, but we need it to be ./styles...
+		// However, T_THEME_PATH points to ./../styles/... because the controller at /mchat is called, but we need it to be ./styles...
 		// Setting this value to true solves this.
 		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
 		{
