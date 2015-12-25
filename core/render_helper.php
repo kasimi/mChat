@@ -145,7 +145,7 @@ class render_helper
 		$mchat_read_archive		= $this->auth->acl_get('u_mchat_archive');
 		$mchat_founder			= $this->user->data['user_type'] == USER_FOUNDER;
 		$mchat_session_time		= !empty($config_mchat['timeout']) ? $config_mchat['timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
-		$mchat_rules			= !empty($config_mchat['rules']) || isset($this->user->lang('MCHAT_RULES'));
+		$mchat_rules			= !empty($config_mchat['rules']) || isset($this->user->lang['MCHAT_RULES']);
 		$mchat_avatars			= !empty($config_mchat['avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'];
 		$mchat_users			= $this->functions_mchat->mchat_users($mchat_session_time, !$on_index);
 
@@ -201,7 +201,7 @@ class render_helper
 				}
 
 				// If the rules are defined in the language file use them, else just use the entry in the database
-				$mchat_rules = isset($this->user->lang('MCHAT_RULES')) ? $this->user->lang('MCHAT_RULES') : $config_mchat['rules'];
+				$mchat_rules = isset($this->user->lang['MCHAT_RULES']) ? $this->user->lang('MCHAT_RULES') : $config_mchat['rules'];
 				$mchat_rules = explode("\n", $mchat_rules);
 				$mchat_rules = array_map('utf8_htmlspecialchars', $mchat_rules);
 				$mchat_rules = implode('<br />', $mchat_rules);
@@ -243,13 +243,13 @@ class render_helper
 		}
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
-		if (isset($this->user->lang('STATIC_MESSAGE')))
+		if (isset($this->user->lang['STATIC_MESSAGE']))
 		{
 			$config_mchat['static_message'] = $this->user->lang('STATIC_MESSAGE');
 		}
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
-		if (isset($this->user->lang('MCHAT_RULES')))
+		if (isset($this->user->lang['MCHAT_RULES']))
 		{
 			$config_mchat['rules'] = $this->user->lang('MCHAT_RULES');
 		}

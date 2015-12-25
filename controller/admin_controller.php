@@ -200,7 +200,7 @@ class admin_controller
 		$mchat_message_top = isset($this->config['mchat_message_top']) ? $this->config['mchat_message_top'] : 0;
 
 		$dateformat_options = '';
-		foreach ($this->user->lang('dateformats') as $format => $null)
+		foreach ($this->user->lang['dateformats'] as $format => $null)
 		{
 			$dateformat_options .= '<option value="' . $format . '"' . (($format == $mchat_config['date']) ? ' selected="selected"' : '') . '>';
 			$dateformat_options .= $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->user->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '');
@@ -209,7 +209,7 @@ class admin_controller
 
 		$s_custom = false;
 		$dateformat_options .= '<option value="custom"';
-		if (!isset($this->user->lang('dateformats')[$mchat_config['date']]))
+		if (!isset($this->user->lang['dateformats'][$mchat_config['date']]))
 		{
 			$dateformat_options .= ' selected="selected"';
 			$s_custom = true;
