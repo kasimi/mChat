@@ -121,7 +121,7 @@ class render_helper
 			}
 			else if (!$on_index)
 			{
-				return $this->helper->render('mchat_body.html', $this->user->lang['MCHAT_TITLE']);
+				return $this->helper->render('mchat_body.html', $this->user->lang('MCHAT_TITLE'));
 			}
 			return;
 		}
@@ -139,13 +139,13 @@ class render_helper
 		$mchat_urls				= $this->config['allow_post_links'] && $this->auth->acl_get('u_mchat_urls');
 		$mchat_ip				= $this->auth->acl_get('u_mchat_ip');
 		$mchat_pm				= $this->auth->acl_get('u_mchat_pm');
-		$mchat_use			= $this->auth->acl_get('u_mchat_use');
+		$mchat_use				= $this->auth->acl_get('u_mchat_use');
 		$mchat_view				= $this->auth->acl_get('u_mchat_view');
 		$mchat_no_flood			= $this->auth->acl_get('u_mchat_flood_ignore');
 		$mchat_read_archive		= $this->auth->acl_get('u_mchat_archive');
 		$mchat_founder			= $this->user->data['user_type'] == USER_FOUNDER;
 		$mchat_session_time		= !empty($config_mchat['timeout']) ? $config_mchat['timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
-		$mchat_rules			= !empty($config_mchat['rules']) || isset($this->user->lang['MCHAT_RULES']);
+		$mchat_rules			= !empty($config_mchat['rules']) || isset($this->user->lang('MCHAT_RULES'));
 		$mchat_avatars			= !empty($config_mchat['avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'];
 		$mchat_users			= $this->functions_mchat->mchat_users($mchat_session_time, !$on_index);
 
@@ -158,7 +158,7 @@ class render_helper
 				if (!$this->user->data['is_registered'])
 				{
 					// Login box
-					login_box('', $this->user->lang['LOGIN']);
+					login_box('', $this->user->lang('LOGIN'));
 				}
 
 				if (!$mchat_founder)
@@ -179,12 +179,12 @@ class render_helper
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
 
 					meta_refresh(3, $mchat_redirect);
-					trigger_error($this->user->lang['MCHAT_CLEANED']. '<br /><br />' . sprintf($this->user->lang['RETURN_PAGE'], '<a href="' . $mchat_redirect . '">', '</a>'));
+					trigger_error($this->user->lang('MCHAT_CLEANED'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
 				}
 				else
 				{
 					// Display confirm box
-					confirm_box(false, $this->user->lang['MCHAT_DELALLMESS']);
+					confirm_box(false, $this->user->lang('MCHAT_DELALLMESS'));
 				}
 
 				return;
@@ -201,14 +201,14 @@ class render_helper
 				}
 
 				// If the rules are defined in the language file use them, else just use the entry in the database
-				$mchat_rules = isset($this->user->lang['MCHAT_RULES']) ? $this->user->lang['MCHAT_RULES'] : $config_mchat['rules'];
+				$mchat_rules = isset($this->user->lang('MCHAT_RULES')) ? $this->user->lang('MCHAT_RULES') : $config_mchat['rules'];
 				$mchat_rules = explode("\n", $mchat_rules);
 				$mchat_rules = array_map('utf8_htmlspecialchars', $mchat_rules);
 				$mchat_rules = implode('<br />', $mchat_rules);
 
 				$this->template->assign_var('MCHAT_RULES', $mchat_rules);
 
-				return $this->helper->render('mchat_rules.html', $this->user->lang['MCHAT_HELP']);
+				return $this->helper->render('mchat_rules.html', $this->user->lang('MCHAT_HELP'));
 
 			case 'ip':
 				if (!$mchat_ip)
@@ -224,7 +224,7 @@ class render_helper
 				$user_ip = $this->request->variable('ip', '');
 				$this->template->assign_var('WHOIS', user_ipwhois($user_ip));
 
-				return $this->helper->render('viewonline_whois.html', $this->user->lang['WHO_IS_ONLINE']);
+				return $this->helper->render('viewonline_whois.html', $this->user->lang('WHO_IS_ONLINE'));
 		}
 
 		// Grab foes
@@ -243,15 +243,15 @@ class render_helper
 		}
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
-		if (isset($this->user->lang['STATIC_MESSAGE']))
+		if (isset($this->user->lang('STATIC_MESSAGE')))
 		{
-			$config_mchat['static_message'] = $this->user->lang['STATIC_MESSAGE'];
+			$config_mchat['static_message'] = $this->user->lang('STATIC_MESSAGE');
 		}
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
-		if (isset($this->user->lang['MCHAT_RULES']))
+		if (isset($this->user->lang('MCHAT_RULES')))
 		{
-			$config_mchat['rules'] = $this->user->lang['MCHAT_RULES'];
+			$config_mchat['rules'] = $this->user->lang('MCHAT_RULES');
 		}
 
 		$this->template->assign_vars(array(
@@ -280,14 +280,14 @@ class render_helper
 			'MCHAT_STATIC_MESS'				=> !empty($config_mchat['static_message']) ? htmlspecialchars_decode($config_mchat['static_message']) : '',
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
 			'MCHAT_MESSAGE_LNGTH'			=> $config_mchat['max_message_lngth'],
-			//'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> $config_mchat['max_message_lngth']) ? sprintf($this->user->lang['MCHAT_MESSAGE_LNGTH_EXPLAIN'], $config_mchat['max_message_lngth']) : '', TODO not used
-			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang['MCHAT_MESS_LONG'], $config_mchat['max_message_lngth']),
+			//'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> $config_mchat['max_message_lngth']) ? sprintf($this->user->lang('MCHAT_MESSAGE_LNGTH_EXPLAIN'), $config_mchat['max_message_lngth']) : '', TODO not used
+			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $config_mchat['max_message_lngth']),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $config_mchat['timeout'],
 			'MCHAT_WHOIS_REFRESH'			=> $config_mchat['whois'] ? 1000 * $config_mchat['whois_refresh'] : 0,
 			'MCHAT_PAUSE_ON_INPUT'			=> $config_mchat['pause_on_input'],
 			'MCHAT_ONLINE_EXPLAIN'			=> $this->functions_mchat->mchat_session_time($mchat_session_time),
-			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang['MCHAT_REFRESH_YES'], $config_mchat['refresh']),
-			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang['WHO_IS_REFRESH_EXPLAIN'], $config_mchat['whois_refresh']),
+			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $config_mchat['refresh']),
+			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $config_mchat['whois_refresh']),
 			'S_MCHAT_AVATARS'				=> $mchat_avatars,
 			'S_MCHAT_LOCATION'				=> $config_mchat['location'],
 			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
@@ -304,7 +304,7 @@ class render_helper
 		if (!$on_index)
 		{
 			$this->template->assign_block_vars('navlinks', array(
-				'FORUM_NAME'	=> $this->user->lang['MCHAT_TITLE'],
+				'FORUM_NAME'	=> $this->user->lang('MCHAT_TITLE'),
 				'U_VIEW_FORUM'	=> $this->helper->route('dmzx_mchat_controller'),
 			));
 		}
@@ -320,7 +320,7 @@ class render_helper
 
 					// Redirect to previous page
 					meta_refresh(3, $mchat_redirect);
-					trigger_error($this->user->lang['MCHAT_NOACCESS_ARCHIVE']. '<br /><br />' . sprintf($this->user->lang['RETURN_PAGE'], '<a href="' . $mchat_redirect . '">', '</a>'));
+					trigger_error($this->user->lang('MCHAT_NOACCESS_ARCHIVE'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
 				}
 
 				// Prune the chats
@@ -360,7 +360,7 @@ class render_helper
 
 					if (in_array($row['user_id'], $foes_array))
 					{
-						$row['message'] = sprintf($this->user->lang['MCHAT_FOE'], get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']));
+						$row['message'] = sprintf($this->user->lang('MCHAT_FOE'), get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')));
 					}
 
 					$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
@@ -376,9 +376,9 @@ class render_helper
 						'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}ucp.{$this->phpEx}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 						'MCHAT_MESSAGE_EDIT'	=> $message_edit,
 						'MCHAT_MESSAGE_ID'		=> $row['message_id'],
-						'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-						'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-						'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
+						'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+						'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+						'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 						'MCHAT_USER_IP'			=> $row['user_ip'],
 						'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
 						'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
@@ -400,12 +400,12 @@ class render_helper
 				$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $mchat_total_message, (int) $config_mchat['archive_limit'], $mchat_archive_start);
 
 				$this->template->assign_vars(array(
-					'MCHAT_TOTAL_MESSAGES' => sprintf($this->user->lang['MCHAT_TOTALMESSAGES'], $mchat_total_message),
+					'MCHAT_TOTAL_MESSAGES' => sprintf($this->user->lang('MCHAT_TOTALMESSAGES'), $mchat_total_message),
 				));
 
 				// Add to navlinks
 				$this->template->assign_block_vars('navlinks', array(
-					'FORUM_NAME'	=> $this->user->lang['MCHAT_ARCHIVE_PAGE'],
+					'FORUM_NAME'	=> $this->user->lang('MCHAT_ARCHIVE_PAGE'),
 					'U_VIEW_FORUM'	=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'archive')),
 				));
 
@@ -471,7 +471,7 @@ class render_helper
 
 					if (in_array($row['user_id'], $foes_array))
 					{
-						$row['message'] = sprintf($this->user->lang['MCHAT_FOE'], get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']));
+						$row['message'] = sprintf($this->user->lang('MCHAT_FOE'), get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')));
 					}
 
 					$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
@@ -487,9 +487,9 @@ class render_helper
 						'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}ucp.{$this->phpEx}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 						'MCHAT_MESSAGE_EDIT'	=> $message_edit,
 						'MCHAT_MESSAGE_ID'		=> $row['message_id'],
-						'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-						'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-						'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
+						'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+						'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+						'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 						'MCHAT_USER_IP'			=> $row['user_ip'],
 						'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
 						'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
@@ -749,9 +749,9 @@ class render_helper
 					'MCHAT_IS_POSTER'		=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'],
 					'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}ucp.{$this->phpEx}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 					'MCHAT_MESSAGE_ID'		=> $row['message_id'],
-					'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-					'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-					'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
+					'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+					'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+					'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 					'MCHAT_USER_IP'			=> $row['user_ip'],
 					'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
 					'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
@@ -847,7 +847,7 @@ class render_helper
 			{
 				$mchat_redirect = append_sid("{$this->phpbb_root_path}index.{$this->phpEx}");
 				meta_refresh(3, $mchat_redirect);
-				trigger_error($this->user->lang['MCHAT_NO_CUSTOM_PAGE']. '<br /><br />' . sprintf($this->user->lang['RETURN_PAGE'], '<a href="' . $mchat_redirect . '">', '</a>'));
+				trigger_error($this->user->lang('MCHAT_NO_CUSTOM_PAGE'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
 			}
 
 			// User has permissions to view the custom chat?
@@ -885,7 +885,7 @@ class render_helper
 				foreach ($rows as $row)
 				{
 					$colour_text = $row['group_colour'] ? ' style="color:#' . $row['group_colour'] . '"' : '';
-					$group_name = $row['group_type'] == GROUP_SPECIAL ? $this->user->lang['G_' . $row['group_name']] : $row['group_name'];
+					$group_name = $row['group_type'] == GROUP_SPECIAL ? $this->user->lang('G_' . $row['group_name']) : $row['group_name'];
 					if ($row['group_name'] == 'BOTS' || $this->user->data['user_id'] != ANONYMOUS && !$this->auth->acl_get('u_viewprofile'))
 					{
 						$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
@@ -951,7 +951,7 @@ class render_helper
 
 				if (in_array($row['user_id'], $foes_array))
 				{
-					$row['message'] = sprintf($this->user->lang['MCHAT_FOE'], get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']));
+					$row['message'] = sprintf($this->user->lang('MCHAT_FOE'), get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')));
 				}
 
 				$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
@@ -968,9 +968,9 @@ class render_helper
 					'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}ucp.{$this->phpEx}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 					'MCHAT_MESSAGE_EDIT'	=> $message_edit,
 					'MCHAT_MESSAGE_ID'		=> $row['message_id'],
-					'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-					'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
-					'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang['GUEST']),
+					'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+					'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+					'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 					'MCHAT_USER_IP'			=> $row['user_ip'],
 					'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
 					'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
@@ -1026,7 +1026,7 @@ class render_helper
 		// here, only for the custom page and the archive
 		if (!$on_index)
 		{
-			return $this->helper->render('mchat_body.html', $this->user->lang['MCHAT_TITLE']);
+			return $this->helper->render('mchat_body.html', $this->user->lang('MCHAT_TITLE'));
 		}
 	}
 

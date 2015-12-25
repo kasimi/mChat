@@ -149,7 +149,7 @@ class admin_controller
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$this->user->lang['\\1'])) ? \$this->user->lang['\\1'] : '\\1'", $error);
+			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$this->user->lang('\\1'))) ? \$this->user->lang('\\1') : '\\1'", $error);
 
 			if (!sizeof($error))
 			{
@@ -173,7 +173,7 @@ class admin_controller
 				// rebuild the cache
 				$this->functions_mchat->mchat_cache();
 
-				trigger_error($this->user->lang['MCHAT_CONFIG_SAVED'] . adm_back_link($this->u_action));
+				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($this->u_action));
 			}
 		}
 
@@ -200,21 +200,21 @@ class admin_controller
 		$mchat_message_top = isset($this->config['mchat_message_top']) ? $this->config['mchat_message_top'] : 0;
 
 		$dateformat_options = '';
-		foreach ($this->user->lang['dateformats'] as $format => $null)
+		foreach ($this->user->lang('dateformats') as $format => $null)
 		{
 			$dateformat_options .= '<option value="' . $format . '"' . (($format == $mchat_config['date']) ? ' selected="selected"' : '') . '>';
-			$dateformat_options .= $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->user->lang['VARIANT_DATE_SEPARATOR'] . $this->user->format_date(time(), $format, true) : '');
+			$dateformat_options .= $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->user->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '');
 			$dateformat_options .= '</option>';
 		}
 
 		$s_custom = false;
 		$dateformat_options .= '<option value="custom"';
-		if (!isset($this->user->lang['dateformats'][$mchat_config['date']]))
+		if (!isset($this->user->lang('dateformats')[$mchat_config['date']]))
 		{
 			$dateformat_options .= ' selected="selected"';
 			$s_custom = true;
 		}
-		$dateformat_options .= '>' . $this->user->lang['MCHAT_CUSTOM_DATEFORMAT'] . '</option>';
+		$dateformat_options .= '>' . $this->user->lang('MCHAT_CUSTOM_DATEFORMAT') . '</option>';
 
 		$this->template->assign_vars(array(
 			'MCHAT_ERROR'					=> isset($error) ? ((sizeof($error)) ? implode('<br />', $error) : '') : '',
@@ -252,8 +252,8 @@ class admin_controller
 			'MCHAT_NEW_POSTS_EDIT'			=> ($mchat_new_posts_edit) ? true : false,
 			'MCHAT_NEW_POSTS_QUOTE'			=> ($mchat_new_posts_quote) ? true : false,
 			'MCHAT_PAUSE_ON_INPUT'			=> !empty($mchat_row['pause_on_input']) ? $mchat_row['pause_on_input'] : $mchat_config['pause_on_input'],
-			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang['MCHAT_BBCODES_DISALLOWED_EXPLAIN'], '<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'		=> sprintf($this->user->lang['MCHAT_USER_TIMEOUT_EXPLAIN'],'<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
+			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN'), '<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
+			'L_MCHAT_TIMEOUT_EXPLAIN'		=> sprintf($this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN'),'<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
 			'S_MCHAT_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 			'S_CUSTOM_DATEFORMAT'			=> $s_custom,
 
