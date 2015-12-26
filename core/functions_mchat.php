@@ -130,19 +130,13 @@ class functions_mchat
 	/**
 	* @param $session_time amount of time before a users session times out
 	*/
-	function mchat_users($session_time, $on_page)
+	function mchat_users($session_time)
 	{
 		$check_time = time() - (int) $session_time;
 
 		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
 			WHERE user_lastupdate < ' . $check_time;
 		$this->db->sql_query($sql);
-
-		// Add the user into the sessions upon first visit
-		if ($on_page && $this->user->data['user_id'] != ANONYMOUS && !$this->user->data['is_bot'])
-		{
-			$this->mchat_sessions($session_time);
-		}
 
 		$mchat_user_count = 0;
 		$mchat_user_list = '';
@@ -207,7 +201,7 @@ class functions_mchat
 		$this->db->sql_query($sql);
 
 		// Insert user into the mChat sessions table
-		if ($this->user->data['user_type'] == USER_FOUNDER || $this->user->data['user_type'] == USER_NORMAL)
+		if ($this->user->data['user_type'] == USER_FOUNDER || $this->user->data['user_type'] == USER_NORMAL && $this->user->data['user_id'] != ANONYMOUS && !$this->user->data['is_bot'])
 		{
 			$sql = 'SELECT *
 				FROM ' . $this->mchat_sessions_table . '
@@ -216,18 +210,21 @@ class functions_mchat
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
-			$sql_ary = array('user_lastupdate' => time());
+			$user_lastupdate = time();
 
 			if ($row)
 			{
 				$sql = 'UPDATE ' . $this->mchat_sessions_table . '
-					SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+					SET user_lastupdate = ' . $user_lastupdate . '
 					WHERE user_id = ' . (int) $this->user->data['user_id'];
 			}
 			else
 			{
-				$sql_ary['user_id'] = $this->user->data['user_id'];
-				$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+				$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
+					'user_id'			=> $this->user->data['user_id'],
+					'user_ip'			=> $this->user->data['user_ip'],
+					'user_lastupdate'	=> $user_lastupdate,
+				));
 			}
 
 			$this->db->sql_query($sql);

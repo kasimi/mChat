@@ -127,17 +127,8 @@ class listener implements EventSubscriberInterface
 	 */
 	public function display_mchat_on_index($event)
 	{
-		$mchat_on_index = $this->config['mchat_on_index'];
-		$mchat_view	= $this->auth->acl_get('u_mchat_view');
-
-		$this->render_helper->render_stats();
-
-		if ($mchat_on_index && $mchat_view)
-		{
-			$this->template->assign_var('S_MCHAT_ON_INDEX', true);
-
-			$this->render_helper->render_data_for_page(true);
-		}
+		$this->render_helper->render_data_for_page(true);
+		$this->render_helper->assign_whois();
 	}
 
 	public function posting_modify_submit_post_after($event)
