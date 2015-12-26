@@ -502,7 +502,7 @@ class render_helper
 					'refresh' => $this->render('mchat_messages.html'),
 				);
 
-			case 'stats':
+			case 'whois':
 				if (!$mchat_view || !$config_mchat['whois'])
 				{
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
@@ -1031,8 +1031,9 @@ class render_helper
 	}
 
 	/**
-	 *
-	 */
+	* Renders a template file and returns it
+	* @return string
+	*/
 	protected function render($template_file)
 	{
 		$this->template->set_filenames(array('body' => $template_file));
