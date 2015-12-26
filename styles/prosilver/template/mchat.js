@@ -9,82 +9,27 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
- if (!String.prototype.startsWith) {
+if (!String.prototype.startsWith) {
 	String.prototype.startsWith = function(searchString, position) {
 		position = position || 0;
 		return this.indexOf(searchString, position) === position;
 	};
 }
+
+if (!String.prototype.capitalize) {
+	String.prototype.capitalize = function() {
+		return this.charAt(0).toUpperCase() + this.slice(1);
+	};
+}
+
+// Support Opera
+if (typeof document.hasFocus === 'undefined') {
+	document.hasFocus = function() {
+		return document.visibilityState == 'visible';
+	};
+}
+
 jQuery(function($) {
-	var hasFocus = true;
-	if (!mChat.archiveMode) {
-		$.fn.autoGrowInput = function() {
-			this.filter('input:text').each(function() {
-				var comfortZone = 20;
-				var minWidth = $(this).width();
-				var val = '';
-				var input = $(this);
-				var testSubject = $('<div/>').css({
-					position: 'absolute',
-					top: -9999,
-					left: -9999,
-					width: 'auto',
-					fontSize: input.css('fontSize'),
-					fontFamily: input.css('fontFamily'),
-					fontWeight: input.css('fontWeight'),
-					letterSpacing: input.css('letterSpacing'),
-					whiteSpace: 'nowrap'
-				});
-				testSubject.insertAfter(input);
-				$(this).on('keypress blur change submit focus', function() {
-					if (val === (val = input.val())) {
-						return;
-					}
-					var escaped = val.replace(/&/g, '&amp;').replace(/\s/g, ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-					var testerWidth = testSubject.html(escaped).width();
-					var newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;
-					if ((newWidth < input.width() && newWidth >= minWidth) || (newWidth > minWidth && newWidth < $('.mchat-panel').width() - comfortZone)) {
-						input.width(newWidth);
-					}
-				});
-			});
-			return this;
-		};
-
-		$('input#mchat-input').autoGrowInput();
-
-		if (!mChat.messageTop) {
-			$('#mchat-main').animate({scrollTop: $('#mchat-main')[0].scrollHeight}, 'slow', 'swing');
-		}
-
-		if (mChat.pause) {
-			$('#mchat-input').on('keypress', function() {
-				clearInterval(mChat.interval);
-				$('#mchat-refresh-load,#mchat-refresh-ok,#mchat-refresh-error').hide();
-				$('#mchat-refresh-text').html(mChat.refreshNo).addClass('mchat-alert');
-				$('#mchat-refresh-paused').show();
-			});
-		}
-
-		$([window, document]).blur(function() {
-			hasFocus = false;
-		}).focus(function() {
-			hasFocus = true;
-		});
-
-		if (mChat.playSound && $.cookie('mChatNoSound') != 'yes') {
-			$.cookie('mChatNoSound', null);
-			$('#mchat-user-sound').attr('checked', 'checked');
-		} else {
-			$.cookie('mChatNoSound', 'yes');
-			$('#mchat-user-sound').removeAttr('checked');
-		}
-
-		if ($('#mchat-userlist').length && ($.cookie('mChatShowUserList') == 'yes' || mChat.customPage)) {
-			$('#mchat-userlist').show();
-		}
-	}
-
 	var ajaxOptions = {
 		url: mChat.file,
 		timeout: 10000,
@@ -132,7 +77,7 @@ jQuery(function($) {
 			if ($('#mchat-input').val() !== '') {
 				if (confirm(mChat.clearConfirm)) {
 					$('#mchat-refresh-text').removeClass('mchat-alert');
-					if (!mChat.archiveMode && mChat.pause) {
+					if (mChat.pause) {
 						mChat.interval = setInterval(mChat.refresh, mChat.refreshTime);
 					}
 					$('#mchat-refresh-ok').show();
@@ -144,7 +89,7 @@ jQuery(function($) {
 			}
 		},
 		sound: function(file) {
-			if ($.cookie('mChatNoSound') == 'yes') {
+			if (Cookies.get('mChatNoSound') == 'yes') {
 				return;
 			}
 			file = mChat.extUrl + 'sounds/' + file + '.swf';
@@ -155,17 +100,18 @@ jQuery(function($) {
 			}
 		},
 		notice: function() {
-			if (!hasFocus || !document.hasFocus()) {
+			if (!document.hasFocus()) {
 				$.titleAlert(mChat.newMessageAlert, {interval: 1000});
 			}
 		},
 		toggle: function(name) {
 			var $elem = $('#mchat-' + name);
 			$elem.slideToggle(function() {
+				var cookieName = 'mChatShow' + name.capitalize();
 				if ($elem.is(':visible')) {
-					$.cookie('mChatShow' + name, 'yes');
-				} else if ($elem.is(':hidden')) {
-					$.cookie('mChatShow' + name, null);
+					Cookies.set(cookieName, 'yes');
+				} else {
+					Cookies.remove(cookieName);
 				}
 			});
 		},
@@ -344,7 +290,7 @@ jQuery(function($) {
 					mChat.sound('error');
 				},
 				complete: function() {
-					if ($('#mchat-userlist').length && ($.cookie('mChatShowUserList') == 'yes' || mChat.customPage)) {
+					if ($('#mchat-userlist').length && (Cookies.get('mChatShowUserlist') == 'yes' || mChat.customPage)) {
 						$('#mchat-userlist').css('display', 'block');
 					}
 				}
@@ -396,44 +342,116 @@ jQuery(function($) {
 		}
 	});
 
-	mChat.interval = setInterval(mChat.refresh, mChat.refreshTime);
-	mChat.activeInterval = setInterval(mChat.active, mChat.userTimeout);
-	mChat.sessionTime = mChat.userTimeout ? mChat.userTimeout / 1000 : false;
+	if (!mChat.archiveMode) {
+		$.fn.autoGrowInput = function() {
+			this.filter('input:text').each(function() {
+				var comfortZone = 20;
+				var minWidth = $(this).width();
+				var val = '';
+				var input = $(this);
+				var testSubject = $('<div/>').css({
+					position: 'absolute',
+					top: -9999,
+					left: -9999,
+					width: 'auto',
+					fontSize: input.css('fontSize'),
+					fontFamily: input.css('fontFamily'),
+					fontWeight: input.css('fontWeight'),
+					letterSpacing: input.css('letterSpacing'),
+					whiteSpace: 'nowrap'
+				});
+				testSubject.insertAfter(input);
+				$(this).on('keypress blur change submit focus', function() {
+					if (val === (val = input.val())) {
+						return;
+					}
+					var escaped = val.replace(/&/g, '&amp;').replace(/\s/g, ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+					var testerWidth = testSubject.html(escaped).width();
+					var newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;
+					if ((newWidth < input.width() && newWidth >= minWidth) || (newWidth > minWidth && newWidth < $('.mchat-panel').width() - comfortZone)) {
+						input.width(newWidth);
+					}
+				});
+			});
+			return this;
+		};
+
+		$('input#mchat-input').autoGrowInput();
+
+		if (!mChat.messageTop) {
+			$('#mchat-main').animate({scrollTop: $('#mchat-main')[0].scrollHeight}, 'slow', 'swing');
+		}
+
+		if (mChat.pause) {
+			$('#mchat-input').on('keypress', function() {
+				clearInterval(mChat.interval);
+				$('#mchat-refresh-load,#mchat-refresh-ok,#mchat-refresh-error').hide();
+				$('#mchat-refresh-text').html(mChat.refreshNo).addClass('mchat-alert');
+				$('#mchat-refresh-paused').show();
+			});
+		}
+
+		if (mChat.playSound && Cookies.get('mChatNoSound') != 'yes') {
+			Cookies.remove('mChatNoSound');
+			$('#mchat-user-sound').attr('checked', 'checked');
+		} else {
+			Cookies.set('mChatNoSound', 'yes');
+			$('#mchat-user-sound').removeAttr('checked');
+		}
+
+		$('#mchat-user-sound').change(function() {
+			if (this.checked) {
+				Cookies.remove('mChatNoSound');
+			} else {
+				Cookies.set('mChatNoSound', 'yes');
+			}
+		});
+
+		if (mChat.userTimeout) {
+			mChat.counter = setInterval(mChat.countDown, 1000);
+		}
+
+		if (mChat.whoisRefresh) {
+			mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
+		}
+
+		if (Cookies.get('mChatShowSmilies') == 'yes' && $('#mchat-smilies').css('display', 'none')) {
+			$('#mchat-smilies').slideToggle('slow');
+		}
+
+		if (Cookies.get('mChatShowBbcodes') == 'yes' && $('#mchat-bbcodes').css('display', 'none')) {
+			$('#mchat-bbcodes').slideToggle('slow');
+		}
+
+		if (mChat.customPage) {
+			$('#mchat-userlist').show();
+		} else if (Cookies.get('mChatShowUserlist') == 'yes' && $('#mchat-userlist').length) {
+			$('#mchat-userlist').slideToggle('slow');
+		}
+
+		if (Cookies.get('mChatShowColour') == 'yes' && $('#mchat-colour').css('display', 'none')) {
+			$('#mchat-colour').slideToggle('slow');
+		}
+
+		$('#mchat-colour').html(phpbb.colorPalette('h', 15, 10)).on('click', 'a', function(e) {
+			var color = $(this).data('color');
+			bbfontstyle('[color=#' + color + ']', '[/color]');
+			e.preventDefault();
+		});
+
+		$('#postform').on('keypress', function(e) {
+			if (e.which == 13) {
+				mChat.add();
+				e.preventDefault();
+			}
+		});
+
+		mChat.interval = setInterval(mChat.refresh, mChat.refreshTime);
+		mChat.activeInterval = setInterval(mChat.active, mChat.userTimeout);
+		mChat.sessionTime = mChat.userTimeout ? mChat.userTimeout / 1000 : false;
+	}
+
 	mChat.confirmContainer = $('#mchat-confirm').detach().show();
-
-	if (mChat.userTimeout) {
-		mChat.counter = setInterval(mChat.countDown, 1000);
-	}
-
-	if (mChat.whoisRefresh) {
-		mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
-	}
-
-	if ($.cookie('mChatShowSmiles') == 'yes' && $('#mchat-smilies').css('display', 'none')) {
-		$('#mchat-smilies').slideToggle('slow');
-	}
-
-	if ($.cookie('mChatShowBBCodes') == 'yes' && $('#mchat-bbcodes').css('display', 'none')) {
-		$('#mchat-bbcodes').slideToggle('slow');
-	}
-
-	if ($.cookie('mChatShowUserList') == 'yes' && $('#mchat-userlist').length) {
-		$('#mchat-userlist').slideToggle('slow');
-	}
-
-	if ($.cookie('mChatShowColour') == 'yes' && $('#mchat-colour').css('display', 'none')) {
-		$('#mchat-colour').slideToggle('slow');
-	}
-
-	$('#mchat-user-sound').change(function() {
-		$.cookie('mChatNoSound', $(this).is(':checked') ? null : 'yes');
-	});
-
-	$('#mchat-colour').html(phpbb.colorPalette('h', 15, 10)).on('click', 'a', function(e) {
-		var color = $(this).data('color');
-		bbfontstyle('[color=#' + color + ']', '[/color]');
-		e.preventDefault();
-	});
 
 	$('#mchat-body').on('click', '[data-mchat-action]', function(e) {
 		var action = $(this).data('mchat-action');
@@ -445,12 +463,5 @@ jQuery(function($) {
 		var elem = $(this).data('mchat-toggle');
 		mChat.toggle(elem);
 		e.preventDefault();
-	});
-
-	$('#postform').on('keypress', function(e) {
-		if (e.which == 13) {
-			mChat.add();
-			e.preventDefault();
-		}
 	});
 });
