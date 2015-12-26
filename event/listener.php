@@ -113,7 +113,8 @@ class listener implements EventSubscriberInterface
 	public function add_page_header_link($event)
 	{
 		$this->template->assign_vars(array(
-			'U_MCHAT' => $this->controller_helper->route('dmzx_mchat_controller'),
+			'MCHAT_ALLOW_VIEW'	=> $this->auth->acl_get('u_mchat_view'),
+			'U_MCHAT'			=> $this->controller_helper->route('dmzx_mchat_controller'),
 		));
 	}
 
@@ -128,6 +129,8 @@ class listener implements EventSubscriberInterface
 	{
 		$mchat_on_index = $this->config['mchat_on_index'];
 		$mchat_view	= $this->auth->acl_get('u_mchat_view');
+
+		$this->render_helper->render_stats();
 
 		if ($mchat_on_index && $mchat_view)
 		{
@@ -253,8 +256,8 @@ class listener implements EventSubscriberInterface
 
 	public function display_custom_bbcodes_modify_sql($event)
 	{
-		// Prevent disallowed BBCodes from being added to the template only if we're rendering for mChat
-		if ($this->render_helper->initialized)
+		// Add disallowed BBCodes to the template only if we're rendering for mChat
+		if ($this->render_helper->is_mchat_rendered)
 		{
 			$disallowed_bbcode_array = $this->functions_mchat->get_disallowed_bbcodes();
 

@@ -190,7 +190,7 @@ class functions_mchat
 		{
 			return array(
 				'online_userlist'	=> $mchat_user_list,
-				'mchat_users_count'	=> $mchat_user_count > 1 ? sprintf($this->user->lang('MCHAT_ONLINE_USERS_TOTAL'), $mchat_user_count) : sprintf($this->user->lang('MCHAT_ONLINE_USER_TOTAL'), $mchat_user_count),
+				'mchat_users_count'	=> sprintf($this->user->lang($mchat_user_count > 1 ? 'MCHAT_ONLINE_USERS_TOTAL' : 'MCHAT_ONLINE_USER_TOTAL'), $mchat_user_count),
 				'refresh_message'	=> $refresh_message,
 			);
 		}
