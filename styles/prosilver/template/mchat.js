@@ -89,7 +89,7 @@ jQuery(function($) {
 			}
 		},
 		sound: function(file) {
-			if (Cookies.get('mChatNoSound') == 'yes') {
+			if (Cookies.get('mChatNoSound')) {
 				return;
 			}
 			file = mChat.extUrl + 'sounds/' + file + '.swf';
@@ -290,7 +290,7 @@ jQuery(function($) {
 					mChat.sound('error');
 				},
 				complete: function() {
-					if ($('#mchat-userlist').length && (Cookies.get('mChatShowUserlist') == 'yes' || mChat.customPage)) {
+					if ($('#mchat-userlist').length && (Cookies.get('mChatShowUserlist') || mChat.customPage)) {
 						$('#mchat-userlist').css('display', 'block');
 					}
 				}
@@ -349,7 +349,7 @@ jQuery(function($) {
 				var minWidth = $(this).width();
 				var val = '';
 				var input = $(this);
-				var testSubject = $('<div/>').css({
+				var testSubject = $('<div>').css({
 					position: 'absolute',
 					top: -9999,
 					left: -9999,
@@ -376,11 +376,11 @@ jQuery(function($) {
 			return this;
 		};
 
-		$('input#mchat-input').autoGrowInput();
-
 		if (!mChat.messageTop) {
 			$('#mchat-main').animate({scrollTop: $('#mchat-main')[0].scrollHeight}, 'slow', 'swing');
 		}
+
+		$('input#mchat-input').autoGrowInput();
 
 		if (mChat.pause) {
 			$('#mchat-input').on('keypress', function() {
@@ -391,12 +391,11 @@ jQuery(function($) {
 			});
 		}
 
-		if (mChat.playSound && Cookies.get('mChatNoSound') != 'yes') {
+		if (mChat.playSound && Cookies.get('mChatNoSound')) {
+			$('#mchat-user-sound').removeAttr('checked');
+		} else {
 			Cookies.remove('mChatNoSound');
 			$('#mchat-user-sound').attr('checked', 'checked');
-		} else {
-			Cookies.set('mChatNoSound', 'yes');
-			$('#mchat-user-sound').removeAttr('checked');
 		}
 
 		$('#mchat-user-sound').change(function() {
@@ -415,29 +414,29 @@ jQuery(function($) {
 			mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
 		}
 
-		if (Cookies.get('mChatShowSmilies') == 'yes' && $('#mchat-smilies').css('display', 'none')) {
-			$('#mchat-smilies').slideToggle('slow');
-		}
-
-		if (Cookies.get('mChatShowBbcodes') == 'yes' && $('#mchat-bbcodes').css('display', 'none')) {
-			$('#mchat-bbcodes').slideToggle('slow');
-		}
-
-		if (mChat.customPage) {
-			$('#mchat-userlist').show();
-		} else if (Cookies.get('mChatShowUserlist') == 'yes' && $('#mchat-userlist').length) {
-			$('#mchat-userlist').slideToggle('slow');
-		}
-
-		if (Cookies.get('mChatShowColour') == 'yes' && $('#mchat-colour').css('display', 'none')) {
-			$('#mchat-colour').slideToggle('slow');
-		}
-
 		$('#mchat-colour').html(phpbb.colorPalette('h', 15, 10)).on('click', 'a', function(e) {
 			var color = $(this).data('color');
 			bbfontstyle('[color=#' + color + ']', '[/color]');
 			e.preventDefault();
 		});
+
+		if (Cookies.get('mChatShowSmilies')) {
+			$('#mchat-smilies').slideToggle('slow');
+		}
+
+		if (Cookies.get('mChatShowBbcodes')) {
+			$('#mchat-bbcodes').slideToggle('slow', function() {
+				if (Cookies.get('mChatShowColour')) {
+					$('#mchat-colour').slideToggle('slow');
+				}
+			});
+		}
+
+		if (mChat.customPage) {
+			$('#mchat-userlist').show();
+		} else if (Cookies.get('mChatShowUserlist') && $('#mchat-userlist').length) {
+			$('#mchat-userlist').slideToggle('slow');
+		}
 
 		$('#postform').on('keypress', function(e) {
 			if (e.which == 13) {
