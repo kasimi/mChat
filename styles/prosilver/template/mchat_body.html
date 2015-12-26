@@ -95,7 +95,7 @@
 				<div class="mchat-static"><strong>{L_MCHAT_ANNOUNCEMENT}{L_COLON}</strong> <span>{MCHAT_STATIC_MESS}</span></div>
 			<!-- ENDIF -->
 
-			<!-- IF not (MCHAT_ARCHIVE_MODE or MCHAT_CUSTOM_PAGE) and MCHAT_WHOIS and S_MCHAT_INDEX_STATS -->
+			<!-- IF not (MCHAT_ARCHIVE_MODE or MCHAT_CUSTOM_PAGE) and MCHAT_WHOIS_REFRESH and S_MCHAT_INDEX_STATS -->
 				<!-- INCLUDE mchat_whois.html -->
 			<!-- ENDIF -->
 
@@ -175,7 +175,7 @@
 </div>
 <!-- ENDIF -->
 
-<!-- IF MCHAT_CUSTOM_PAGE and MCHAT_WHOIS -->
+<!-- IF MCHAT_CUSTOM_PAGE and MCHAT_WHOIS_REFRESH -->
 	<h3>{L_WHO_IS_CHATTING}</h3>
 	<!-- INCLUDE mchat_whois.html -->
 	<div class="mchat-refresh">
