@@ -405,7 +405,7 @@ class render_helper
 
 				// Add to navlinks
 				$this->template->assign_block_vars('navlinks', array(
-					'FORUM_NAME'	=> $this->user->lang('MCHAT_ARCHIVE_PAGE'),
+					'FORUM_NAME'	=> $this->user->lang('MCHAT_ARCHIVE'),
 					'U_VIEW_FORUM'	=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'archive')),
 				));
 
