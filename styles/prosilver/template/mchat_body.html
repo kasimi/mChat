@@ -27,7 +27,7 @@
 		<ul class="topiclist">
 			<li class="header">
 				<dl class="icon">
-					<dt><!-- IF MCHAT_ARCHIVE_MODE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSE -->{L_MCHAT_TITLE}<!-- ENDIF --></dt>
+					<dt><!-- IF MCHAT_ARCHIVE_MODE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSEIF MCHAT_CUSTOM_PAGE -->{L_MCHAT_TITLE}<!-- ELSE --><a href="{MCHAT_FILE_NAME}" title="{L_MCHAT_TITLE}">{L_MCHAT_TITLE}</a><!-- ENDIF --></dt>
 				</dl>
 			</li>
 		</ul>
@@ -95,7 +95,7 @@
 				<div class="mchat-static"><strong>{L_MCHAT_ANNOUNCEMENT}{L_COLON}</strong> <span>{MCHAT_STATIC_MESS}</span></div>
 			<!-- ENDIF -->
 
-			<!-- IF not (MCHAT_ARCHIVE_MODE or MCHAT_CUSTOM_PAGE) and MCHAT_WHOIS_REFRESH and S_MCHAT_INDEX_STATS -->
+			<!-- IF not MCHAT_ARCHIVE_MODE and not MCHAT_CUSTOM_PAGE and MCHAT_WHOIS_REFRESH -->
 				<!-- INCLUDE mchat_whois.html -->
 			<!-- ENDIF -->
 
@@ -175,7 +175,7 @@
 </div>
 <!-- ENDIF -->
 
-<!-- IF MCHAT_CUSTOM_PAGE and MCHAT_WHOIS_REFRESH -->
+<!-- IF MCHAT_CUSTOM_PAGE and not MCHAT_ARCHIVE_MODE and MCHAT_WHOIS_REFRESH -->
 	<h3>{L_WHO_IS_CHATTING}</h3>
 	<!-- INCLUDE mchat_whois.html -->
 	<div class="mchat-refresh">
