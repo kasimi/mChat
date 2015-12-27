@@ -643,7 +643,7 @@ class render_helper
 				}
 
 				// Edit and delete auths
-				$mchat_ban	= $this->auth->acl_get('a_authusers') && $this->user->data['user_id'] != $row['user_id'];
+				$mchat_ban	= $this->auth->acl_get('a_authusers') && $this->user->data['user_id'] != $user_id;
 				$mchat_edit	= $this->auth->acl_get('u_mchat_edit') && $this->user->data['user_id'] == $user_id;
 				$mchat_del	= $this->auth->acl_get('u_mchat_delete') && $this->user->data['user_id'] == $user_id;
 
