@@ -11,6 +11,9 @@ namespace dmzx\mchat\core;
 
 class functions_mchat
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -30,6 +33,12 @@ class functions_mchat
 	protected $cache;
 
 	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $phpEx;
+
+	/** @var string */
 	protected $mchat_table;
 
 	/** @var string */
@@ -41,24 +50,30 @@ class functions_mchat
 	/**
 	* Constructor
 	*
+	* @param \phpbb\config\config				$config
 	* @param \phpbb\template\template			$template
 	* @param \phpbb\user						$user
 	* @param \phpbb\auth\auth					$auth
 	* @param \phpbb\log\log_interface			$log
 	* @param \phpbb\db\driver\driver_interface	$db
 	* @param \phpbb\cache\service				$cache
+	* @param string								$phpbb_root_path
+	* @param string								$phpEx
 	* @param string								$mchat_table
 	* @param string								$mchat_config_table
 	* @param string								$mchat_sessions_table
 	*/
-	function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $mchat_table, $mchat_config_table, $mchat_sessions_table)
+	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $phpEx, $mchat_table, $mchat_config_table, $mchat_sessions_table)
 	{
+		$this->config				= $config;
 		$this->template				= $template;
 		$this->user					= $user;
 		$this->auth					= $auth;
 		$this->log					= $log;
 		$this->db					= $db;
 		$this->cache				= $cache;
+		$this->phpbb_root_path		= $phpbb_root_path;
+		$this->phpEx				= $phpEx;
 		$this->mchat_table			= $mchat_table;
 		$this->mchat_config_table	= $mchat_config_table;
 		$this->mchat_sessions_table = $mchat_sessions_table;
@@ -323,5 +338,98 @@ class functions_mchat
 			'avatar_width'	=> $row['user_avatar_width'] > $row['user_avatar_height'] ? 40 : (40 / $row['user_avatar_height']) * $row['user_avatar_width'],
 			'avatar_height'	=> $row['user_avatar_height'] > $row['user_avatar_width'] ? 40 : (40 / $row['user_avatar_width']) * $row['user_avatar_height'],
 		));
+	}
+
+	function mchat_messages($sql_where, $total, $offset = 0)
+	{
+		$sql_array = array(
+			'SELECT'	=> 'm.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_allow_pm',
+			'FROM'		=> array($this->mchat_table	=> 'm'),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'm.user_id = u.user_id',
+				)
+			),
+			'WHERE'		=> $sql_where,
+			'ORDER_BY'	=> 'm.message_id DESC',
+		);
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query_limit($sql, $total, $offset);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
+	function mchat_legend()
+	{
+		// Grab group details for legend display for who is online on the custom page
+		$order_legend = $this->config['legend_sort_groupname'] ? 'group_name' : 'group_legend';
+		if ($this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+		{
+			$sql = 'SELECT group_id, group_name, group_colour, group_type
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_legend <> 0
+				ORDER BY ' . $order_legend . ' ASC';
+		}
+		else
+		{
+			$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+				FROM ' . GROUPS_TABLE . ' g
+				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (g.group_id = ug.group_id AND ug.user_id = ' . $this->user->data['user_id'] . ' AND ug.user_pending = 0)
+				WHERE g.group_legend <> 0
+					AND (g.group_type <> ' . GROUP_HIDDEN . '
+					OR ug.user_id = ' . (int) $this->user->data['user_id'] . ')
+				ORDER BY g.' . $order_legend . ' ASC';
+		}
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$legend = array();
+		foreach ($rows as $row)
+		{
+			$colour_text = $row['group_colour'] ? ' style="color:#' . $row['group_colour'] . '"' : '';
+			$group_name = $row['group_type'] == GROUP_SPECIAL ? $this->user->lang('G_' . $row['group_name']) : $row['group_name'];
+			if ($row['group_name'] == 'BOTS' || $this->user->data['user_id'] != ANONYMOUS && !$this->auth->acl_get('u_viewprofile'))
+			{
+				$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
+			}
+			else
+			{
+				$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$this->phpbb_root_path}memberlist.{$this->phpEx}", 'mode=group&amp;g='.$row['group_id']) . '">' . $group_name . '</a>';
+			}
+		}
+
+		return $legend;
+	}
+
+	function mchat_prune()
+	{
+		$sql = 'TRUNCATE TABLE ' . $this->mchat_table;
+		$this->db->sql_query($sql);
+
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
+	}
+
+	function mchat_foes()
+	{
+		$sql = 'SELECT *
+			FROM ' . ZEBRA_TABLE . '
+			WHERE user_id = ' . (int) $this->user->data['user_id'] . '
+				AND foe = 1';
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$foes = array();
+		foreach ($rows as $row)
+		{
+			$foes[] = $row['zebra_id'];
+		}
+
+		return $foes;
 	}
 }

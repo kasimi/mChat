@@ -181,11 +181,8 @@ class render_helper
 
 				if (confirm_box(true))
 				{
-					// Run cleaner
-					$sql = 'TRUNCATE TABLE ' . $this->mchat_table;
-					$this->db->sql_query($sql);
-
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
+					// Prune is confirmed
+					$this->functions_mchat->mchat_prune();
 
 					meta_refresh(3, $mchat_redirect);
 					trigger_error($this->user->lang('MCHAT_CLEANED'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
@@ -231,20 +228,7 @@ class render_helper
 				return $this->helper->render('viewonline_whois.html', $this->user->lang('WHO_IS_ONLINE'));
 		}
 
-		// Grab foes
-		$sql = 'SELECT *
-			FROM ' . ZEBRA_TABLE . '
-			WHERE user_id = ' . $this->user->data['user_id'] . '
-			AND foe = 1';
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		$foes_array = array();
-		foreach ($rows as $row)
-		{
-			$foes_array[] = $row['zebra_id'];
-		}
+		$foes_array = $this->functions_mchat->mchat_foes();
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
 		if (isset($this->user->lang['STATIC_MESSAGE']))
@@ -329,18 +313,10 @@ class render_helper
 					$this->functions_mchat->mchat_prune($config_mchat['prune_num']);
 				}
 
-				$mchat_archive_start = $this->request->variable('start', 0);
-				$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'WHERE m.forum_id = 0';
-
-				// Fetch message rows
-				$sql = 'SELECT m.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_allow_pm
-					FROM ' . $this->mchat_table . ' m
-					LEFT JOIN ' . USERS_TABLE . ' u ON m.user_id = u.user_id
-					' . $sql_where . '
-					ORDER BY m.message_id DESC';
-				$result = $this->db->sql_query_limit($sql, (int) $config_mchat['archive_limit'], $mchat_archive_start);
-				$rows = $this->db->sql_fetchrowset($result);
-				$this->db->sql_freeresult($result);
+				$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'm.forum_id = 0';
+				$limit = (int) $config_mchat['archive_limit'];
+				$offset = $this->request->variable('start', 0);
+				$rows = $this->functions_mchat->mchat_messages($sql_where, $limit, $offset);
 
 				foreach ($rows as $i => $row)
 				{
@@ -414,16 +390,9 @@ class render_helper
 			case 'refresh':
 				// Request new messages
 				$mchat_message_last_id = $this->request->variable('message_last_id', 0);
-				$sql_and = $this->user->data['user_mchat_topics'] ? '' : 'AND m.forum_id = 0';
-				$sql = 'SELECT m.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_allow_pm
-					FROM ' . $this->mchat_table . ' m, ' . USERS_TABLE . ' u
-					WHERE m.user_id = u.user_id
-					AND m.message_id > ' . (int) $mchat_message_last_id . '
-					' . $sql_and . '
-					ORDER BY m.message_id DESC';
-				$result = $this->db->sql_query_limit($sql, (int) $config_mchat['message_limit']);
-				$rows = $this->db->sql_fetchrowset($result);
-				$this->db->sql_freeresult($result);
+				$sql_where = 'm.message_id > ' . (int) $mchat_message_last_id . ($this->user->data['user_mchat_topics'] ? '' : ' AND m.forum_id = 0');
+				$limit = (int) $config_mchat['message_limit'];
+				$rows = $this->functions_mchat->mchat_messages($sql_where, $limit);
 
 				// Reverse the array if messages appear at the bottom
 				if (!$this->config['mchat_message_top'])
@@ -713,14 +682,9 @@ class render_helper
 				$this->db->sql_query($sql);
 
 				// Message edited...now read it
-				$sql = 'SELECT m.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_allow_pm
-					FROM ' . $this->mchat_table . ' m, ' . USERS_TABLE . ' u
-					WHERE m.user_id = u.user_id
-						AND m.message_id = ' . (int) $message_id . '
-					ORDER BY m.message_id DESC';
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				$sql_where = 'm.message_id = ' . (int) $message_id;
+				$rows = $this->functions_mchat->mchat_messages($sql_where, 1);
+				$row = $rows[0];
 
 				$message_edit = $row['message'];
 
@@ -844,62 +808,14 @@ class render_helper
 
 			if ($config_mchat['whois'])
 			{
-				// Grab group details for legend display for who is online on the custom page
-				$order_legend = $this->config['legend_sort_groupname'] ? 'group_name' : 'group_legend';
-				if ($this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
-				{
-					$sql = 'SELECT group_id, group_name, group_colour, group_type
-						FROM ' . GROUPS_TABLE . '
-						WHERE group_legend <> 0
-						ORDER BY ' . $order_legend . ' ASC';
-				}
-				else
-				{
-					$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
-						FROM ' . GROUPS_TABLE . ' g
-						LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (g.group_id = ug.group_id AND ug.user_id = ' . $this->user->data['user_id'] . ' AND ug.user_pending = 0)
-						WHERE g.group_legend <> 0
-							AND (g.group_type <> ' . GROUP_HIDDEN . '
-							OR ug.user_id = ' . (int) $this->user->data['user_id'] . ')
-						ORDER BY g.' . $order_legend . ' ASC';
-				}
-				$result = $this->db->sql_query($sql);
-				$rows = $this->db->sql_fetchrowset($result);
-				$this->db->sql_freeresult($result);
-
-				$legend = array();
-				foreach ($rows as $row)
-				{
-					$colour_text = $row['group_colour'] ? ' style="color:#' . $row['group_colour'] . '"' : '';
-					$group_name = $row['group_type'] == GROUP_SPECIAL ? $this->user->lang('G_' . $row['group_name']) : $row['group_name'];
-					if ($row['group_name'] == 'BOTS' || $this->user->data['user_id'] != ANONYMOUS && !$this->auth->acl_get('u_viewprofile'))
-					{
-						$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
-					}
-					else
-					{
-						$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$this->phpbb_root_path}memberlist.{$this->phpEx}", 'mode=group&amp;g='.$row['group_id']) . '">' . $group_name . '</a>';
-					}
-				}
-
-				$this->template->assign_vars(array(
-					'LEGEND'	=> implode(', ', $legend),
-				));
+				$legend = $this->functions_mchat->mchat_legend();
+				$this->template->assign_var('LEGEND', implode(', ', $legend));
 			}
 		}
 
-		$message_number = $config_mchat[$on_index ? 'message_num' : 'message_limit'];
-		$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'WHERE m.forum_id = 0';
-
-		// Message row
-		$sql = 'SELECT m.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_allow_pm
-			FROM ' . $this->mchat_table . ' m
-			LEFT JOIN ' . USERS_TABLE . ' u ON m.user_id = u.user_id
-			' . $sql_where . '
-			ORDER BY message_id DESC';
-		$result = $this->db->sql_query_limit($sql, $message_number);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
+		$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'm.forum_id = 0';
+		$limit = $config_mchat[$on_index ? 'message_num' : 'message_limit'];
+		$rows = $this->functions_mchat->mchat_messages($sql_where, $limit);
 
 		// Reverse the array if messages appear at the bottom
 		if (!$this->config['mchat_message_top'])

@@ -42,12 +42,15 @@ services:
     dmzx.mchat.functions_mchat:
         class: dmzx\mchat\core\functions_mchat
         arguments:
+            - '@config'
             - '@template'
             - '@user'
             - '@auth'
             - '@log'
             - '@dbal.conn'
             - '@cache'
+            - '%core.root_path%'
+            - '%core.php_ext%'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_config%'
             - '%dmzx.mchat.table.mchat_sessions%'
