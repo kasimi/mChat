@@ -53,12 +53,12 @@ jQuery(function($) {
 
 	$.extend(mChat, {
 		clear: function() {
-			if (mChat.$elem('input').val() !== '') {
+			if (mChat.$$('input').val() !== '') {
 				if (confirm(mChat.clearConfirm)) {
 					mChat.resetSession();
-					mChat.$elem('input').val('');
+					mChat.$$('input').val('');
 				}
-				mChat.$elem('input').focus();
+				mChat.$$('input').focus();
 			}
 		},
 		sound: function(file) {
@@ -67,9 +67,9 @@ jQuery(function($) {
 			}
 			file = mChat.extUrl + 'sounds/' + file + '.swf';
 			if (navigator.userAgent.match(/MSIE ([0-9]+)\./) || navigator.userAgent.match(/Trident\/7.0; rv 11.0/)) {
-				mChat.$elem('sound').html('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" height="0" width="0" type="application/x-shockwave-flash"><param name="movie" value="' + file + '"></object>');
+				mChat.$$('sound').html('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" height="0" width="0" type="application/x-shockwave-flash"><param name="movie" value="' + file + '"></object>');
 			} else {
-				mChat.$elem('sound').html('<embed src="' + file + '" width="0" height="0" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>');
+				mChat.$$('sound').html('<embed src="' + file + '" width="0" height="0" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>');
 			}
 		},
 		notice: function() {
@@ -78,8 +78,8 @@ jQuery(function($) {
 			}
 		},
 		toggle: function(name) {
-			var $elem = $('#mchat-' + name);
-			$elem.slideToggle(function() {
+			var $elem = mChat.$$(name);
+			$elem.stop().slideToggle(function() {
 				var cookieName = 'mChatShow' + name.capitalize();
 				if ($elem.is(':visible')) {
 					Cookies.set(cookieName, 'yes');
@@ -92,10 +92,10 @@ jQuery(function($) {
 			if (mChat.submitting) {
 				return;
 			}
-			if (mChat.$elem('input').val() === '') {
+			if (mChat.$$('input').val() === '') {
 				return;
 			}
-			var messChars = mChat.$elem('input').val().replace(/ /g, '');
+			var messChars = mChat.$$('input').val().replace(/ /g, '');
 			if (mChat.mssgLngth && messChars.length > mChat.mssgLngth) {
 				alert(mChat.mssgLngthLong);
 				return;
@@ -106,22 +106,27 @@ jQuery(function($) {
 			$.ajax($.extend({}, ajaxOptions, {
 				data: $formElems.serialize(),
 				beforeSend: function() {
-					mChat.$elem('add').attr('disabled', 'disabled');
+					mChat.$$('add').attr('disabled', 'disabled');
 					mChat.pauseSession();
 				},
-				success: mChat.refresh,
+				success: function(json) {
+					if (json.add) {
+						mChat.$$('input').val('');
+						mChat.refresh();
+					}
+				},
 				complete: function() {
 					mChat.resetSession();
-					mChat.$elem('input').val('').focus();
-					mChat.$elem('add').removeAttr('disabled');
+					mChat.$$('input').focus();
+					mChat.$$('add').removeAttr('disabled');
 				}
 			}));
 		},
 		edit: function() {
 			var $container = $(this).closest('.mchat-message');
-			var $message = mChat.$elem('confirm').find('textarea').show().val($container.data('edit'));
-			mChat.$elem('confirm').find('p').text(mChat.editInfo);
-			phpbb.confirm(mChat.$elem('confirm'), function() {
+			var $message = mChat.$$('confirm').find('textarea').show().val($container.data('edit'));
+			mChat.$$('confirm').find('p').text(mChat.editInfo);
+			phpbb.confirm(mChat.$$('confirm'), function() {
 				$.ajax($.extend({}, ajaxOptions, {
 					data: {
 						mode: 'edit',
@@ -138,7 +143,7 @@ jQuery(function($) {
 						mChat.resetSession();
 						if (!mChat.archiveMode && !mChat.messageTop) {
 							setTimeout(function() {
-								mChat.$elem('main').animate({scrollTop: mChat.$elem('main')[0].scrollHeight}, 'slow', 'swing');
+								mChat.$$('main').animate({scrollTop: mChat.$$('main')[0].scrollHeight}, 'slow', 'swing');
 							}, 250);
 						}
 					}
@@ -147,9 +152,9 @@ jQuery(function($) {
 		},
 		del: function() {
 			var $container = $(this).closest('.mchat-message');
-			mChat.$elem('confirm').find('textarea').hide();
-			mChat.$elem('confirm').find('p').text(mChat.delConfirm);
-			phpbb.confirm(mChat.$elem('confirm'), function() {
+			mChat.$$('confirm').find('textarea').hide();
+			mChat.$$('confirm').find('p').text(mChat.delConfirm);
+			phpbb.confirm(mChat.$$('confirm'), function() {
 				$.ajax($.extend({}, ajaxOptions, {
 					data: {
 						mode: 'del',
@@ -169,35 +174,35 @@ jQuery(function($) {
 		},
 		refresh: function() {
 			var firstLastSelector = mChat.messageTop ? ':first' : ':last';
-			var id = mChat.$elem('messages').children(firstLastSelector).data('id');
+			var id = mChat.$$('messages').children(firstLastSelector).data('id');
 			$.ajax($.extend({}, ajaxOptions, {
 				data: {
 					mode: 'refresh',
 					message_last_id: id
 				},
 				beforeSend: function() {
-					$('#mchat-refresh-ok,#mchat-refresh-error,#mchat-refresh-paused').hide();
-					mChat.$elem('refresh-load').show();
+					mChat.$$('refresh-ok', 'refresh-error', 'refresh-paused').hide();
+					mChat.$$('refresh-load').show();
 				},
 				success: function(json) {
 					var $html = $(json.refresh);
 					if ($html.length) {
-						mChat.$elem('no-messages').remove();
-						mChat.$elem('messages')[mChat.messageTop ? 'prepend' : 'append']($html.hide());
+						mChat.$$('no-messages').remove();
+						mChat.$$('messages')[mChat.messageTop ? 'prepend' : 'append']($html.hide());
 						$html.css('opacity', 0).slideDown('slow').animate({opacity: 1}, {queue: false, duration: 'slow'});
-						mChat.$elem('main').animate({scrollTop: mChat.messageTop ? 0 : mChat.$elem('main')[0].scrollHeight}, 'slow');
+						mChat.$$('main').animate({scrollTop: mChat.messageTop ? 0 : mChat.$$('main')[0].scrollHeight}, 'slow');
 						mChat.sound('add');
 						mChat.notice();
 					}
 					setTimeout(function() {
-						$('#mchat-refresh-load,#mchat-refresh-error,#mchat-refresh-paused').hide();
-						mChat.$elem('refresh-ok').show();
-						mChat.$elem('refresh-text').html(mChat.refreshYes);
+						mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
+						mChat.$$('refresh-ok').show();
+						mChat.$$('refresh-text').html(mChat.refreshYes);
 					}, 250);
 				},
 				error: function() {
-					$('#mchat-refresh-load,#mchat-refresh-ok,#mchat-refresh-paused').hide();
-					mChat.$elem('refresh-error').show();
+					mChat.$$('refresh-load', 'refresh-ok', 'refresh-paused').hide();
+					mChat.$$('refresh-error').show();
 					mChat.sound('error');
 				}
 			}));
@@ -209,33 +214,35 @@ jQuery(function($) {
 				},
 				beforeSend: function() {
 					if (mChat.customPage) {
-						mChat.$elem('refresh-pending').show();
-						mChat.$elem('refresh').hide();
+						mChat.$$('refresh-pending').show();
+						mChat.$$('refresh').hide();
 					}
 				},
 				success: function(json) {
-					mChat.$elem('whois').replaceWith(json.whois);
+					var $whois = $(json.whois);
+					var $userlist = $whois.find('#mchat-userlist');
+					if (Cookies.get('mChatShowUserlist')) {
+						$userlist.show();
+					}
+					mChat.$$('whois').replaceWith($whois);
+					mChat.cache['whois'] = $whois;
+					mChat.cache['userlist'] = $userlist;
 					if (mChat.customPage) {
 						setTimeout(function() {
-							mChat.$elem('refresh-pending').hide();
-							mChat.$elem('refresh').show();
+							mChat.$$('refresh-pending').hide();
+							mChat.$$('refresh').show();
 						}, 250);
 					}
 				},
 				error: function() {
 					mChat.sound('error');
-				},
-				complete: function() {
-					if (mChat.$elem('userlist').length && (Cookies.get('mChatShowUserlist') || mChat.customPage)) {
-						mChat.$elem('userlist').css('display', 'block');
-					}
 				}
 			}));
 		},
 		countDown: function() {
 			mChat.sessionTime -= 1;
 			var timeLeft = formatRemainingSessionTime(mChat.sessionTime);
-			mChat.$elem('session').html(mChat.sessEnds + ' ' + timeLeft);
+			mChat.$$('session').html(mChat.sessEnds + ' ' + timeLeft);
 			if (mChat.sessionTime <= 0) {
 				mChat.endSession();
 			}
@@ -257,32 +264,33 @@ jQuery(function($) {
 				mChat.sessionTime = mChat.userTimeout / 1000;
 				clearInterval(mChat.sessionCountdown);
 				mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
-				mChat.$elem('session').html(mChat.sessEnds + ' ' + formatRemainingSessionTime(mChat.sessionTime));
+				mChat.$$('session').html(mChat.sessEnds + ' ' + formatRemainingSessionTime(mChat.sessionTime));
 			}
 			if (mChat.whoisRefresh) {
 				clearInterval(mChat.whoisInterval);
 				mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
 			}
 			if (mChat.pause) {
-				mChat.$elem('input').one('keypress', mChat.endSession);
+				mChat.$$('input').one('keypress', mChat.endSession);
 			}
-			mChat.$elem('refresh-ok').show();
-			$('#mchat-refresh-load,#mchat-refresh-error,#mchat-refresh-paused').hide();
-			mChat.$elem('refresh-text').html(mChat.refreshYes);
+			mChat.$$('refresh-ok').show();
+			mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
+			mChat.$$('refresh-text').html(mChat.refreshYes);
 			mChat.submitting = false;
 		},
 		endSession: function() {
 			clearInterval(mChat.refreshInterval);
 			if (mChat.userTimeout) {
 				clearInterval(mChat.sessionCountdown);
-				mChat.$elem('session').html(mChat.sessOut);
+				mChat.$$('session').html(mChat.sessOut);
 			}
 			if (mChat.whoisRefresh) {
 				clearInterval(mChat.whoisInterval);
 			}
-			$('#mchat-refresh-load,#mchat-refresh-ok,#mchat-refresh-error').hide();
-			mChat.$elem('refresh-paused').show();
-			mChat.$elem('refresh-text').html(mChat.refreshNo);
+			mChat.$$('refresh-load', 'refresh-ok', 'refresh-error').hide();
+			mChat.$$('refresh-paused').show();
+			mChat.$$('refresh-text').html(mChat.refreshNo);
+			mChat.whois();
 		},
 		mention: function() {
 			var $container = $(this).closest('.mchat-message');
@@ -317,16 +325,20 @@ jQuery(function($) {
 			s = s.replace(/&quot;/g, "'");
 			return s;
 		},
-		$elem: function(name) {
-			if (!mChat.cache[name]) {
-				mChat.cache[name] = $('#mchat-' + name);
-			}
-			return mChat.cache[name];
-		},
+		$$: function() {
+			return $($.map(arguments, function(name) {
+				if (!mChat.cache[name]) {
+					mChat.cache[name] = $('#mchat-' + name);
+				}
+				return mChat.cache[name];
+			})).map(function() {
+				return this.toArray();
+			});
+		}
 	});
 
 	mChat.cache = {};
-	mChat.$elem('confirm').detach().show();
+	mChat.$$('confirm').detach().show();
 
 	if (!mChat.archiveMode) {
 		$.fn.autoGrowInput = function() {
@@ -365,19 +377,39 @@ jQuery(function($) {
 		mChat.resetSession();
 
 		if (!mChat.messageTop) {
-			mChat.$elem('main').animate({scrollTop: mChat.$elem('main')[0].scrollHeight}, 'slow', 'swing');
+			mChat.$$('main').animate({scrollTop: mChat.$$('main')[0].scrollHeight}, 'slow', 'swing');
 		}
 
-		mChat.$elem('input').autoGrowInput();
-
 		if (mChat.playSound && Cookies.get('mChatNoSound')) {
-			mChat.$elem('user-sound').removeAttr('checked');
+			mChat.$$('user-sound').removeAttr('checked');
 		} else {
-			mChat.$elem('user-sound').attr('checked', 'checked');
+			mChat.$$('user-sound').attr('checked', 'checked');
 			Cookies.remove('mChatNoSound');
 		}
 
-		mChat.$elem('user-sound').change(function() {
+		if (Cookies.get('mChatShowSmilies')) {
+			mChat.$$('smilies').slideToggle('slow');
+		}
+
+		if (Cookies.get('mChatShowBbcodes')) {
+			mChat.$$('bbcodes').slideToggle('slow', function() {
+				if (Cookies.get('mChatShowColour')) {
+					mChat.$$('colour').slideToggle('slow');
+				}
+			});
+		}
+
+		if (Cookies.get('mChatShowUserlist')) {
+			mChat.$$('userlist').slideToggle('slow');
+		}
+
+		mChat.$$('colour').html(phpbb.colorPalette('h', 15, 10)).on('click', 'a', function(e) {
+			var color = $(this).data('color');
+			bbfontstyle('[color=#' + color + ']', '[/color]');
+			e.preventDefault();
+		});
+
+		mChat.$$('user-sound').change(function() {
 			if (this.checked) {
 				Cookies.remove('mChatNoSound');
 			} else {
@@ -385,43 +417,21 @@ jQuery(function($) {
 			}
 		});
 
-		mChat.$elem('colour').html(phpbb.colorPalette('h', 15, 10)).on('click', 'a', function(e) {
-			var color = $(this).data('color');
-			bbfontstyle('[color=#' + color + ']', '[/color]');
-			e.preventDefault();
-		});
-
-		if (Cookies.get('mChatShowSmilies')) {
-			mChat.$elem('smilies').slideToggle('slow');
-		}
-
-		if (Cookies.get('mChatShowBbcodes')) {
-			mChat.$elem('bbcodes').slideToggle('slow', function() {
-				if (Cookies.get('mChatShowColour')) {
-					mChat.$elem('colour').slideToggle('slow');
-				}
-			});
-		}
-
-		if (mChat.$elem('userlist').length && (Cookies.get('mChatShowUserlist') || mChat.customPage)) {
-			mChat.$elem('userlist').slideToggle('slow');
-		}
-
 		$('#postform').on('keypress', function(e) {
 			if (e.which == 13) {
 				mChat.add();
 				e.preventDefault();
 			}
 		});
+
+		mChat.$$('input').autoGrowInput();
 	}
 
-	mChat.$elem('body').on('click', '[data-mchat-action]', function(e) {
+	$('#page-body').on('click', '[data-mchat-action]', function(e) {
 		var action = $(this).data('mchat-action');
 		mChat[action].call(this);
 		e.preventDefault();
-	});
-
-	mChat.$elem('body').on('click', '[data-mchat-toggle]', function(e) {
+	}).on('click', '[data-mchat-toggle]', function(e) {
 		var elem = $(this).data('mchat-toggle');
 		mChat.toggle(elem);
 		e.preventDefault();

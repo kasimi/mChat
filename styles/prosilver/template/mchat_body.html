@@ -27,7 +27,7 @@
 		<ul class="topiclist">
 			<li class="header">
 				<dl class="icon">
-					<dt><!-- IF MCHAT_ARCHIVE_MODE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSEIF MCHAT_CUSTOM_PAGE -->{L_MCHAT_TITLE}<!-- ELSE --><a href="{MCHAT_FILE_NAME}" title="{L_MCHAT_TITLE}">{L_MCHAT_TITLE}</a><!-- ENDIF --></dt>
+					<dt><!-- IF MCHAT_ARCHIVE_MODE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSE --><a href="{MCHAT_FILE_NAME}" title="{L_MCHAT_TITLE}">{L_MCHAT_TITLE}</a><!-- ENDIF --></dt>
 				</dl>
 			</li>
 		</ul>
@@ -182,7 +182,7 @@
 	<div class="mchat-refresh">
 		<span id="mchat-refresh">{MCHAT_WHOIS_REFRESH_EXPLAIN}</span>
 		<span id="mchat-refresh-pending" class="hidden">{L_MCHAT_REFRESHING}</span>
-		<!-- IF LEGEND --><br /><em>{L_LEGEND}{L_COLON} {LEGEND}</em><!-- ENDIF -->
+		<!-- IF LEGEND --><br /><br /><em>{L_LEGEND}{L_COLON} {LEGEND}</em><!-- ENDIF -->
 	</div>
 <!-- ELSEIF MCHAT_ARCHIVE_MODE and LEGEND -->
 	<div class="mchat-refresh">
