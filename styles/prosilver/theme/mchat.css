@@ -5,7 +5,6 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-
 .mchat-message {
 	background: linear-gradient(#B6BFC4, #FFFFFF, #FFFFFF, #B6BFC4);
 	border: 1px solid #999999;
@@ -58,30 +57,24 @@
 	background-color: #E9F0F5 !important;
 }
 
-div.mchat-static {
-	color: #990000;
+
+#mchat-static, #mchat-stats, #mchat-whois, .mchat-refresh {
 	padding-left: 5px;
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	text-align: left;
 	font-size: 1.1em;
 }
 
-#mchat-stats,
-#mchat-whois {
-	padding-left: 5px;
+#mchat-static {
+	color: #990000;
+}
+
+#mchat-stats, #mchat-whois {
 	margin-top: 2px;
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	text-align: left;
 	min-height: 1.3em;
-	font-size: 1.1em;
 	height: auto !important;
 }
 
 .mchat-refresh {
-	padding-left: 5px;
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	text-align: left;
-	font-size: 1.1em;
 	margin-top: 1.5em;
 	clear: both;
 }
@@ -113,9 +106,12 @@ div.mchat-static {
 	float: right;
 }
 
-.mchat-mention,
-.mchat-message-icons > * {
+.mchat-mention, .mchat-message-icons > * {
 	cursor: pointer;
+}
+
+#mchat-smilies {
+	padding: 5px;
 }
 
 #mchat-refresh-load {
@@ -129,8 +125,7 @@ div.mchat-static {
 	cursor: help;
 }
 
-#mchat-refresh-error,
-#mchat-refresh-paused {
+#mchat-refresh-error, #mchat-refresh-paused {
 	vertical-align: middle;
 	cursor: help;
 	display: none;
@@ -140,6 +135,10 @@ div.mchat-static {
 	position: absolute;
 	left: -1000px;
 	top: -1000px;
+}
+
+#mchat-status {
+	padding: 5px;
 }
 
 .mchat-alert {

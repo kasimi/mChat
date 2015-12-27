@@ -71,7 +71,7 @@
 			</script>
 
 			<!-- IF not MCHAT_ARCHIVE_MODE -->
-				<div id="mchat-main" class="mchat-row-limit" <!-- IF MCHAT_CUSTOM_PAGE -->style="height: {MCHAT_CUSTOM_HEIGHT}px;"<!-- ELSE -->style="height: {MCHAT_INDEX_HEIGHT}px;"<!-- ENDIF -->>
+				<div id="mchat-main" class="mchat-row-limit" style="height:<!-- IF MCHAT_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px">
 			<!-- ENDIF -->
 
 			<div id="mchat-confirm" class="hidden">
@@ -91,7 +91,7 @@
 			</div>
 
 			<!-- IF MCHAT_STATIC_MESS -->
-				<div class="mchat-static"><strong>{L_MCHAT_ANNOUNCEMENT}{L_COLON}</strong> <span>{MCHAT_STATIC_MESS}</span></div>
+				<div id="mchat-static"><strong>{L_MCHAT_ANNOUNCEMENT}{L_COLON}</strong> <span>{MCHAT_STATIC_MESS}</span></div>
 			<!-- ENDIF -->
 
 			<!-- IF not MCHAT_ARCHIVE_MODE and not MCHAT_CUSTOM_PAGE and MCHAT_WHOIS_REFRESH -->
@@ -111,7 +111,9 @@
 						<!-- ENDIF -->
 						<br />
 						<input id="mchat-add" type="button" class="button2" data-mchat-action="add" value="{L_MCHAT_ADD}" />
-						<input id="mchat-clear" type="button" class="button2" data-mchat-action="clear" value="{L_MCHAT_CLEAR_INPUT}" />
+						<!-- IF MCHAT_USER_TIMEOUT or MCHAT_PAUSE_ON_INPUT -->
+							<input id="mchat-clear" type="button" class="button2" data-mchat-action="clear" value="{L_MCHAT_CLEAR_INPUT}" />
+						<!-- ENDIF -->
 						<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
 							<input type="button" class="button2" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
 						<!-- ENDIF -->
@@ -136,7 +138,7 @@
 						<!-- ENDIF -->
 					<!-- ENDIF -->
 					<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
-						<div id="mchat-smilies" style="padding: 5px; display: none;">
+						<div id="mchat-smilies" class="hidden">
 							<!-- BEGIN smiley -->
 							<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
 							<!-- END smiley -->
@@ -144,13 +146,13 @@
 						</div>
 					<!-- ENDIF -->
 					<!-- EVENT dmzx_mchat_body_smiley_after -->
-					<div style="padding: 3px;">
+					<div id="mchat-status">
 						<img src="{EXT_URL}styles/prosilver/theme/images/load.gif" alt="{L_MCHAT_LOAD}" title="{L_MCHAT_LOAD}" id="mchat-refresh-load" />
 						<img src="{EXT_URL}styles/prosilver/theme/images/ok.gif" alt="{L_MCHAT_OK}" title="{L_MCHAT_OK}" id="mchat-refresh-ok" />
 						<img src="{EXT_URL}styles/prosilver/theme/images/error.gif" alt="{L_MCHAT_ERROR}" title="{L_MCHAT_ERROR}" id="mchat-refresh-error" />
 						<img src="{EXT_URL}styles/prosilver/theme/images/paused.gif" alt="{L_MCHAT_PAUSE}" title="{L_MCHAT_PAUSE}" id="mchat-refresh-paused" />
 						<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
-						<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">&nbsp;</span><!-- ENDIF --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF S_MCHAT_SOUND_YES --> checked="checked"<!-- ENDIF --> /></label>
+						<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session"></span><!-- ENDIF --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF S_MCHAT_SOUND_YES --> checked="checked"<!-- ENDIF --> /></label>
 						{L_MCHAT_COPYRIGHT}
 					</div>
 				</div>
