@@ -583,7 +583,7 @@ class render_helper
 				}
 
 				return array(
-					'add' => $this->render('mchat_messages.html'),
+					'add' => true,
 				);
 
 			case 'edit':
