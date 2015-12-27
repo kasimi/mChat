@@ -60,12 +60,9 @@ services:
             - '@dmzx.mchat.functions_mchat'
             - '@dmzx.mchat.render_helper'
             - '@auth'
-            - '@config'
             - '@controller.helper'
             - '@template'
             - '@user'
-            - '@dbal.conn'
             - '%core.php_ext%'
-            - '%dmzx.mchat.table.mchat%'
         tags:
             - { name: event.listener }

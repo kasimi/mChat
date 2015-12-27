@@ -406,7 +406,7 @@ class functions_mchat
 		return $legend;
 	}
 
-	function mchat_prune()
+	function mchat_truncate_messages()
 	{
 		$sql = 'TRUNCATE TABLE ' . $this->mchat_table;
 		$this->db->sql_query($sql);
@@ -431,5 +431,52 @@ class functions_mchat
 		}
 
 		return $foes;
+	}
+
+	function mchat_insert_posting($mode, $data)
+	{
+		if (empty($this->config['mchat_enable']) || empty($this->config['mchat_new_posts']))
+		{
+			return;
+		}
+
+		if ($mode == 'post' && !empty($this->config['mchat_new_posts_topic']))
+		{
+			$mchat_new_data = $this->user->lang('MCHAT_NEW_TOPIC');
+		}
+		else if ($mode == 'quote' && !empty($this->config['mchat_new_posts_quote']))
+		{
+			$mchat_new_data = $this->user->lang('MCHAT_NEW_QUOTE');
+		}
+		else if ($mode == 'edit' && !empty($this->config['mchat_new_posts_edit']))
+		{
+			$mchat_new_data = $this->user->lang('MCHAT_NEW_EDIT');
+		}
+		else if ($mode == 'reply' && !empty($this->config['mchat_new_posts_reply']))
+		{
+			$mchat_new_data = $this->user->lang('MCHAT_NEW_REPLY');
+		}
+		else
+		{
+			return;
+		}
+
+		$message = utf8_normalize_nfc($mchat_new_data . ': [url=' . generate_board_url() . '/viewtopic.' . $this->phpEx . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url] '. $this->user->lang('MCHAT_IN') . ' [url=' . generate_board_url() . '/viewforum. ' . $this->phpEx . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . ' [/url] ' . $this->user->lang('MCHAT_IN_SECTION'));
+
+		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
+		generate_text_for_storage($message, $uid, $bitfield, $options, true, false, false);
+		$sql_ary = array(
+			'forum_id'			=> $data['forum_id'],
+			'post_id'			=> $data['post_id'],
+			'user_id'			=> $this->user->data['user_id'],
+			'user_ip'			=> $this->user->data['session_ip'],
+			'message'			=> $message,
+			'bbcode_bitfield'	=> $bitfield,
+			'bbcode_uid'		=> $uid,
+			'bbcode_options'	=> $options,
+			'message_time'		=> time(),
+		);
+		$sql = 'INSERT INTO ' .	$this->mchat_table	. ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+		$this->db->sql_query($sql);
 	}
 }
