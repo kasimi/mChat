@@ -13,7 +13,7 @@ class install_mchat extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], '0.2.1', '>=');
+		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], '0.3.2', '>=');
 	}
 
 	static public function depends_on()
@@ -34,7 +34,7 @@ class install_mchat extends \phpbb\db\migration\migration
 			array('config.add', array('mchat_new_posts_quote', false)),
 			array('config.add', array('mchat_message_top', true)),
 			array('config.add', array('mchat_stats_index', false)),
-			array('config.add', array('mchat_version', '0.2.1')),
+			array('config.add', array('mchat_version', '0.3.2')),
 
 			// Add permissions
 			array('permission.add', array('u_mchat_use', true)),
