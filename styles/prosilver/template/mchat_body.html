@@ -27,7 +27,7 @@
 		<ul class="topiclist">
 			<li class="header">
 				<dl class="icon">
-					<dt><!-- IF MCHAT_ARCHIVE_MODE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSE --><a href="{MCHAT_FILE_NAME}" title="{L_MCHAT_TITLE}">{L_MCHAT_TITLE}</a><!-- ENDIF --></dt>
+					<dt><!-- IF MCHAT_ARCHIVE_MODE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSEIF S_MCHAT_CUSTOM_PAGE --><a href="{MCHAT_FILE_NAME}" title="{L_MCHAT_TITLE}">{L_MCHAT_TITLE}</a><!-- ELSE -->{L_MCHAT_TITLE}<!-- ENDIF --></dt>
 				</dl>
 			</li>
 		</ul>

@@ -97,9 +97,12 @@ class listener implements EventSubscriberInterface
 	*/
 	public function add_page_header_link($event)
 	{
+		$allow_view = $this->auth->acl_get('u_mchat_view');
+		$config_mchat = $allow_view ? $this->functions_mchat->mchat_cache() : array();
 		$this->template->assign_vars(array(
-			'MCHAT_ALLOW_VIEW'	=> $this->auth->acl_get('u_mchat_view'),
-			'U_MCHAT'			=> $this->controller_helper->route('dmzx_mchat_controller'),
+			'MCHAT_ALLOW_VIEW'		=> $this->auth->acl_get('u_mchat_view'),
+			'S_MCHAT_CUSTOM_PAGE'	=> !empty($config_mchat['custom_page']),
+			'U_MCHAT'				=> $this->controller_helper->route('dmzx_mchat_controller'),
 		));
 	}
 
