@@ -127,12 +127,12 @@ class render_helper
 			return;
 		}
 
-		if ($on_index && !$this->config['mchat_on_index'])
+		$mchat_view = $this->auth->acl_get('u_mchat_view');
+
+		if ($on_index && (!$this->config['mchat_on_index'] || !$mchat_view))
 		{
 			return;
 		}
-
-		$mchat_view = $this->auth->acl_get('u_mchat_view');
 
 		if (!$mchat_view)
 		{
