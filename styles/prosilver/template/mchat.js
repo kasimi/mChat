@@ -316,7 +316,7 @@ jQuery(function($) {
 			insert_text(mChat.likes + '[quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		entityDecode: function(text) {
-			var s = decodeURIComponent(text.replace(/\+/g, ' '));
+			var s = decodeURIComponent(text.toString().replace(/\+/g, ' '));
 			s = s.replace(/&lt;/g, '<');
 			s = s.replace(/&gt;/g, '>');
 			s = s.replace(/&#58;/g, ':');
