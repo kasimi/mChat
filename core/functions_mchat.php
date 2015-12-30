@@ -461,7 +461,7 @@ class functions_mchat
 			return;
 		}
 
-		$message = utf8_normalize_nfc($mchat_new_data . ': [url=' . generate_board_url() . '/viewtopic.' . $this->phpEx . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url] '. $this->user->lang('MCHAT_IN') . ' [url=' . generate_board_url() . '/viewforum. ' . $this->phpEx . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . ' [/url] ' . $this->user->lang('MCHAT_IN_SECTION'));
+		$message = utf8_normalize_nfc($mchat_new_data . ': [url=' . generate_board_url() . '/viewtopic.' . $this->phpEx . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url] '. $this->user->lang('MCHAT_IN') . ' [url=' . generate_board_url() . '/viewforum.' . $this->phpEx . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . ' [/url] ' . $this->user->lang('MCHAT_IN_SECTION'));
 
 		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
 		generate_text_for_storage($message, $uid, $bitfield, $options, true, false, false);
