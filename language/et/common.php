@@ -49,7 +49,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_DELITE'					=> 'Kustuta',
 	'MCHAT_EDIT'					=> 'Muuda',
 	'MCHAT_EDITINFO'				=> 'Muuda sõnumit ja vajuta OK',
-	'MCHAT_ENABLE'					=> 'Vabandame, kuid Mini-Jututuba on hetkel kättesaamatu',
 	'MCHAT_ERROR'					=> 'Viga',
 	'MCHAT_FLOOD'					=> 'Sa ei saa postitada oma järgmist postitust nii kiiresti',
 	'MCHAT_FOE'						=> 'See sõnum on tehtud kasutaja <strong>%1$s</strong>, kes on sinu mustas nimekirjas.',

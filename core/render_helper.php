@@ -109,24 +109,6 @@ class render_helper
 			define('PHPBB_USE_BOARD_URL_PATH', true);
 		}
 
-		$this->template->assign_vars(array(
-			'MCHAT_ENABLE'		=> $this->config['mchat_enable'],
-			'MCHAT_DISABLE'		=> !$this->config['mchat_enable'],
-		));
-
-		if (!$this->config['mchat_enable'])
-		{
-			if ($this->request->is_ajax())
-			{
-				throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
-			}
-			else if (!$on_index)
-			{
-				return $this->helper->render('mchat_body.html', $this->user->lang('MCHAT_TITLE'));
-			}
-			return;
-		}
-
 		$mchat_view = $this->auth->acl_get('u_mchat_view');
 
 		if ($on_index && (!$this->config['mchat_on_index'] || !$mchat_view))
@@ -879,7 +861,7 @@ class render_helper
 	*/
 	public function assign_whois()
 	{
-		if ($this->config['mchat_enable'] && $this->auth->acl_get('u_mchat_view') && !$this->is_mchat_rendered)
+		if ($this->auth->acl_get('u_mchat_view') && !$this->is_mchat_rendered)
 		{
 			$this->is_mchat_rendered = true;
 			$config_mchat = $this->functions_mchat->mchat_cache();

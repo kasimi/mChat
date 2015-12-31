@@ -49,7 +49,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_DELITE'					=> 'Delete',
 	'MCHAT_EDIT'					=> 'Edit',
 	'MCHAT_EDITINFO'				=> 'Edit the message and click OK',
-	'MCHAT_ENABLE'					=> 'Sorry, the Mini-Chat is currently unavailable',
 	'MCHAT_ERROR'					=> 'Error',
 	'MCHAT_FLOOD'					=> 'You can not post another message so soon after your last',
 	'MCHAT_FOE'						=> 'This message was made by <strong>%1$s</strong> who is currently on your ignore list.',

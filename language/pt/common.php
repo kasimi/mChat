@@ -49,7 +49,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_DELITE'					=> 'Excluir',
 	'MCHAT_EDIT'					=> 'Editar',
 	'MCHAT_EDITINFO'				=> 'Editar a mensagem e clik em OK',
-	'MCHAT_ENABLE'					=> 'Perdão, o Mini-Chat actualmente no está disponível',
 	'MCHAT_ERROR'					=> 'Error',
 	'MCHAT_FLOOD'					=> 'Você não pode enviar outra mensagem tão rapido, depois de enviar a última',
 	'MCHAT_FOE'						=> 'Esta mensagem foi criada por <strong>%1$s</strong> que se encontra actualmente na sua lista de ignorados.',

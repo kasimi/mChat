@@ -188,7 +188,6 @@ class admin_controller
 		}
 		$this->db->sql_freeresult($result);
 
-		$mchat_enable = isset($this->config['mchat_enable']) ? $this->config['mchat_enable'] : 0;
 		$mchat_on_index = isset($this->config['mchat_on_index']) ? $this->config['mchat_on_index'] : 0;
 		$mchat_version = isset($this->config['mchat_version']) ? $this->config['mchat_version'] : '';
 		$mchat_new_posts = isset($this->config['mchat_new_posts']) ? $this->config['mchat_new_posts'] : 0;
@@ -221,7 +220,6 @@ class admin_controller
 			'MCHAT_VERSION'					=> $mchat_version,
 			'MCHAT_PRUNE'					=> !empty($mchat_row['prune_enable']) ? $mchat_row['prune_enable'] : $mchat_config['prune_enable'],
 			'MCHAT_PRUNE_NUM'				=> !empty($mchat_row['prune_num']) ? $mchat_row['prune_num'] : $mchat_config['prune_num'],
-			'MCHAT_ENABLE'					=> ($mchat_enable) ? true : false,
 			'MCHAT_ON_INDEX'				=> ($mchat_on_index) ? true : false,
 			'MCHAT_MESSAGE_TOP'				=> ($mchat_message_top) ? true : false,
 			'MCHAT_LOCATION'				=> !empty($mchat_row['location']) ? $mchat_row['location'] : $mchat_config['location'],
@@ -303,8 +301,6 @@ class admin_controller
 	*/
 	protected function set_options()
 	{
-		//update setting in config table for mod enabled or not
-		$this->config->set('mchat_enable', $this->request->variable('mchat_enable', 0));
 		// update setting in config table for allowing on index or not
 		$this->config->set('mchat_on_index', $this->request->variable('mchat_on_index', 0));
 		// update setting in config table to enable posts to display or not

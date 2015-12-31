@@ -100,7 +100,7 @@ class listener implements EventSubscriberInterface
 		$allow_view = $this->auth->acl_get('u_mchat_view');
 		$config_mchat = $allow_view ? $this->functions_mchat->mchat_cache() : array();
 		$this->template->assign_vars(array(
-			'MCHAT_ALLOW_VIEW'		=> $this->auth->acl_get('u_mchat_view'),
+			'MCHAT_ALLOW_VIEW'		=> $allow_view,
 			'S_MCHAT_CUSTOM_PAGE'	=> !empty($config_mchat['custom_page']),
 			'U_MCHAT'				=> $this->controller_helper->route('dmzx_mchat_controller'),
 		));

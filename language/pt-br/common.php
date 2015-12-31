@@ -49,7 +49,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_DELITE'					=> 'Excluir',
 	'MCHAT_EDIT'					=> 'Editar',
 	'MCHAT_EDITINFO'				=> 'Edite a mensagem e clique OK',
-	'MCHAT_ENABLE'					=> 'Desculpe, o mChat está indisponível no momento',
 	'MCHAT_ERROR'					=> 'Erro',
 	'MCHAT_FLOOD'					=> 'Você não pode postar uma mensagem logo após postar a última',
 	'MCHAT_FOE'						=> 'Esta mensagem foi feita por <strong>%1$s</strong> o qual está atualmente na sua lista de ignorados.',

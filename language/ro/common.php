@@ -52,7 +52,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_DELITE'					=> 'Șterge',
 	'MCHAT_EDIT'					=> 'Modifică',
 	'MCHAT_EDITINFO'				=> 'Editează mesaj și apoi apasă OK',
-	'MCHAT_ENABLE'					=> 'Ne pare rău, momentan mini-Chat nu este disponibil',
 	'MCHAT_ERROR'					=> 'Eroare',
 	'MCHAT_FLOOD'					=> 'Nu poți trimite alt mesaj (chiar așa de repede de la ultimul)',
 	'MCHAT_FOE'						=> 'Acest mesaj a fost trimis de <strong>%1$s</strong>. Se află blocat in lista ta.',

@@ -49,7 +49,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_DELITE'					=> 'Verwijder',
 	'MCHAT_EDIT'					=> 'Bewerk',
 	'MCHAT_EDITINFO'				=> 'Bewerk het bericht en klik op OKE',
-	'MCHAT_ENABLE'					=> 'Sorry, de Mini-Chat is momenteel niet beschikbaar',
 	'MCHAT_ERROR'					=> 'Fout',
 	'MCHAT_FLOOD'					=> 'Je kunt niet zo snel een bericht plaatsen, na jouw laatste bericht !!',
 	'MCHAT_FOE'						=> 'Dit bericht was gemaakt door <strong>%1$s</strong> die momenteel op jouw negeerlijst staat.',

@@ -435,7 +435,7 @@ class functions_mchat
 
 	function mchat_insert_posting($mode, $data)
 	{
-		if (empty($this->config['mchat_enable']) || empty($this->config['mchat_new_posts']))
+		if (empty($this->config['mchat_new_posts']))
 		{
 			return;
 		}

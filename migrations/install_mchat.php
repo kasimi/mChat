@@ -25,7 +25,6 @@ class install_mchat extends \phpbb\db\migration\migration
 	{
 		return array(
 			// Add configs
-			array('config.add', array('mchat_enable', true)),
 			array('config.add', array('mchat_on_index', true)),
 			array('config.add', array('mchat_new_posts', false)),
 			array('config.add', array('mchat_new_posts_topic', false)),
