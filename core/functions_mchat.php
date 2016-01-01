@@ -29,9 +29,6 @@ class functions_mchat
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\cache\service */
-	protected $cache;
-
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -40,9 +37,6 @@ class functions_mchat
 
 	/** @var string */
 	protected $mchat_table;
-
-	/** @var string */
-	protected $mchat_config_table;
 
 	/** @var string */
 	protected $mchat_sessions_table;
@@ -56,14 +50,12 @@ class functions_mchat
 	* @param \phpbb\auth\auth					$auth
 	* @param \phpbb\log\log_interface			$log
 	* @param \phpbb\db\driver\driver_interface	$db
-	* @param \phpbb\cache\service				$cache
 	* @param string								$phpbb_root_path
 	* @param string								$phpEx
 	* @param string								$mchat_table
-	* @param string								$mchat_config_table
 	* @param string								$mchat_sessions_table
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $phpEx, $mchat_table, $mchat_config_table, $mchat_sessions_table)
+	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $phpEx, $mchat_table, $mchat_sessions_table)
 	{
 		$this->config				= $config;
 		$this->template				= $template;
@@ -71,40 +63,10 @@ class functions_mchat
 		$this->auth					= $auth;
 		$this->log					= $log;
 		$this->db					= $db;
-		$this->cache				= $cache;
 		$this->phpbb_root_path		= $phpbb_root_path;
 		$this->phpEx				= $phpEx;
 		$this->mchat_table			= $mchat_table;
-		$this->mchat_config_table	= $mchat_config_table;
 		$this->mchat_sessions_table = $mchat_sessions_table;
-	}
-
-	/**
-	* Builds the cache if it doesn't exist
-	*/
-	function mchat_cache()
-	{
-		// Grab the config entries in the ACP...and cache em :P
-		$config_mchat = $this->cache->get('_mchat_config');
-
-		if ($config_mchat === false)
-		{
-			$sql = 'SELECT *
-				FROM ' . $this->mchat_config_table;
-			$result = $this->db->sql_query($sql);
-			$rows = $this->db->sql_fetchrowset($result);
-			$this->db->sql_freeresult($result);
-
-			$config_mchat = array();
-			foreach ($rows as $row)
-			{
-				$config_mchat[$row['config_name']] = $row['config_value'];
-			}
-
-			$this->cache->put('_mchat_config', $config_mchat);
-		}
-
-		return $config_mchat;
 	}
 
 	/**
@@ -324,10 +286,7 @@ class functions_mchat
 
 	public function get_disallowed_bbcodes()
 	{
-		$config_mchat = $this->mchat_cache();
-		$disallowed_bbcode = $config_mchat['bbcode_disallowed'];
-		$disallowed_bbcode_array = explode('|', $disallowed_bbcode);
-		return $disallowed_bbcode_array;
+		return explode('|', $this->config['mchat_bbcode_disallowed']);
 	}
 
 	function mchat_avatar($row)

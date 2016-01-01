@@ -19,6 +19,9 @@ class listener implements EventSubscriberInterface
 	/** @var \dmzx\mchat\core\render_helper */
 	protected $render_helper;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -39,16 +42,18 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \dmzx\mchat\core\functions_mchat	$functions_mchat
 	* @param \dmzx\mchat\core\render_helper		$render_helper
+	* @param \phpbb\config\config				$config
 	* @param \phpbb\auth\auth					$auth
 	* @param \phpbb\controller\helper			$controller_helper
 	* @param \phpbb\template\template			$template
 	* @param \phpbb\user						$user
 	* @param string								$phpEx
 	*/
-	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \dmzx\mchat\core\render_helper $render_helper, \phpbb\auth\auth $auth, \phpbb\controller\helper $controller_helper, \phpbb\template\template $template, \phpbb\user $user, $phpEx)
+	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \dmzx\mchat\core\render_helper $render_helper, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\controller\helper $controller_helper, \phpbb\template\template $template, \phpbb\user $user, $phpEx)
 	{
 		$this->functions_mchat		= $functions_mchat;
 		$this->render_helper		= $render_helper;
+		$this->config				= $config;
 		$this->auth					= $auth;
 		$this->controller_helper	= $controller_helper;
 		$this->template				= $template;
@@ -97,11 +102,9 @@ class listener implements EventSubscriberInterface
 	*/
 	public function add_page_header_link($event)
 	{
-		$allow_view = $this->auth->acl_get('u_mchat_view');
-		$config_mchat = $allow_view ? $this->functions_mchat->mchat_cache() : array();
 		$this->template->assign_vars(array(
-			'MCHAT_ALLOW_VIEW'		=> $allow_view,
-			'S_MCHAT_CUSTOM_PAGE'	=> !empty($config_mchat['custom_page']),
+			'MCHAT_ALLOW_VIEW'		=> $this->auth->acl_get('u_mchat_view'),
+			'S_MCHAT_CUSTOM_PAGE'	=> $this->config['mchat_custom_page'],
 			'U_MCHAT'				=> $this->controller_helper->route('dmzx_mchat_controller'),
 		));
 	}

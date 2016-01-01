@@ -125,8 +125,6 @@ class render_helper
 		// Add lang file
 		$this->user->add_lang('posting');
 
-		$config_mchat = $this->functions_mchat->mchat_cache();
-
 		// Access rights
 		$mchat_allow_bbcode		= $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode');
 		$mchat_smilies			= $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies');
@@ -137,9 +135,9 @@ class render_helper
 		$mchat_no_flood			= $this->auth->acl_get('u_mchat_flood_ignore');
 		$mchat_read_archive		= $this->auth->acl_get('u_mchat_archive');
 		$mchat_founder			= $this->user->data['user_type'] == USER_FOUNDER;
-		$mchat_session_time		= !empty($config_mchat['timeout']) ? $config_mchat['timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
-		$mchat_rules			= !empty($config_mchat['rules']) || isset($this->user->lang['MCHAT_RULES']);
-		$mchat_avatars			= !empty($config_mchat['avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'];
+		$mchat_session_time		= !empty($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
+		$mchat_rules			= !empty($this->config['mchat_rules']) || isset($this->user->lang['MCHAT_RULES']);
+		$mchat_avatars			= !empty($this->config['mchat_avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'];
 
 		$mchat_mode	= $this->request->variable('mode', '');
 		$in_archive = $mchat_mode == 'archive';
@@ -185,7 +183,7 @@ class render_helper
 				}
 
 				// If the rules are defined in the language file use them, else just use the entry in the database
-				$mchat_rules = isset($this->user->lang['MCHAT_RULES']) ? $this->user->lang('MCHAT_RULES') : $config_mchat['rules'];
+				$mchat_rules = isset($this->user->lang['MCHAT_RULES']) ? $this->user->lang('MCHAT_RULES') : $this->config['mchat_rules'];
 				$mchat_rules = explode("\n", $mchat_rules);
 				$mchat_rules = array_map('utf8_htmlspecialchars', $mchat_rules);
 				$mchat_rules = implode('<br />', $mchat_rules);
@@ -216,18 +214,18 @@ class render_helper
 		// If the static message is defined in the language file use it, else the entry in the database is used
 		if (isset($this->user->lang['STATIC_MESSAGE']))
 		{
-			$config_mchat['static_message'] = $this->user->lang('STATIC_MESSAGE');
+			$this->config['mchat_static_message'] = $this->user->lang('STATIC_MESSAGE');
 		}
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
 		if (isset($this->user->lang['MCHAT_RULES']))
 		{
-			$config_mchat['rules'] = $this->user->lang('MCHAT_RULES');
+			$this->config['mchat_rules'] = $this->user->lang('MCHAT_RULES');
 		}
 
 		$this->template->assign_vars(array(
 			'MCHAT_FILE_NAME'				=> $this->helper->route('dmzx_mchat_controller'),
-			'MCHAT_REFRESH_JS'				=> 1000 * $config_mchat['refresh'],
+			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
 			'MCHAT_ARCHIVE_MODE'			=> $in_archive,
 			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
 			'MCHAT_RULES'					=> $mchat_rules,
@@ -242,23 +240,23 @@ class render_helper
 			'MCHAT_MESSAGE_TOP'				=> $this->config['mchat_message_top'],
 			'MCHAT_ARCHIVE_URL'				=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'archive')),
 			'MCHAT_CUSTOM_PAGE'				=> !$on_index,
-			'MCHAT_INDEX_HEIGHT'			=> $config_mchat['index_height'],
-			'MCHAT_CUSTOM_HEIGHT'			=> $config_mchat['custom_height'],
+			'MCHAT_INDEX_HEIGHT'			=> $this->config['mchat_index_height'],
+			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
 			'MCHAT_READ_ARCHIVE_BUTTON'		=> $mchat_read_archive,
 			'MCHAT_FOUNDER'					=> $mchat_founder,
 			'MCHAT_CLEAN_URL'				=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'clean', 'redirect' => $on_index ? 'index' : 'mchat')),
-			'MCHAT_STATIC_MESS'				=> !empty($config_mchat['static_message']) ? htmlspecialchars_decode($config_mchat['static_message']) : '',
+			'MCHAT_STATIC_MESS'				=> !empty($this->config['mchat_static_message']) ? htmlspecialchars_decode($this->config['mchat_static_message']) : '',
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
-			'MCHAT_MESSAGE_LNGTH'			=> $config_mchat['max_message_lngth'],
-			//'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> $config_mchat['max_message_lngth']) ? sprintf($this->user->lang('MCHAT_MESSAGE_LNGTH_EXPLAIN'), $config_mchat['max_message_lngth']) : '', TODO not used
-			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $config_mchat['max_message_lngth']),
-			'MCHAT_USER_TIMEOUT'			=> 1000 * $config_mchat['timeout'],
-			'MCHAT_WHOIS_REFRESH'			=> $config_mchat['whois'] ? 1000 * $config_mchat['whois_refresh'] : 0,
-			'MCHAT_PAUSE_ON_INPUT'			=> $config_mchat['pause_on_input'],
-			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $config_mchat['refresh']),
-			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $config_mchat['whois_refresh']),
+			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
+			//'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> $this->config['mchat_max_message_lngth']) ? sprintf($this->user->lang('MCHAT_MESSAGE_LNGTH_EXPLAIN'), $this->config['mchat_max_message_lngth']) : '', TODO not used
+			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
+			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->config['mchat_timeout'],
+			'MCHAT_WHOIS_REFRESH'			=> $this->config['mchat_whois'] ? 1000 * $this->config['mchat_whois_refresh'] : 0,
+			'MCHAT_PAUSE_ON_INPUT'			=> $this->config['mchat_pause_on_input'],
+			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $this->config['mchat_refresh']),
+			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $this->config['mchat_whois_refresh']),
 			'S_MCHAT_AVATARS'				=> $mchat_avatars,
-			'S_MCHAT_LOCATION'				=> $config_mchat['location'],
+			'S_MCHAT_LOCATION'				=> $this->config['mchat_location'],
 			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
 			'U_MORE_SMILIES'				=> append_sid("{$this->phpbb_root_path}posting.{$this->phpEx}", 'mode=smilies'),
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'rules')),
@@ -290,9 +288,9 @@ class render_helper
 				}
 
 				// Prune the chats
-				if ($config_mchat['prune_enable'] && $config_mchat['prune_num'] > 0)
+				if ($this->config['mchat_prune'] && $this->config['mchat_prune_num'] > 0)
 				{
-					$this->functions_mchat->mchat_prune($config_mchat['prune_num']);
+					$this->functions_mchat->mchat_prune($this->config['mchat_prune_num']);
 				}
 
 				break;
@@ -301,7 +299,7 @@ class render_helper
 				// Request new messages
 				$mchat_message_last_id = $this->request->variable('message_last_id', 0);
 				$sql_where = 'm.message_id > ' . (int) $mchat_message_last_id . ($this->user->data['user_mchat_topics'] ? '' : ' AND m.forum_id = 0');
-				$limit = (int) $config_mchat['message_limit'];
+				$limit = (int) $this->config['mchat_message_limit'];
 				$rows = $this->functions_mchat->mchat_messages($sql_where, $limit);
 
 				// Reverse the array if messages appear at the bottom
@@ -361,7 +359,7 @@ class render_helper
 						'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
 						'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 						'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
-						'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $config_mchat['date']),
+						'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
 					));
 				}
 
@@ -370,7 +368,7 @@ class render_helper
 				);
 
 			case 'whois':
-				if (!$config_mchat['whois'])
+				if (!$this->config['mchat_whois'])
 				{
 					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
 				}
@@ -399,7 +397,7 @@ class render_helper
 				}
 
 				// Flood control
-				if (!$mchat_no_flood && $config_mchat['flood_time'])
+				if (!$mchat_no_flood && $this->config['mchat_flood_time'])
 				{
 					$mchat_flood_current_time = time();
 
@@ -411,7 +409,7 @@ class render_helper
 					$message_time = (int) $this->db->sql_fetchfield('message_time');
 					$this->db->sql_freeresult($result);
 
-					if ($message_time && time() - $message_time < $config_mchat['flood_time'])
+					if ($message_time && time() - $message_time < $this->config['mchat_flood_time'])
 					{
 						// Locked
 						throw new \phpbb\exception\http_exception(400, 'MCHAT_BAD_REQUEST');
@@ -422,14 +420,14 @@ class render_helper
 				$this->functions_mchat->mchat_sessions($mchat_session_time);
 
 				// We override the $this->config['min_post_chars'] entry?
-				if ($config_mchat['override_min_post_chars'])
+				if ($this->config['mchat_override_min_post_chars'])
 				{
 					$old_cfg['min_post_chars'] = $this->config['min_post_chars'];
 					$this->config['min_post_chars'] = 0;
 				}
 
 				// We do the same for the max number of smilies?
-				if ($config_mchat['override_smilie_limit'])
+				if ($this->config['mchat_override_smilie_limit'])
 				{
 					$old_cfg['max_post_smilies'] = $this->config['max_post_smilies'];
 					$this->config['max_post_smilies'] = 0;
@@ -447,11 +445,11 @@ class render_helper
 				}
 
 				// Disallowed bbcodes
-				if ($config_mchat['bbcode_disallowed'])
+				if ($this->config['mchat_bbcode_disallowed'])
 				{
 					$bbcode_replace = array(
-						'#\[(' . $config_mchat['bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
-						'#\[/(' . $config_mchat['bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
+						'#\[(' . $this->config['mchat_bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
+						'#\[/(' . $this->config['mchat_bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
 					);
 					$message = preg_replace($bbcode_replace, '', $message);
 				}
@@ -543,17 +541,17 @@ class render_helper
 				}
 
 				// Message limit
-				$message = $config_mchat['max_message_lngth'] && utf8_strlen($message) >= $config_mchat['max_message_lngth'] + 3 ? utf8_substr($message, 0, $config_mchat['max_message_lngth']) . '...' : $message;
+				$message = $this->config['mchat_max_message_lngth'] && utf8_strlen($message) >= $this->config['mchat_max_message_lngth'] + 3 ? utf8_substr($message, 0, $this->config['mchat_max_message_lngth']) . '...' : $message;
 
 				// We override the $this->config['min_post_chars'] entry?
-				if ($config_mchat['override_min_post_chars'])
+				if ($this->config['mchat_override_min_post_chars'])
 				{
 					$old_cfg['min_post_chars'] = $this->config['min_post_chars'];
 					$this->config['min_post_chars'] = 0;
 				}
 
 				// We do the same for the max number of smilies?
-				if ($config_mchat['override_smilie_limit'])
+				if ($this->config['mchat_override_smilie_limit'])
 				{
 					$old_cfg['max_post_smilies'] = $this->config['max_post_smilies'];
 					$this->config['max_post_smilies'] = 0;
@@ -571,11 +569,11 @@ class render_helper
 				}
 
 				// Disallowed bbcodes
-				if ($config_mchat['bbcode_disallowed'])
+				if ($this->config['mchat_bbcode_disallowed'])
 				{
 					$bbcode_replace = array(
-						'#\[(' . $config_mchat['bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
-						'#\[/(' . $config_mchat['bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
+						'#\[(' . $this->config['mchat_bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
+						'#\[/(' . $this->config['mchat_bbcode_disallowed'] . ')[^\[\]]+\]#Usi',
 					);
 					$message = preg_replace($bbcode_replace, '', $message);
 				}
@@ -620,7 +618,7 @@ class render_helper
 					'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
 					'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 					'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
-					'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $config_mchat['date']),
+					'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
 				));
 
 				// Reset the config settings
@@ -709,7 +707,7 @@ class render_helper
 			if (!$in_archive)
 			{
 				// If custom page false mchat.php page redirect to index...
-				if (!$config_mchat['custom_page'])
+				if (!$this->config['mchat_custom_page'])
 				{
 					$mchat_redirect = append_sid("{$this->phpbb_root_path}index.{$this->phpEx}");
 					meta_refresh(3, $mchat_redirect);
@@ -719,7 +717,7 @@ class render_helper
 				$this->functions_mchat->mchat_sessions($mchat_session_time);
 			}
 
-			if ($config_mchat['whois'])
+			if ($this->config['mchat_whois'])
 			{
 				$legend = $this->functions_mchat->mchat_legend();
 				$this->template->assign_var('LEGEND', implode(', ', $legend));
@@ -727,7 +725,7 @@ class render_helper
 		}
 
 		$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'm.forum_id = 0';
-		$limit = $in_archive ? $config_mchat['archive_limit'] : $config_mchat[$on_index ? 'message_num' : 'message_limit'];
+		$limit = $in_archive ? $this->config['mchat_archive_limit'] : $this->config[$on_index ? 'mchat_message_num' : 'mchat_message_limit'];
 		$start = $in_archive ? $this->request->variable('start', 0) : 0;
 		$rows = $this->functions_mchat->mchat_messages($sql_where, $limit, $start);
 
@@ -789,7 +787,7 @@ class render_helper
 				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
 				'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
-				'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $config_mchat['date']),
+				'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
 			));
 		}
 
@@ -864,8 +862,7 @@ class render_helper
 		if ($this->auth->acl_get('u_mchat_view') && !$this->is_mchat_rendered)
 		{
 			$this->is_mchat_rendered = true;
-			$config_mchat = $this->functions_mchat->mchat_cache();
-			$mchat_session_time = !empty($config_mchat['timeout']) ? $config_mchat['timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
+			$mchat_session_time = isset($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (isset($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
 			$mchat_stats = $this->functions_mchat->mchat_users($mchat_session_time);
 			$this->template->assign_vars(array(
 				'MCHAT_INDEX_STATS'		=> $this->config['mchat_stats_index'] && $this->user->data['user_mchat_stats_index'],
