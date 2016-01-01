@@ -217,7 +217,7 @@ class render_helper
 				break;
 
 			case 'clean':
-				if (!$mchat_founder)
+				if (!$mchat_founder || !check_form_key('mchat', -1))
 				{
 					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
 				}
@@ -311,7 +311,7 @@ class render_helper
 				);
 
 			case 'add':
-				if (!$mchat_use || !check_form_key('mchat_posting', -1))
+				if (!$mchat_use || !check_form_key('mchat', -1))
 				{
 					// Forbidden (for jQ AJAX request)
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
@@ -428,7 +428,7 @@ class render_helper
 			case 'edit':
 				$message_id = $this->request->variable('message_id', 0);
 
-				if (!$message_id)
+				if (!$message_id || !check_form_key('mchat', -1))
 				{
 					// Forbidden
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
@@ -585,7 +585,7 @@ class render_helper
 			case 'del':
 				$message_id = $this->request->variable('message_id', 0);
 
-				if (!$message_id)
+				if (!$message_id || !check_form_key('mchat', -1))
 				{
 					// Forbidden
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
@@ -766,7 +766,7 @@ class render_helper
 				generate_smilies('inline', 0);
 			}
 
-			add_form_key('mchat_posting');
+			add_form_key('mchat');
 		}
 
 		/**

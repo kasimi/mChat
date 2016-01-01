@@ -56,8 +56,10 @@
 				editInfo		: '{LA_MCHAT_EDITINFO}',
 				noAccess		: '{LA_NO_AUTH_OPERATION}',
 				flood			: '{LA_MCHAT_FLOOD}',
+				<!-- IF MCHAT_FOUNDER -->
 				cleanConfirm	: '{LA_MCHAT_DELALLMESS}',
 				cleanDone		: '{LA_MCHAT_CLEANED}',
+				<!-- ENDIF -->
 				delConfirm		: '{LA_MCHAT_DELCONFIRM}',
 				clearConfirm	: '{LA_MCHAT_RESET_QUESTION}',
 				sessOut			: '{LA_MCHAT_SESSION_OUT}',
@@ -103,7 +105,6 @@
 					<noscript><div class="mchat-alert">{L_MCHAT_NOJAVASCRIPT}</div></noscript>
 					<!-- IF MCHAT_ALLOW_USE -->
 						{S_FORM_TOKEN}
-						<input type="hidden" name="mode" value="add" />
 						<!-- IF MCHAT_INPUT_TYPE -->
 							<input type="text" name="message" class="inputbox medium" id="mchat-input" />
 						<!-- ELSE -->

@@ -1,7 +1,7 @@
 /**
  *
  * @package mChat JavaScript Code mini
- * @version 1.4.4 of 2013-11-03
+ * @version 1.5.0 of 2015-12-27
  * @copyright (c) 2009 By Shapoval Andrey Vladimirovich (AllCity) ~ http://allcity.net.ru/
  * @copyright (c) 2013 By Rich McGirr (RMcGirr83) http://rmcgirr83.org
  * @copyright (c) 2015 By dmzx - http://www.dmzx-web.net
@@ -49,6 +49,14 @@ jQuery(function($) {
 
 	var formatRemainingSessionTime = function(time) {
 		return (new Date(time * 1000)).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
+	};
+
+	var getPostData = function(data) {
+		var formData = mChat.hiddenFields.serializeArray();
+		$.each(data, function(name, value) {
+			formData.push({name: name, value: value});
+		});
+		return $.param(formData);
 	};
 
 	$.extend(mChat, {
@@ -100,11 +108,11 @@ jQuery(function($) {
 				alert(mChat.mssgLngthLong);
 				return;
 			}
-			var $formElems = $('#' + form_name + ' :input[name]').filter(function(i, elem) {
-				return !elem.name.startsWith('addbbcode');
-			});
 			$.ajax($.extend({}, ajaxOptions, {
-				data: $formElems.serialize(),
+				data: getPostData({
+					mode: 'add',
+					message: mChat.$$('input').val()
+				}),
 				beforeSend: function() {
 					mChat.$$('add').attr('disabled', 'disabled');
 					mChat.pauseSession();
@@ -128,11 +136,11 @@ jQuery(function($) {
 			mChat.$$('confirm').find('p').text(mChat.editInfo);
 			phpbb.confirm(mChat.$$('confirm'), function() {
 				$.ajax($.extend({}, ajaxOptions, {
-					data: {
+					data: getPostData({
 						mode: 'edit',
 						message_id: $container.data('id'),
 						message: $message.val()
-					},
+					}),
 					success: function(json) {
 						$container.fadeOut('slow', function() {
 							$container.replaceWith($(json.edit).hide().fadeIn('slow'));
@@ -156,10 +164,10 @@ jQuery(function($) {
 			mChat.$$('confirm').find('p').text(mChat.delConfirm);
 			phpbb.confirm(mChat.$$('confirm'), function() {
 				$.ajax($.extend({}, ajaxOptions, {
-					data: {
+					data: getPostData({
 						mode: 'del',
 						message_id: $container.data('id')
-					},
+					}),
 					success: function(json) {
 						if (json.del) {
 							mChat.sound('del');
@@ -245,9 +253,9 @@ jQuery(function($) {
 			mChat.$$('confirm').find('p').text(mChat.cleanConfirm);
 			phpbb.confirm(mChat.$$('confirm'), function() {
 				$.ajax($.extend({}, ajaxOptions, {
-					data: {
+					data: getPostData({
 						mode: 'clean',
-					},
+					}),
 					success: function(json) {
 						if (json.clean) {
 							phpbb.alert('mChat', mChat.cleanDone);
@@ -359,6 +367,7 @@ jQuery(function($) {
 
 	mChat.cache = {};
 	mChat.$$('confirm').detach().show();
+	mChat.hiddenFields = $('#' + form_name).find('input[type=hidden]');
 
 	if (!mChat.archiveMode) {
 		$.fn.autoGrowInput = function() {
