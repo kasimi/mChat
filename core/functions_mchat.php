@@ -264,29 +264,21 @@ class functions_mchat
 	function display_mchat_bbcodes()
 	{
 		$default_bbcodes = array('B', 'I', 'U', 'QUOTE', 'CODE', 'LIST', 'IMG', 'URL', 'SIZE', 'COLOR', 'EMAIL', 'FLASH');
-		$disallowed_bbcode_array = $this->get_disallowed_bbcodes();
 
 		// Let's remove the default bbcodes
-		if (!empty($disallowed_bbcode_array))
+		$disallowed_bbcode_array = explode('|', strtoupper($this->config['mchat_bbcode_disallowed']));
+
+		foreach ($default_bbcodes as $default_bbcode)
 		{
-			$disallowed_bbcode_array = array_map('strtoupper', $disallowed_bbcode_array);
-			foreach ($default_bbcodes as $default_bbcode)
+			if (!in_array($default_bbcode, $disallowed_bbcode_array))
 			{
-				if (!in_array($default_bbcode, $disallowed_bbcode_array))
-				{
-					$this->template->assign_vars(array(
-						'S_MCHAT_BBCODE_' . $default_bbcode => true,
-					));
-				}
+				$this->template->assign_vars(array(
+					'S_MCHAT_BBCODE_' . $default_bbcode => true,
+				));
 			}
 		}
 
 		display_custom_bbcodes();
-	}
-
-	public function get_disallowed_bbcodes()
-	{
-		return explode('|', $this->config['mchat_bbcode_disallowed']);
 	}
 
 	function mchat_avatar($row)
@@ -394,31 +386,24 @@ class functions_mchat
 
 	function mchat_insert_posting($mode, $data)
 	{
-		if (empty($this->config['mchat_new_posts']))
+		if (!$this->config['mchat_new_posts'])
 		{
 			return;
 		}
 
-		if ($mode == 'post' && !empty($this->config['mchat_new_posts_topic']))
-		{
-			$mchat_new_data = $this->user->lang('MCHAT_NEW_TOPIC');
-		}
-		else if ($mode == 'quote' && !empty($this->config['mchat_new_posts_quote']))
-		{
-			$mchat_new_data = $this->user->lang('MCHAT_NEW_QUOTE');
-		}
-		else if ($mode == 'edit' && !empty($this->config['mchat_new_posts_edit']))
-		{
-			$mchat_new_data = $this->user->lang('MCHAT_NEW_EDIT');
-		}
-		else if ($mode == 'reply' && !empty($this->config['mchat_new_posts_reply']))
-		{
-			$mchat_new_data = $this->user->lang('MCHAT_NEW_REPLY');
-		}
-		else
+		$mode_config = array(
+			'post'	=> 'mchat_new_posts_topic',
+			'quote'	=> 'mchat_new_posts_quote',
+			'edit'	=> 'mchat_new_posts_edit',
+			'reply'	=> 'mchat_new_posts_reply',
+		);
+
+		if (empty($mode_config[$mode]))
 		{
 			return;
 		}
+
+		$mchat_new_data = $this->user->lang('MCHAT_NEW_' . strtoupper($mode));
 
 		$message = utf8_normalize_nfc($mchat_new_data . ': [url=' . generate_board_url() . '/viewtopic.' . $this->phpEx . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url] '. $this->user->lang('MCHAT_IN') . ' [url=' . generate_board_url() . '/viewforum.' . $this->phpEx . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . ' [/url] ' . $this->user->lang('MCHAT_IN_SECTION'));
 

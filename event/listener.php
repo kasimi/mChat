@@ -201,17 +201,12 @@ class listener implements EventSubscriberInterface
 	public function display_custom_bbcodes_modify_sql($event)
 	{
 		// Add disallowed BBCodes to the template only if we're rendering for mChat
-		if ($this->render_helper->is_mchat_rendered)
+		if ($this->render_helper->is_mchat_rendered && !empty($this->config['mchat_bbcode_disallowed']))
 		{
-			$disallowed_bbcode_array = $this->functions_mchat->get_disallowed_bbcodes();
-
-			if (!empty($disallowed_bbcode_array))
-			{
-				$disallowed_bbcode_array = array_map('strtoupper', $disallowed_bbcode_array);
-				$sql_ary = $event['sql_ary'];
-				$sql_ary['WHERE'] .= " AND UPPER(b.bbcode_tag) NOT IN ('" . implode("','", $disallowed_bbcode_array) . "')";
-				$event['sql_ary'] = $sql_ary;
-			}
+			$disallowed_bbcode_array = explode('|', strtoupper($this->config['mchat_bbcode_disallowed']));
+			$sql_ary = $event['sql_ary'];
+			$sql_ary['WHERE'] .= " AND UPPER(b.bbcode_tag) NOT IN ('" . implode("','", $disallowed_bbcode_array) . "')";
+			$event['sql_ary'] = $sql_ary;
 		}
 	}
 }
