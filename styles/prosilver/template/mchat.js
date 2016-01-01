@@ -239,6 +239,26 @@ jQuery(function($) {
 				}
 			}));
 		},
+		clean: function() {
+			var $container = $(this).closest('.mchat-message');
+			mChat.$$('confirm').find('textarea').hide();
+			mChat.$$('confirm').find('p').text(mChat.cleanConfirm);
+			phpbb.confirm(mChat.$$('confirm'), function() {
+				$.ajax($.extend({}, ajaxOptions, {
+					data: {
+						mode: 'clean',
+					},
+					success: function(json) {
+						if (json.clean) {
+							phpbb.alert('mChat', mChat.cleanDone);
+							setTimeout(function() {
+								location.reload();
+							}, 1500);
+						}
+					},
+				}));
+			});
+		},
 		countDown: function() {
 			mChat.sessionTime -= 1;
 			var timeLeft = formatRemainingSessionTime(mChat.sessionTime);

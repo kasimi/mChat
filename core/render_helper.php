@@ -137,41 +137,6 @@ class render_helper
 		$mchat_mode	= $this->request->variable('mode', '');
 		$in_archive = $mchat_mode == 'archive';
 
-		// Return early for all regular HTTP requests that don't require message rendering. No AJAX here!
-		switch ($mchat_mode)
-		{
-			case 'clean':
-				if (!$this->user->data['is_registered'])
-				{
-					// Login box
-					login_box('', $this->user->lang('LOGIN'));
-				}
-
-				if (!$mchat_founder)
-				{
-					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
-				}
-
-				$mchat_redirect = $this->request->variable('redirect', '');
-				$mchat_redirect = ($mchat_redirect == 'index' ? append_sid("{$this->phpbb_root_path}index.{$this->phpEx}") : $this->helper->route('dmzx_mchat_controller')) . '#mChat';
-
-				if (confirm_box(true))
-				{
-					// Prune is confirmed
-					$this->functions_mchat->mchat_truncate_messages();
-
-					meta_refresh(3, $mchat_redirect);
-					trigger_error($this->user->lang('MCHAT_CLEANED'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
-				}
-				else
-				{
-					// Display confirm box
-					confirm_box(false, $this->user->lang('MCHAT_DELALLMESS'));
-				}
-
-				return;
-		}
-
 		$foes_array = $this->functions_mchat->mchat_foes();
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
@@ -201,7 +166,6 @@ class render_helper
 			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
 			'MCHAT_READ_ARCHIVE_BUTTON'		=> $mchat_read_archive,
 			'MCHAT_FOUNDER'					=> $mchat_founder,
-			'MCHAT_CLEAN_URL'				=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'clean', 'redirect' => $on_index ? 'index' : 'mchat')),
 			'MCHAT_STATIC_MESS'				=> !empty($this->config['mchat_static_message']) ? htmlspecialchars_decode($this->config['mchat_static_message']) : '',
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
@@ -251,6 +215,16 @@ class render_helper
 				}
 
 				break;
+
+			case 'clean':
+				if (!$mchat_founder)
+				{
+					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+				}
+
+				$this->functions_mchat->mchat_truncate_messages();
+
+				return array('clean' => true);
 
 			case 'refresh':
 				// Request new messages
