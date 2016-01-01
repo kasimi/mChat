@@ -129,15 +129,10 @@ class render_helper
 		$mchat_allow_bbcode		= $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode');
 		$mchat_smilies			= $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies');
 		$mchat_urls				= $this->config['allow_post_links'] && $this->auth->acl_get('u_mchat_urls');
-		$mchat_ip				= $this->auth->acl_get('u_mchat_ip');
-		$mchat_pm				= $this->auth->acl_get('u_mchat_pm');
 		$mchat_use				= $this->auth->acl_get('u_mchat_use');
-		$mchat_no_flood			= $this->auth->acl_get('u_mchat_flood_ignore');
 		$mchat_read_archive		= $this->auth->acl_get('u_mchat_archive');
 		$mchat_founder			= $this->user->data['user_type'] == USER_FOUNDER;
 		$mchat_session_time		= !empty($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
-		$mchat_rules			= !empty($this->config['mchat_rules']) || isset($this->user->lang['MCHAT_RULES']);
-		$mchat_avatars			= !empty($this->config['mchat_avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'];
 
 		$mchat_mode	= $this->request->variable('mode', '');
 		$in_archive = $mchat_mode == 'archive';
@@ -175,38 +170,6 @@ class render_helper
 				}
 
 				return;
-
-			case 'rules':
-				if (!$mchat_rules)
-				{
-					throw new \phpbb\exception\http_exception(404, 'MCHAT_NO_RULES');
-				}
-
-				// If the rules are defined in the language file use them, else just use the entry in the database
-				$mchat_rules = isset($this->user->lang['MCHAT_RULES']) ? $this->user->lang('MCHAT_RULES') : $this->config['mchat_rules'];
-				$mchat_rules = explode("\n", $mchat_rules);
-				$mchat_rules = array_map('utf8_htmlspecialchars', $mchat_rules);
-				$mchat_rules = implode('<br />', $mchat_rules);
-
-				$this->template->assign_var('MCHAT_RULES', $mchat_rules);
-
-				return $this->helper->render('mchat_rules.html', $this->user->lang('MCHAT_HELP'));
-
-			case 'ip':
-				if (!$mchat_ip)
-				{
-					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
-				}
-
-				if (!function_exists('user_ipwhois'))
-				{
-					include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
-				}
-
-				$user_ip = $this->request->variable('ip', '');
-				$this->template->assign_var('WHOIS', user_ipwhois($user_ip));
-
-				return $this->helper->render('viewonline_whois.html', $this->user->lang('WHO_IS_ONLINE'));
 		}
 
 		$foes_array = $this->functions_mchat->mchat_foes();
@@ -217,23 +180,17 @@ class render_helper
 			$this->config['mchat_static_message'] = $this->user->lang('STATIC_MESSAGE');
 		}
 
-		// If the static message is defined in the language file use it, else the entry in the database is used
-		if (isset($this->user->lang['MCHAT_RULES']))
-		{
-			$this->config['mchat_rules'] = $this->user->lang('MCHAT_RULES');
-		}
-
 		$this->template->assign_vars(array(
 			'MCHAT_FILE_NAME'				=> $this->helper->route('dmzx_mchat_controller'),
 			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
 			'MCHAT_ARCHIVE_MODE'			=> $in_archive,
 			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
-			'MCHAT_RULES'					=> $mchat_rules,
+			'MCHAT_RULES'					=> !empty($this->user->lang['MCHAT_RULES']) || !empty($this->config['mchat_rules']),
 			'MCHAT_ALLOW_VIEW'				=> $mchat_view,
 			'MCHAT_ALLOW_USE'				=> $mchat_use,
 			'MCHAT_ALLOW_SMILES'			=> $mchat_smilies,
-			'MCHAT_ALLOW_IP'				=> $mchat_ip,
-			'MCHAT_ALLOW_PM'				=> $mchat_pm,
+			'MCHAT_ALLOW_IP'				=> $this->auth->acl_get('u_mchat_ip'),
+			'MCHAT_ALLOW_PM'				=> $this->auth->acl_get('u_mchat_pm'),
 			'MCHAT_ALLOW_LIKE'				=> $mchat_use && $this->auth->acl_get('u_mchat_like'),
 			'MCHAT_ALLOW_QUOTE'				=> $mchat_use && $this->auth->acl_get('u_mchat_quote'),
 			'MCHAT_ALLOW_BBCODES'			=> $mchat_allow_bbcode,
@@ -255,11 +212,11 @@ class render_helper
 			'MCHAT_PAUSE_ON_INPUT'			=> $this->config['mchat_pause_on_input'],
 			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $this->config['mchat_refresh']),
 			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $this->config['mchat_whois_refresh']),
-			'S_MCHAT_AVATARS'				=> $mchat_avatars,
+			'S_MCHAT_AVATARS'				=> !empty($this->config['mchat_avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'],
 			'S_MCHAT_LOCATION'				=> $this->config['mchat_location'],
 			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
 			'U_MORE_SMILIES'				=> append_sid("{$this->phpbb_root_path}posting.{$this->phpEx}", 'mode=smilies'),
-			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'rules')),
+			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_rules_controller'),
 			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && !empty($this->user->data['user_mchat_index']),
 			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
 			'STYLE_PATH'					=> generate_board_url() . '/styles/' . $this->user->style['style_path'],
@@ -356,7 +313,7 @@ class render_helper
 						'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 						'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 						'MCHAT_USER_IP'			=> $row['user_ip'],
-						'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
+						'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_whois_controller', array('ip' => $row['user_ip'])),
 						'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 						'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
 						'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
@@ -397,7 +354,7 @@ class render_helper
 				}
 
 				// Flood control
-				if (!$mchat_no_flood && $this->config['mchat_flood_time'])
+				if ($this->config['mchat_flood_time'] && !$this->auth->acl_get('u_mchat_flood_ignore'))
 				{
 					$mchat_flood_current_time = time();
 
@@ -615,7 +572,7 @@ class render_helper
 					'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 					'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 					'MCHAT_USER_IP'			=> $row['user_ip'],
-					'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
+					'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_whois_controller', array('ip' => $row['user_ip'])),
 					'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 					'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
 					'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
@@ -784,7 +741,7 @@ class render_helper
 				'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USER_IP'			=> $row['user_ip'],
-				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'ip', 'ip' => $row['user_ip'])),
+				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_whois_controller', array('ip' => $row['user_ip'])),
 				'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
 				'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),

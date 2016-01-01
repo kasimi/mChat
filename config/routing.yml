@@ -1,3 +1,9 @@
 dmzx_mchat_controller:
     path: /mchat
     defaults: { _controller: dmzx.mchat.controller:handle }
+dmzx_mchat_rules_controller:
+    path: /mchat/rules
+    defaults: { _controller: dmzx.mchat.rules.controller:handle }
+dmzx_mchat_whois_controller:
+    path: /mchat/whois/{ip}
+    defaults: { _controller: dmzx.mchat.whois.controller:handle }
