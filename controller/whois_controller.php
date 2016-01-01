@@ -9,8 +9,6 @@
 
 namespace dmzx\mchat\controller;
 
-use \Symfony\Component\HttpFoundation\JsonResponse;
-
 class whois_controller
 {
 	/** @var \phpbb\auth\auth */

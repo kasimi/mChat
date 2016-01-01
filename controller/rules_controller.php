@@ -9,8 +9,6 @@
 
 namespace dmzx\mchat\controller;
 
-use \Symfony\Component\HttpFoundation\JsonResponse;
-
 class rules_controller
 {
 	/** @var \phpbb\config\config */
