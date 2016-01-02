@@ -118,8 +118,7 @@ class listener implements EventSubscriberInterface
 	 */
 	public function display_mchat_on_index($event)
 	{
-		$this->render_helper->render_data_for_page(true);
-		$this->render_helper->assign_whois();
+		$this->render_helper->render_data_for_page('index');
 	}
 
 	public function posting_modify_submit_post_after($event)

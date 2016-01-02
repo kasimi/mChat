@@ -36,9 +36,9 @@ class mchat
 	*
 	* @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-	public function handle()
+	public function handle($mode)
 	{
-		$content = $this->render_helper->render_data_for_page(false);
+		$content = $this->render_helper->render_data_for_page($mode);
 		return $this->request->is_ajax() ? new JsonResponse($content) : $content;
 	}
 }

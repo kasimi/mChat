@@ -99,7 +99,7 @@ class render_helper
 	* @return null|array|string	If we are rendering for the index, null is returned. For modes that are only
 	*							called via AJAX, an array is returned, otherwise the rendered content is returned.
 	*/
-	public function render_data_for_page($on_index)
+	public function render_data_for_page($page)
 	{
 		// If mChat is used on the index by a user without an avatar, a default avatar is used.
 		// However, T_THEME_PATH points to ./../styles/... because the controller at /mchat is called, but we need it to be ./styles...
@@ -109,9 +109,10 @@ class render_helper
 			define('PHPBB_USE_BOARD_URL_PATH', true);
 		}
 
-		$mchat_view = $this->auth->acl_get('u_mchat_view');
+		$this->assign_whois();
 
-		if ($on_index && (!$this->config['mchat_on_index'] || !$mchat_view))
+		$mchat_view = $this->auth->acl_get('u_mchat_view');
+		if ($page == 'index' && (!$this->config['mchat_on_index'] || !$mchat_view))
 		{
 			return;
 		}
@@ -131,10 +132,10 @@ class render_helper
 		$mchat_use				= $this->auth->acl_get('u_mchat_use');
 		$mchat_read_archive		= $this->auth->acl_get('u_mchat_archive');
 		$mchat_founder			= $this->user->data['user_type'] == USER_FOUNDER;
-		$mchat_session_time		= !empty($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
+
 
 		$mchat_mode	= $this->request->variable('mode', '');
-		$in_archive = $mchat_mode == 'archive';
+		$in_archive = $page == 'archive';
 
 		$foes_array = $this->functions_mchat->mchat_foes();
 
@@ -150,7 +151,6 @@ class render_helper
 			'MCHAT_ARCHIVE_MODE'			=> $in_archive,
 			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
 			'MCHAT_RULES'					=> !empty($this->user->lang['MCHAT_RULES']) || !empty($this->config['mchat_rules']),
-			'MCHAT_ALLOW_VIEW'				=> $mchat_view,
 			'MCHAT_ALLOW_USE'				=> $mchat_use,
 			'MCHAT_ALLOW_SMILES'			=> $mchat_smilies,
 			'MCHAT_ALLOW_IP'				=> $this->auth->acl_get('u_mchat_ip'),
@@ -159,8 +159,8 @@ class render_helper
 			'MCHAT_ALLOW_QUOTE'				=> $mchat_use && $this->auth->acl_get('u_mchat_quote'),
 			'MCHAT_ALLOW_BBCODES'			=> $mchat_allow_bbcode,
 			'MCHAT_MESSAGE_TOP'				=> $this->config['mchat_message_top'],
-			'MCHAT_ARCHIVE_URL'				=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'archive')),
-			'MCHAT_CUSTOM_PAGE'				=> !$on_index,
+			'MCHAT_ARCHIVE_URL'				=> $this->helper->route('dmzx_mchat_archive_controller'),
+			'MCHAT_CUSTOM_PAGE'				=> $page == 'custom',
 			'MCHAT_INDEX_HEIGHT'			=> $this->config['mchat_index_height'],
 			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
 			'MCHAT_READ_ARCHIVE_BUTTON'		=> $mchat_read_archive,
@@ -185,7 +185,7 @@ class render_helper
 			'STYLE_PATH'					=> generate_board_url() . '/styles/' . $this->user->style['style_path'],
 		));
 
-		if (!$on_index)
+		if ($page != 'index')
 		{
 			$this->template->assign_block_vars('navlinks', array(
 				'FORUM_NAME'	=> $this->user->lang('MCHAT_TITLE'),
@@ -196,25 +196,6 @@ class render_helper
 		// Request mode
 		switch ($mchat_mode)
 		{
-			case 'archive':
-				if (!$mchat_read_archive)
-				{
-					// Redirect to correct page
-					$mchat_redirect = append_sid("{$this->phpbb_root_path}index.{$this->phpEx}");
-
-					// Redirect to previous page
-					meta_refresh(3, $mchat_redirect);
-					trigger_error($this->user->lang('MCHAT_NOACCESS_ARCHIVE'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
-				}
-
-				// Prune the chats
-				if ($this->config['mchat_prune'] && $this->config['mchat_prune_num'] > 0)
-				{
-					$this->functions_mchat->mchat_prune($this->config['mchat_prune_num']);
-				}
-
-				break;
-
 			case 'clean':
 				if (!$mchat_founder || !check_form_key('mchat', -1))
 				{
@@ -245,15 +226,19 @@ class render_helper
 
 				$this->assign_whois();
 
-				return array(
-					'whois' => $this->render('mchat_whois.html'),
-				);
+				return array('whois' => $this->render('mchat_whois.html'));
 
 			case 'add':
 				if (!$mchat_use || !check_form_key('mchat', -1))
 				{
 					// Forbidden (for jQ AJAX request)
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+				}
+
+				// Flood control
+				if ($this->functions_mchat->is_flooding())
+				{
+					throw new \phpbb\exception\http_exception(400, 'MCHAT_BAD_REQUEST');
 				}
 
 				$message = utf8_ucfirst($this->request->variable('message', '', true));
@@ -266,28 +251,8 @@ class render_helper
 					throw new \phpbb\exception\http_exception(501, 'MCHAT_ERROR_NOT_IMPLEMENTED');
 				}
 
-				// Flood control
-				if ($this->config['mchat_flood_time'] && !$this->auth->acl_get('u_mchat_flood_ignore'))
-				{
-					$mchat_flood_current_time = time();
-
-					$sql = 'SELECT message_time
-						FROM ' . $this->mchat_table . '
-						WHERE user_id = ' . (int) $this->user->data['user_id'] . '
-						ORDER BY message_time DESC';
-					$result = $this->db->sql_query_limit($sql, 1);
-					$message_time = (int) $this->db->sql_fetchfield('message_time');
-					$this->db->sql_freeresult($result);
-
-					if ($message_time && time() - $message_time < $this->config['mchat_flood_time'])
-					{
-						// Locked
-						throw new \phpbb\exception\http_exception(400, 'MCHAT_BAD_REQUEST');
-					}
-				}
-
 				// Insert user into the mChat sessions table
-				$this->functions_mchat->mchat_sessions($mchat_session_time);
+				$this->functions_mchat->mchat_sessions();
 
 				/**
 				* Event render_helper_add
@@ -308,9 +273,7 @@ class render_helper
 				$sql = 'INSERT INTO ' . $this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 				$this->db->sql_query($sql);
 
-				return array(
-					'add' => true,
-				);
+				return array('add' => true);
 
 			case 'edit':
 				$message_id = $this->request->variable('message_id', 0);
@@ -363,7 +326,7 @@ class render_helper
 				// Add a log
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EDITED_MCHAT', false, array($row['username']));
 
-				$this->functions_mchat->mchat_sessions($mchat_session_time);
+				$this->functions_mchat->mchat_sessions();
 
 				/**
 				* Event render_helper_edit
@@ -373,9 +336,7 @@ class render_helper
 				*/
 				$this->dispatcher->trigger_event('dmzx.mchat.core.render_helper_edit');
 
-				return array(
-					'edit' => $this->render('mchat_messages.html'),
-				);
+				return array('edit' => $this->render('mchat_messages.html'));
 
 			case 'del':
 				$message_id = $this->request->variable('message_id', 0);
@@ -417,17 +378,15 @@ class render_helper
 				// Add a log
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, array($row['username']));
 
-				$this->functions_mchat->mchat_sessions($mchat_session_time);
+				$this->functions_mchat->mchat_sessions();
 
-				return array(
-					'del' => true,
-				);
+				return array('del' => true);
 		}
 
 		// If not include in index.php set mchat.php page true
-		if (!$on_index)
+		if ($page != 'index')
 		{
-			if (!$in_archive)
+			if ($page == 'custom')
 			{
 				// If custom page false mchat.php page redirect to index...
 				if (!$this->config['mchat_custom_page'])
@@ -437,7 +396,7 @@ class render_helper
 					trigger_error($this->user->lang('MCHAT_NO_CUSTOM_PAGE'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
 				}
 
-				$this->functions_mchat->mchat_sessions($mchat_session_time);
+				$this->functions_mchat->mchat_sessions();
 			}
 
 			if ($this->config['mchat_whois'])
@@ -448,7 +407,7 @@ class render_helper
 		}
 
 		$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'm.forum_id = 0';
-		$limit = $in_archive ? $this->config['mchat_archive_limit'] : $this->config[$on_index ? 'mchat_message_num' : 'mchat_message_limit'];
+		$limit = $in_archive ? $this->config['mchat_archive_limit'] : $this->config[$page == 'index' ? 'mchat_message_num' : 'mchat_message_limit'];
 		$start = $in_archive ? $this->request->variable('start', 0) : 0;
 		$rows = $this->functions_mchat->mchat_messages($sql_where, $limit, $start);
 
@@ -456,28 +415,38 @@ class render_helper
 
 		if ($in_archive)
 		{
+			if (!$mchat_read_archive)
+			{
+				// Redirect to correct page
+				$mchat_redirect = append_sid("{$this->phpbb_root_path}index.{$this->phpEx}");
+
+				// Redirect to previous page
+				meta_refresh(3, $mchat_redirect);
+				trigger_error($this->user->lang('MCHAT_NOACCESS_ARCHIVE'). '<br /><br />' . sprintf($this->user->lang('RETURN_PAGE'), '<a href="' . $mchat_redirect . '">', '</a>'));
+			}
+
+			// Prune the chats
+			if ($this->config['mchat_prune'] && $this->config['mchat_prune_num'] > 0)
+			{
+				$this->functions_mchat->mchat_prune($this->config['mchat_prune_num']);
+			}
+
 			// Run query again to get the total number of message for pagination
-			$sql = 'SELECT COUNT(message_id) AS mess_id
-				FROM ' . $this->mchat_table;
-			$result = $this->db->sql_query($sql);
-			$mchat_total_message = (int) $this->db->sql_fetchfield('mess_id');
-			$this->db->sql_freeresult($result);
+			$total_messages = $this->functions_mchat->get_total_message_count();
 
-			$pagination_url = $this->helper->route('dmzx_mchat_controller', array('mode' => 'archive'));
-			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $mchat_total_message, $limit, $start);
+			$pagination_url = $this->helper->route('dmzx_mchat_archive_controller');
+			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_messages, $limit, $start);
 
-			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', sprintf($this->user->lang('MCHAT_TOTALMESSAGES'), $mchat_total_message));
+			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', sprintf($this->user->lang('MCHAT_TOTALMESSAGES'), $total_messages));
 
 			// Add to navlinks
 			$this->template->assign_block_vars('navlinks', array(
 				'FORUM_NAME'	=> $this->user->lang('MCHAT_ARCHIVE'),
-				'U_VIEW_FORUM'	=> $this->helper->route('dmzx_mchat_controller', array('mode' => 'archive')),
+				'U_VIEW_FORUM'	=> $pagination_url,
 			));
 		}
 		else
 		{
-			$this->assign_whois();
-
 			// Display custom bbcodes
 			if ($mchat_allow_bbcode)
 			{
@@ -511,7 +480,7 @@ class render_helper
 
 		// If we're on the index, we must not render anything
 		// here, only for the custom page and the archive
-		if (!$on_index)
+		if ($page != 'index')
 		{
 			return $this->helper->render('mchat_body.html', $this->user->lang($in_archive ? 'MCHAT_ARCHIVE_PAGE' : 'MCHAT_TITLE'));
 		}
@@ -525,8 +494,7 @@ class render_helper
 		if ($this->auth->acl_get('u_mchat_view') && !$this->is_mchat_rendered)
 		{
 			$this->is_mchat_rendered = true;
-			$mchat_session_time = isset($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (isset($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
-			$mchat_stats = $this->functions_mchat->mchat_users($mchat_session_time);
+			$mchat_stats = $this->functions_mchat->mchat_users();
 			$this->template->assign_vars(array(
 				'MCHAT_INDEX_STATS'		=> $this->config['mchat_stats_index'] && $this->user->data['user_mchat_stats_index'],
 				'MCHAT_USERS_COUNT'		=> $mchat_stats['mchat_users_count'],
@@ -592,7 +560,7 @@ class render_helper
 	}
 
 	/*
-	* Checks whether an author has edit ir delete permissions for a message
+	* Checks whether an author has edit or delete permissions for a message
 	*/
 	protected function auth_message($permission, $author_id)
 	{

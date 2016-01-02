@@ -1,6 +1,9 @@
 dmzx_mchat_controller:
     path: /mchat
-    defaults: { _controller: dmzx.mchat.controller:handle }
+    defaults: { _controller: dmzx.mchat.controller:handle, mode: custom }
+dmzx_mchat_archive_controller:
+    path: /mchat/archive
+    defaults: { _controller: dmzx.mchat.controller:handle, mode: archive }
 dmzx_mchat_rules_controller:
     path: /mchat/rules
     defaults: { _controller: dmzx.mchat.rules.controller:handle }

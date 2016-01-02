@@ -105,10 +105,13 @@ class functions_mchat
 	}
 
 	/**
-	* @param $session_time amount of time before a users session times out
+	*
 	*/
-	function mchat_users($session_time)
+	function mchat_users()
 	{
+		// Amount of time before a user is not shown as being in the chat
+		$session_time = $this->session_time();
+
 		$check_time = time() - (int) $session_time;
 
 		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
@@ -147,31 +150,21 @@ class functions_mchat
 			$mchat_user_list .= ($mchat_user_list != '') ? $this->user->lang('COMMA_SEPARATOR') . $mchat_user_online_link : $mchat_user_online_link;
 		}
 
-		$refresh_message = $this->mchat_session_time($session_time);
-
-		if (!$mchat_user_count)
-		{
-			return array(
-				'online_userlist'	=> '',
-				'mchat_users_count'	=> $this->user->lang('MCHAT_NO_CHATTERS'),
-				'refresh_message'	=> $refresh_message,
-			);
-		}
-		else
-		{
-			return array(
-				'online_userlist'	=> $mchat_user_list,
-				'mchat_users_count'	=> sprintf($this->user->lang($mchat_user_count > 1 ? 'MCHAT_ONLINE_USERS_TOTAL' : 'MCHAT_ONLINE_USER_TOTAL'), $mchat_user_count),
-				'refresh_message'	=> $refresh_message,
-			);
-		}
+		return array(
+			'online_userlist'	=> $mchat_user_count ? $mchat_user_list : '',
+			'mchat_users_count'	=> $mchat_user_count ? sprintf($this->user->lang($mchat_user_count > 1 ? 'MCHAT_ONLINE_USERS_TOTAL' : 'MCHAT_ONLINE_USER_TOTAL'), $mchat_user_count) : $this->user->lang('MCHAT_NO_CHATTERS'),
+			'refresh_message'	=> $this->mchat_session_time($session_time),
+		);
 	}
 
 	/**
-	* @param mixed $session_time amount of time before a user is not shown as being in the chat
+	*
 	*/
-	function mchat_sessions($session_time)
+	function mchat_sessions()
 	{
+		// Amount of time before a user is not shown as being in the chat
+		$session_time = $this->session_time();
+
 		$check_time = time() - (int) $session_time;
 		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
 			WHERE user_lastupdate < ' . $check_time;
@@ -230,12 +223,7 @@ class functions_mchat
 	*/
 	function mchat_prune($mchat_prune_amount)
 	{
-		// How many chats do we have?
-		$sql = 'SELECT COUNT(message_id) AS messages
-			FROM ' . $this->mchat_table;
-		$result = $this->db->sql_query($sql);
-		$mchat_total_messages = (int) $this->db->sql_fetchfield('messages');
-		$this->db->sql_freeresult($result);
+		$mchat_total_messages = $this->get_total_message_count();
 
 		if ($mchat_total_messages <= $mchat_prune_amount)
 		{
@@ -256,6 +244,16 @@ class functions_mchat
 		$this->db->sql_query($sql);
 
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
+	}
+
+	function get_total_message_count()
+	{
+		$sql = 'SELECT COUNT(message_id) AS messages
+			FROM ' . $this->mchat_table;
+		$result = $this->db->sql_query($sql);
+		$total_messages = (int) $this->db->sql_fetchfield('messages');
+		$this->db->sql_freeresult($result);
+		return $total_messages;
 	}
 
 	/**
@@ -422,5 +420,28 @@ class functions_mchat
 		);
 		$sql = 'INSERT INTO ' .	$this->mchat_table	. ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
+	}
+
+	function is_flooding()
+	{
+		if (!$this->config['mchat_flood_time'] || $this->auth->acl_get('u_mchat_flood_ignore'))
+		{
+			return false;
+		}
+
+		$sql = 'SELECT message_time
+			FROM ' . $this->mchat_table . '
+			WHERE user_id = ' . (int) $this->user->data['user_id'] . '
+			ORDER BY message_time DESC';
+		$result = $this->db->sql_query_limit($sql, 1);
+		$message_time = (int) $this->db->sql_fetchfield('message_time');
+		$this->db->sql_freeresult($result);
+
+		return $message_time && time() - $message_time < $this->config['mchat_flood_time'];
+	}
+
+	function session_time()
+	{
+		return !empty($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
 	}
 }
