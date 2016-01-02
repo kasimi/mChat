@@ -34,6 +34,7 @@ class install_mchat extends \phpbb\db\migration\migration
 			array('config.add', array('mchat_date', 'D M d, Y g:i a')),
 			array('config.add', array('mchat_flood_time', 0)),
 			array('config.add', array('mchat_index_height', 250)),
+			array('config.add', array('mchat_live_updates', 1)),
 			array('config.add', array('mchat_location', 0)),
 			array('config.add', array('mchat_max_message_lngth', 500)),
 			array('config.add', array('mchat_message_limit', 10)),

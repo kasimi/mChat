@@ -156,6 +156,12 @@
 			<dd><input type="text" name="mchat_archive_limit" id="mchat_archive_limit" size="10" value="{MCHAT_ARCHIVE_LIMIT}" /></dd>
 		</dl>
 		<dl>
+			<dt><label for="mchat_live_updates">{L_MCHAT_LIVE_UPDATES}{L_COLON}</label><br />
+			<span>{L_MCHAT_LIVE_UPDATES_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" name="mchat_live_updates" value="1"<!-- IF MCHAT_LIVE_UPDATES --> id="mchat_live_updates" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="mchat_live_updates" value="0"<!-- IF not MCHAT_LIVE_UPDATES --> id="mchat_live_updates" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+		<dl>
 			<dt><label for="mchat_avatars">{L_MCHAT_AVATARS}{L_COLON}</label><br />
 			<span>{L_MCHAT_AVATARS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="mchat_avatars" value="1"<!-- IF MCHAT_AVATARS --> id="mchat_avatars" checked="checked"<!-- ENDIF --> /> {L_YES}</label>

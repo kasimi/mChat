@@ -198,12 +198,14 @@ jQuery(function($) {
 						mChat.sound('add');
 						mChat.notice();
 					}
-					$.each(json.edit, function(id, serverEditTime) {
-						var $container = $('#mchat-message-' + id);
-						if (serverEditTime > $container.data('edit-time')) {
-							editedMessages[id] = $container;
-						}
-					});
+					if (json.hasOwnProperty('edit')) {
+						$.each(json.edit, function(id, serverEditTime) {
+							var $container = $('#mchat-message-' + id);
+							if (serverEditTime > $container.data('edit-time')) {
+								editedMessages[id] = $container;
+							}
+						});
+					}
 					if ($.isEmptyObject(editedMessages)) {
 						setTimeout(function() {
 							if (mChat.refreshInterval) {

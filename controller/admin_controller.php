@@ -86,6 +86,7 @@ class admin_controller
 			'mchat_date'					=> array('default' => 'D M d, Y g:i a',	'validation' => array('string', false, 0, 255)),
 			'mchat_flood_time'				=> array('default' => 0,				'validation' => array('num', false, 0, 30)),
 			'mchat_index_height'			=> array('default' => 250,				'validation' => array('num', false, 50, 1000)),
+			'mchat_live_updates'			=> array('default' => 1,				'validation' => array()),
 			'mchat_location'				=> array('default' => 0,				'validation' => array()),
 			'mchat_max_message_lngth'		=> array('default' => 500,				'validation' => array('num', false, 0, 500)),
 			'mchat_message_limit'			=> array('default' => 10,				'validation' => array('num', false, 10, 30)),

@@ -216,14 +216,17 @@ class render_helper
 				$response['refresh'] = $this->render('mchat_messages.html');
 
 				// Request edited messages
-				$message_first_id = $this->request->variable('message_first_id', 0);
-				$sql_where = 'm.message_id >= ' . (int) $message_first_id . ' AND m.edit_time > 0';
-				$rows = $this->functions_mchat->mchat_messages($sql_where);
-
-				$response['edit'] = array();
-				foreach ($rows as $row)
+				if ($this->config['mchat_live_updates'])
 				{
-					$response['edit'][$row['message_id']] = $row['edit_time'];
+					$message_first_id = $this->request->variable('message_first_id', 0);
+					$sql_where = 'm.message_id >= ' . (int) $message_first_id . ' AND m.edit_time > 0';
+					$rows = $this->functions_mchat->mchat_messages($sql_where);
+
+					$response['edit'] = array();
+					foreach ($rows as $row)
+					{
+						$response['edit'][$row['message_id']] = $row['edit_time'];
+					}
 				}
 
 				return $response;
