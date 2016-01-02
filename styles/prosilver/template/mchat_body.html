@@ -153,7 +153,7 @@
 						<img src="{EXT_URL}styles/prosilver/theme/images/error.gif" alt="{L_MCHAT_ERROR}" title="{L_MCHAT_ERROR}" id="mchat-refresh-error" />
 						<img src="{EXT_URL}styles/prosilver/theme/images/paused.gif" alt="{L_MCHAT_PAUSE}" title="{L_MCHAT_PAUSE}" id="mchat-refresh-paused" />
 						<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
-						<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session"></span><!-- ENDIF --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF S_MCHAT_SOUND_YES --> checked="checked"<!-- ENDIF --> /></label>
+						<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{L_MCHAT_SESSION_ENDS} {MCHAT_USER_TIMEOUT_TIME}</span><!-- ENDIF --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF S_MCHAT_SOUND_YES --> checked="checked"<!-- ENDIF --> /></label>
 						{L_MCHAT_COPYRIGHT}
 					</div>
 				</div>
