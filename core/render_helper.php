@@ -133,8 +133,6 @@ class render_helper
 		$mchat_read_archive		= $this->auth->acl_get('u_mchat_archive');
 		$mchat_founder			= $this->user->data['user_type'] == USER_FOUNDER;
 
-
-		$mchat_mode	= $this->request->variable('mode', '');
 		$in_archive = $page == 'archive';
 
 		$foes_array = $this->functions_mchat->mchat_foes();
@@ -195,7 +193,7 @@ class render_helper
 		}
 
 		// Request mode
-		switch ($mchat_mode)
+		switch ($this->request->variable('mode', ''))
 		{
 			case 'clean':
 				if (!$mchat_founder || !check_form_key('mchat', -1))
@@ -208,16 +206,27 @@ class render_helper
 				return array('clean' => true);
 
 			case 'refresh':
-				// Request new messages
-				$mchat_message_last_id = $this->request->variable('message_last_id', 0);
-				$sql_where = 'm.message_id > ' . (int) $mchat_message_last_id . ($this->user->data['user_mchat_topics'] ? '' : ' AND m.forum_id = 0');
-				$limit = (int) $this->config['mchat_message_limit'];
-				$rows = $this->functions_mchat->mchat_messages($sql_where, $limit);
-				$this->assign_messages($rows, $foes_array, $in_archive);
+				$response = array();
 
-				return array(
-					'refresh' => $this->render('mchat_messages.html'),
-				);
+				// Request new messages
+				$message_last_id = $this->request->variable('message_last_id', 0);
+				$sql_where = 'm.message_id > ' . (int) $message_last_id . ($this->user->data['user_mchat_topics'] ? '' : ' AND m.forum_id = 0');
+				$rows = $this->functions_mchat->mchat_messages($sql_where);
+				$this->assign_messages($rows, $foes_array, $in_archive);
+				$response['refresh'] = $this->render('mchat_messages.html');
+
+				// Request edited messages
+				$message_first_id = $this->request->variable('message_first_id', 0);
+				$sql_where = 'm.message_id >= ' . (int) $message_first_id . ' AND m.edit_time > 0';
+				$rows = $this->functions_mchat->mchat_messages($sql_where);
+
+				$response['edit'] = array();
+				foreach ($rows as $row)
+				{
+					$response['edit'][$row['message_id']] = $row['edit_time'];
+				}
+
+				return $response;
 
 			case 'whois':
 				if (!$this->config['mchat_whois'])
@@ -248,8 +257,7 @@ class render_helper
 				$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
 				if (!$message || !utf8_strlen($message_chars))
 				{
-					// Not Implemented
-					throw new \phpbb\exception\http_exception(501, 'MCHAT_ERROR_NOT_IMPLEMENTED');
+					throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
 				}
 
 				// Insert user into the mChat sessions table
@@ -306,14 +314,15 @@ class render_helper
 				$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
 				if (!$message || !utf8_strlen($message_chars))
 				{
-					// Not Implemented (for jQ AJAX request)
-					throw new \phpbb\exception\http_exception(501, 'MCHAT_ERROR_NOT_IMPLEMENTED');
+					throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
 				}
 
 				// Message limit
 				$message = $this->config['mchat_max_message_lngth'] && utf8_strlen($message) >= $this->config['mchat_max_message_lngth'] + 3 ? utf8_substr($message, 0, $this->config['mchat_max_message_lngth']) . '...' : $message;
 
-				$sql_ary = $this->sql_ary_message($message);
+				$sql_ary = array_merge($this->sql_ary_message($message), array(
+					'edit_time' => time(),
+				));
 
 				$sql = 'UPDATE ' . $this->mchat_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE message_id = ' . (int) $message_id;
@@ -338,6 +347,21 @@ class render_helper
 				$this->dispatcher->trigger_event('dmzx.mchat.core.render_helper_edit');
 
 				return array('edit' => $this->render('mchat_messages.html'));
+
+			case 'update':
+				$message_ids = $this->request->variable('message_ids', array(0));
+				$sql_where = $this->db->sql_in_set('m.message_id', $message_ids);
+				$rows = $this->functions_mchat->mchat_messages($sql_where);
+
+				$messages = array();
+				foreach ($rows as $row)
+				{
+					$this->assign_messages(array($row), $foes_array, $in_archive);
+					$messages[$row['message_id']] = $this->render('mchat_messages.html');
+					$this->template->destroy_block_vars('mchatrow');
+				}
+
+				return array('update' => $messages);
 
 			case 'del':
 				$message_id = $this->request->variable('message_id', 0);
@@ -468,7 +492,10 @@ class render_helper
 				generate_smilies('inline', 0);
 			}
 
-			add_form_key('mchat');
+			if ($mchat_use)
+			{
+				add_form_key('mchat');
+			}
 		}
 
 		/**
@@ -556,6 +583,7 @@ class render_helper
 				'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->phpEx}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
 				'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
+				'MCHAT_EDIT_TIME'		=> $row['edit_time'],
 			));
 		}
 	}

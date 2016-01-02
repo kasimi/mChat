@@ -182,6 +182,7 @@ class install_mchat extends \phpbb\db\migration\migration
 						'bbcode_uid'			=> array('VCHAR:8', ''),
 						'bbcode_options'		=> array('BOOL', '7'),
 						'message_time'			=> array('INT:11', 0),
+						'edit_time'				=> array('INT:11', 0),
 						'forum_id'				=> array('UINT', 0),
 						'post_id'				=> array('UINT', 0),
 					),
