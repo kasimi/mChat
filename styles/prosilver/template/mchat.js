@@ -412,7 +412,7 @@ jQuery(function($) {
 			mChat.$$('main').animate({scrollTop: mChat.$$('main')[0].scrollHeight}, 'slow', 'swing');
 		}
 
-		if (mChat.playSound && Cookies.get('mChatNoSound')) {
+		if (!mChat.playSound || Cookies.get('mChatNoSound')) {
 			mChat.$$('user-sound').removeAttr('checked');
 		} else {
 			mChat.$$('user-sound').attr('checked', 'checked');
