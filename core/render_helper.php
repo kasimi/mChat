@@ -206,26 +206,54 @@ class render_helper
 				return array('clean' => true);
 
 			case 'refresh':
-				$response = array();
+				$message_first_id = $this->request->variable('message_first_id', 0);
+				$message_last_id = $this->request->variable('message_last_id', 0);
+				$message_edits = $this->request->variable('message_edits', array(0));
 
 				// Request new messages
-				$message_last_id = $this->request->variable('message_last_id', 0);
-				$sql_where = 'm.message_id > ' . (int) $message_last_id . ($this->user->data['user_mchat_topics'] ? '' : ' AND m.forum_id = 0');
-				$rows = $this->functions_mchat->mchat_messages($sql_where);
-				$this->assign_messages($rows, $foes_array, $in_archive);
-				$response['refresh'] = $this->render('mchat_messages.html');
+				$sql_where = 'm.message_id > ' . (int) $message_last_id;
 
 				// Request edited messages
 				if ($this->config['mchat_live_updates'])
 				{
-					$message_first_id = $this->request->variable('message_first_id', 0);
-					$sql_where = 'm.message_id >= ' . (int) $message_first_id . ' AND m.edit_time > 0';
-					$rows = $this->functions_mchat->mchat_messages($sql_where);
+					$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0)', (int) $message_first_id , (int) $message_last_id);
+				}
 
-					$response['edit'] = array();
-					foreach ($rows as $row)
+				// Exclude post notifications
+				if (!$this->user->data['user_mchat_topics'])
+				{
+					$sql_where = '(' . $sql_where .  ') AND m.forum_id = 0';
+				}
+
+				$rows = $this->functions_mchat->mchat_messages($sql_where);
+				$rows_refresh = array();
+				$rows_edit = array();
+
+				foreach ($rows as $row)
+				{
+					$message_id = $row['message_id'];
+					if ($message_id > $message_last_id)
 					{
-						$response['edit'][$row['message_id']] = $row['edit_time'];
+						$rows_refresh[] = $row;
+					}
+					else if (!isset($message_edits[$message_id]) || $message_edits[$message_id] < $row['edit_time'])
+					{
+						$rows_edit[] = $row;
+					}
+				}
+
+				// Assign new messages
+				$this->assign_messages($rows_refresh, $foes_array, $in_archive);
+				$response = array('refresh' => $this->render('mchat_messages.html'));
+
+				// Assign edited messages
+				if (!empty($rows_edit))
+				{
+					$response['edit'] = array();
+					foreach ($rows_edit as $row)
+					{
+						$this->assign_messages(array($row), $foes_array, $in_archive);
+						$response['edit'][$row['message_id']] = $this->render('mchat_messages.html');
 					}
 				}
 
@@ -236,8 +264,6 @@ class render_helper
 				{
 					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
 				}
-
-				$this->assign_whois();
 
 				return array('whois' => $this->render('mchat_whois.html'));
 
@@ -251,7 +277,7 @@ class render_helper
 				// Flood control
 				if ($this->functions_mchat->is_flooding())
 				{
-					throw new \phpbb\exception\http_exception(400, 'MCHAT_BAD_REQUEST');
+					throw new \phpbb\exception\http_exception(400, 'MCHAT_NOACCESS');
 				}
 
 				$message = utf8_ucfirst($this->request->variable('message', '', true));
@@ -350,21 +376,6 @@ class render_helper
 				$this->dispatcher->trigger_event('dmzx.mchat.core.render_helper_edit');
 
 				return array('edit' => $this->render('mchat_messages.html'));
-
-			case 'update':
-				$message_ids = $this->request->variable('message_ids', array(0));
-				$sql_where = $this->db->sql_in_set('m.message_id', $message_ids);
-				$rows = $this->functions_mchat->mchat_messages($sql_where);
-
-				$messages = array();
-				foreach ($rows as $row)
-				{
-					$this->assign_messages(array($row), $foes_array, $in_archive);
-					$messages[$row['message_id']] = $this->render('mchat_messages.html');
-					$this->template->destroy_block_vars('mchatrow');
-				}
-
-				return array('update' => $messages);
 
 			case 'del':
 				$message_id = $this->request->variable('message_id', 0);
@@ -540,11 +551,18 @@ class render_helper
 	*/
 	public function assign_messages($rows, $foes, $in_archive)
 	{
+		if (empty($rows))
+		{
+			return;
+		}
+
 		// Reverse the array if messages appear at the bottom
 		if (!$this->config['mchat_message_top'] && !$in_archive)
 		{
 			$rows = array_reverse($rows);
 		}
+
+		$this->template->destroy_block_vars('mchatrow');
 
 		foreach ($rows as $i => $row)
 		{

@@ -148,7 +148,9 @@ jQuery(function($) {
 					},
 					complete: function() {
 						$message.val('');
-						mChat.resetSession();
+						if (!mChat.refreshInterval) {
+							mChat.resetSession();
+						}
 					}
 				}));
 			});
@@ -171,18 +173,30 @@ jQuery(function($) {
 							});
 						}
 					},
-					complete: mChat.resetSession
+					complete: function() {
+						if (!mChat.refreshInterval) {
+							mChat.resetSession();
+						}
+					}
 				}));
 			});
 		},
 		refresh: function() {
-			var $children = mChat.$$('messages').children();
+			var $messages = mChat.$$('messages').children();
 			var editedMessages = {};
+			$.each($messages, function() {
+				var $message = $(this);
+				var editTime = $message.data('edit-time');
+				if (editTime) {
+					editedMessages[$message.data('id')] = editTime;
+				}
+			});
 			$.ajax($.extend({}, ajaxOptions, {
 				data: {
 					mode: 'refresh',
-					message_first_id: $children.filter(mChat.messageTop ? ':last' : ':first').data('id'),
-					message_last_id: $children.filter(mChat.messageTop ? ':first' : ':last').data('id')
+					message_first_id: $messages.filter(mChat.messageTop ? ':last' : ':first').data('id'),
+					message_last_id: $messages.filter(mChat.messageTop ? ':first' : ':last').data('id'),
+					message_edits: editedMessages
 				},
 				beforeSend: function() {
 					mChat.$$('refresh-ok', 'refresh-error', 'refresh-paused').hide();
@@ -199,60 +213,23 @@ jQuery(function($) {
 						mChat.notice();
 					}
 					if (json.hasOwnProperty('edit')) {
-						$.each(json.edit, function(id, serverEditTime) {
+						$.each(json.edit, function(id, content) {
 							var $container = $('#mchat-message-' + id);
-							if (serverEditTime > $container.data('edit-time')) {
-								editedMessages[id] = $container;
-							}
+							$container.fadeOut('slow', function() {
+								$container.replaceWith($(content).hide().fadeIn('slow'));
+							});
 						});
 					}
-					if ($.isEmptyObject(editedMessages)) {
-						setTimeout(function() {
-							if (mChat.refreshInterval) {
-								mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
-								mChat.$$('refresh-ok').show();
-								mChat.$$('refresh-text').html(mChat.refreshYes);
-							}
-						}, 250);
-					} else {
-						mChat.update(editedMessages);
-					}
+					setTimeout(function() {
+						if (mChat.refreshInterval) {
+							mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
+							mChat.$$('refresh-ok').show();
+						}
+					}, 250);
 				},
 				error: function() {
 					mChat.$$('refresh-load', 'refresh-ok', 'refresh-paused').hide();
 					mChat.$$('refresh-error').show();
-					mChat.sound('error');
-				}
-			}));
-		},
-		update: function(containers) {
-			$.ajax($.extend({}, ajaxOptions, {
-				beforeSend: function() {
-					mChat.$$('refresh-ok', 'refresh-error', 'refresh-paused').hide();
-					mChat.$$('refresh-load').show();
-				},
-				data: {
-					mode: 'update',
-					message_ids: $.map(containers, function($container, id) {
-						return id;
-					})
-				},
-				success: function(json) {
-					$.each(json.update, function(id, content) {
-						var $container = containers[id];
-						$container.fadeOut('slow', function() {
-							$container.replaceWith($(content).hide().fadeIn('slow'));
-						});
-					});
-				},
-				complete: function() {
-					if (mChat.refreshInterval) {
-						mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
-						mChat.$$('refresh-ok').show();
-						mChat.$$('refresh-text').html(mChat.refreshYes);
-					}
-				},
-				error: function() {
 					mChat.sound('error');
 				}
 			}));
