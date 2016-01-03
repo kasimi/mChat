@@ -133,9 +133,7 @@ jQuery(function($) {
 					$container.fadeOut('slow', function() {
 						$container.replaceWith($(json.edit).hide().fadeIn('slow'));
 					});
-					if (mChat.refreshInterval) {
-						mChat.resetSession(true);
-					}
+					mChat.resetSession(true);
 				});
 			});
 		},
@@ -151,9 +149,7 @@ jQuery(function($) {
 					$container.fadeOut('slow', function() {
 						$container.remove();
 					});
-					if (mChat.refreshInterval) {
-						mChat.resetSession(true);
-					}
+					mChat.resetSession(true);
 				});
 			});
 		},
@@ -279,7 +275,6 @@ jQuery(function($) {
 		},
 		endSession: function() {
 			clearInterval(mChat.refreshInterval);
-			mChat.refreshInterval = false;
 			if (mChat.userTimeout) {
 				clearInterval(mChat.sessionCountdown);
 				mChat.$$('session').html(mChat.sessOut);
