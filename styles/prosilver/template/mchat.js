@@ -69,14 +69,11 @@ jQuery(function($) {
 			}
 		},
 		sound: function(file) {
-			if (Cookies.get('mchat_no_sound')) {
-				return;
-			}
-			file = mChat.extUrl + 'sounds/' + file + '.swf';
-			if (navigator.userAgent.match(/MSIE ([0-9]+)\./) || navigator.userAgent.match(/Trident\/7.0; rv 11.0/)) {
-				mChat.$$('sound').html('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" height="0" width="0" type="application/x-shockwave-flash"><param name="movie" value="' + file + '"></object>');
-			} else {
-				mChat.$$('sound').html('<embed src="' + file + '" width="0" height="0" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>');
+			if (!Cookies.get('mchat_no_sound')) {
+				var audio = mChat.$$('sound-' + file).get(0);
+				audio.pause();
+				audio.currentTime = 0;
+				audio.play();
 			}
 		},
 		notice: function() {
@@ -96,7 +93,7 @@ jQuery(function($) {
 			});
 		},
 		add: function() {
-			if (mChat.submitting) {
+			if (mChat.$$('add').prop('disabled')) {
 				return;
 			}
 			if (mChat.$$('input').val() === '') {
@@ -107,8 +104,8 @@ jQuery(function($) {
 				alert(mChat.mssgLngthLong);
 				return;
 			}
-			mChat.$$('add').attr('disabled', 'disabled');
 			mChat.pauseSession();
+			mChat.$$('add').prop('disabled', true);
 			ajaxRequest('add', true, {
 				message: mChat.$$('input').val()
 			}).done(function(json) {
@@ -117,7 +114,7 @@ jQuery(function($) {
 				mChat.resetSession(false);
 			}).always(function() {
 				mChat.$$('input').focus();
-				mChat.$$('add').removeAttr('disabled');
+				mChat.$$('add').prop('disabled', false);
 			});
 		},
 		edit: function() {
@@ -241,7 +238,6 @@ jQuery(function($) {
 			}
 		},
 		pauseSession: function() {
-			mChat.submitting = true;
 			clearInterval(mChat.refreshInterval);
 			if (mChat.userTimeout) {
 				clearInterval(mChat.sessionCountdown);
@@ -271,7 +267,6 @@ jQuery(function($) {
 				mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
 				mChat.$$('refresh-text').html(mChat.refreshYes);
 			}
-			mChat.submitting = false;
 		},
 		endSession: function() {
 			clearInterval(mChat.refreshInterval);
@@ -376,12 +371,7 @@ jQuery(function($) {
 			mChat.$$('main').animate({scrollTop: mChat.$$('main')[0].scrollHeight}, 'slow', 'swing');
 		}
 
-		if (!mChat.playSound || Cookies.get('mchat_no_sound')) {
-			mChat.$$('user-sound').removeAttr('checked');
-		} else {
-			mChat.$$('user-sound').attr('checked', 'checked');
-			Cookies.remove('mchat_no_sound');
-		}
+		mChat.$$('user-sound').prop('checked', mChat.playSound && !Cookies.get('mchat_no_sound'));
 
 		if (Cookies.get('mchat_show_smilies')) {
 			mChat.$$('smilies').slideToggle('slow');
