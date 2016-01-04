@@ -21,21 +21,20 @@ jQuery(function($) {
 		var deferred = $.Deferred();
 		var promise = deferred.promise();
 		if (sendHiddenFields) {
-			mChat.hiddenFields.each(function() {
-				data[this.name] = this.value;
-			});
+			$.extend(data, mChat.hiddenFields);
 		}
 		data.mode = mode;
 		$.ajax({
 			url: mChat.file,
 			timeout: 10000,
 			type: 'POST',
+			dataType: 'json',
 			data: data
 		}).success(function(json, status, xhr) {
 			if (json.hasOwnProperty(mode)) {
 				deferred.resolve(json, status, xhr);
 			} else {
-				deferred.reject(xhr, status, 'rejected');
+				deferred.reject(xhr, status, xhr.responseJSON ? 'session' : 'format');
 			}
 		}).error(function(xhr, status, error) {
 			deferred.reject(xhr, status, error);
@@ -44,7 +43,10 @@ jQuery(function($) {
 			mChat.sound('error');
 			mChat.$$('refresh-load', 'refresh-ok', 'refresh-paused').hide();
 			mChat.$$('refresh-error').show();
-			if (errorThrown == 'rejected') {
+			if (errorThrown == 'format') {
+				// Unexpected format
+			} else if (errorThrown == 'session') {
+				mChat.endSession();
 				alert(mChat.sessOut);
 			} else if (xhr.status == 400) {
 				alert(mChat.flood);
@@ -96,7 +98,7 @@ jQuery(function($) {
 			if (mChat.$$('add').prop('disabled')) {
 				return;
 			}
-			if (mChat.$$('input').val() === '') {
+			if ($.trim(mChat.$$('input').val()) === '') {
 				return;
 			}
 			var messChars = mChat.$$('input').val().replace(/ /g, '');
@@ -111,10 +113,10 @@ jQuery(function($) {
 			}).done(function(json) {
 				mChat.$$('input').val('');
 				mChat.refresh();
-				mChat.resetSession(false);
 			}).always(function() {
 				mChat.$$('input').focus();
 				mChat.$$('add').prop('disabled', false);
+				mChat.resetSession(false);
 			});
 		},
 		edit: function() {
@@ -169,12 +171,17 @@ jQuery(function($) {
 			}).done(function(json) {
 				var $html = $(json.refresh);
 				if ($html.length) {
-					mChat.$$('no-messages').remove();
-					mChat.$$('messages')[mChat.messageTop ? 'prepend' : 'append']($html.hide());
-					$html.css('opacity', 0).slideDown('slow').animate({opacity: 1}, {queue: false, duration: 'slow'});
-					mChat.$$('main').animate({scrollTop: mChat.messageTop ? 0 : mChat.$$('main')[0].scrollHeight}, 'slow');
 					mChat.sound('add');
 					mChat.notice();
+					mChat.$$('no-messages').remove();
+					$html.hide().each(function(i) {
+						var $this = $(this);
+						setTimeout(function() {
+							mChat.$$('messages')[mChat.messageTop ? 'prepend' : 'append']($this);
+							$this.css('opacity', 0).slideDown('slow').animate({opacity: 1}, {queue: false, duration: 'slow'});
+							mChat.$$('main').animate({scrollTop: mChat.messageTop ? 0 : mChat.$$('main')[0].scrollHeight}, 'slow');
+						}, i * 600);
+					});
 				}
 				if (json.hasOwnProperty('edit')) {
 					$.each(json.edit, function(id, content) {
@@ -182,6 +189,15 @@ jQuery(function($) {
 						var $container = $('#mchat-message-' + id);
 						$container.fadeOut('slow', function() {
 							$container.replaceWith($(content).hide().fadeIn('slow'));
+						});
+					});
+				}
+				if (json.hasOwnProperty('del')) {
+					$.each(json.del, function(i, id) {
+						var $container = $('#mchat-message-' + id);
+						mChat.sound('del');
+						$container.fadeOut('slow', function() {
+							$container.remove();
 						});
 					});
 				}
@@ -223,7 +239,7 @@ jQuery(function($) {
 					phpbb.alert('mChat', mChat.cleanDone);
 					setTimeout(function() {
 						location.reload();
-					}, 1500);
+					}, 2000);
 				});
 			});
 		},
@@ -270,6 +286,7 @@ jQuery(function($) {
 		},
 		endSession: function() {
 			clearInterval(mChat.refreshInterval);
+			mChat.refreshInterval = false;
 			if (mChat.userTimeout) {
 				clearInterval(mChat.sessionCountdown);
 				mChat.$$('session').html(mChat.sessOut);
@@ -329,7 +346,11 @@ jQuery(function($) {
 
 	mChat.cache = {};
 	mChat.$$('confirm').detach().show();
-	mChat.hiddenFields = $('#' + form_name).find('input[type=hidden]');
+
+	mChat.hiddenFields = {};
+	$('#' + form_name).find('input[type=hidden]').each(function() {
+		mChat.hiddenFields[this.name] = this.value;
+	});
 
 	if (!mChat.archiveMode) {
 		$.fn.autoGrowInput = function() {
