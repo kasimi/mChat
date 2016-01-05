@@ -42,21 +42,17 @@ services:
             - '@config'
             - '@controller.helper'
             - '@template'
-            - '@log'
             - '@user'
             - '@auth'
-            - '@dbal.conn'
             - '@pagination'
             - '@request'
             - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '%dmzx.mchat.table.mchat%'
     dmzx.mchat.functions_mchat:
         class: dmzx\mchat\core\functions_mchat
         arguments:
             - '@config'
-            - '@template'
             - '@user'
             - '@auth'
             - '@log'
