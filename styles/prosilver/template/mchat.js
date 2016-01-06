@@ -26,7 +26,7 @@ jQuery(function($) {
 		data.mode = mode;
 		$.ajax({
 			url: mChat.file,
-			timeout: 10000,
+			timeout: 5000,
 			type: 'POST',
 			dataType: 'json',
 			data: data
@@ -52,6 +52,8 @@ jQuery(function($) {
 				alert(mChat.flood);
 			} else if (xhr.status == 403) {
 				alert(mChat.noAccess);
+			} else if (xhr.status == 413) {
+				alert(mChat.mssgLngthLong);
 			} else if (xhr.status == 501) {
 				alert(mChat.noMessageInput);
 			} else if (typeof console !== 'undefined' && console.log) {
@@ -101,8 +103,8 @@ jQuery(function($) {
 			if ($.trim(mChat.$$('input').val()) === '') {
 				return;
 			}
-			var messChars = mChat.$$('input').val().replace(/ /g, '');
-			if (mChat.mssgLngth && messChars.length > mChat.mssgLngth) {
+			var messChars = mChat.$$('input').val().replace(/\s/g, '');
+			if (messChars.length > mChat.mssgLngth) {
 				alert(mChat.mssgLngthLong);
 				return;
 			}

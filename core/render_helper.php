@@ -175,7 +175,6 @@ class render_helper
 			'MCHAT_STATIC_MESS'				=> !empty($this->config['mchat_static_message']) ? htmlspecialchars_decode($this->config['mchat_static_message']) : '',
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
-			//'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> $this->config['mchat_max_message_lngth']) ? sprintf($this->user->lang('MCHAT_MESSAGE_LNGTH_EXPLAIN'), $this->config['mchat_max_message_lngth']) : '', TODO not used
 			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->config['mchat_timeout'],
 			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', $this->config['mchat_timeout']),
@@ -281,12 +280,7 @@ class render_helper
 
 				$message = utf8_ucfirst($this->request->variable('message', '', true));
 
-				// Must have something other than bbcode in the message
-				$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
-				if (!$message || !utf8_strlen($message_chars))
-				{
-					throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
-				}
+				$this->check_message_bounds($message);
 
 				$sql_ary = array_merge($this->sql_ary_message($message), array(
 					'user_id'			=> $this->user->data['user_id'],
@@ -323,15 +317,7 @@ class render_helper
 
 				$message = $this->request->variable('message', '', true);
 
-				// Must have something other than bbcode in the message
-				$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
-				if (!$message || !utf8_strlen($message_chars))
-				{
-					throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
-				}
-
-				// Message limit
-				$message = $this->config['mchat_max_message_lngth'] && utf8_strlen($message) >= $this->config['mchat_max_message_lngth'] + 3 ? utf8_substr($message, 0, $this->config['mchat_max_message_lngth']) . '...' : $message;
+				$this->check_message_bounds($message);
 
 				$sql_ary = array_merge($this->sql_ary_message($message), array(
 					'edit_time' => time(),
@@ -381,7 +367,6 @@ class render_helper
 
 				return array('del' => true);
 		}
-
 
 		// AJAX requests & unknown modes aren't allowed any further
 		if ($this->request->is_ajax() || !empty($mode))
@@ -638,5 +623,26 @@ class render_helper
 		$content = $this->template->assign_display('body', '', true);
 
 		return trim(str_replace(array("\r", "\n"), '', $content));
+	}
+
+	/**
+	* Checks whether the message is too short or too long.
+	* Throws an exception if bounds are not exceeded.
+	*/
+	protected function check_message_bounds($message)
+	{
+		// Must have something other than bbcode in the message
+		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
+		if (!$message || !utf8_strlen($message_chars))
+		{
+			throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
+		}
+
+		// Must not exceed character limit, excluding whitespaces
+		$message_chars = preg_replace('#\s#m', '', $message);
+		if (utf8_strlen($message_chars) > $this->config['mchat_max_message_lngth'])
+		{
+			throw new \phpbb\exception\http_exception(413, 'MCHAT_MESS_LONG', array($this->config['mchat_max_message_lngth']));
+		}
 	}
 }
