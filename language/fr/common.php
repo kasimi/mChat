@@ -117,7 +117,6 @@ $lang = array_merge($lang, array(
 	'ACP_USER_MCHAT'				=> 'Paramètres du mini-tchat',
 	'LOG_DELETED_MCHAT'				=> '<strong>Les messages de mchat ont été supprimés</strong><br />» %1$s',
 	'LOG_EDITED_MCHAT'				=> '<strong>Les messages de mchat ont été édités</strong><br />» %1$s',
-	'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> 'Caractères restants: <span class="charsLeft error"><strong>%d</strong></span>',
 	'MCHAT_TOP_POSTERS'				=> 'Top posteurs',
 	'MCHAT_NEW_CHAT'				=> 'Nouveau message dans Mini-tchat!',
 	'MCHAT_SEND_PM'					=> 'Envoyer un message privé',

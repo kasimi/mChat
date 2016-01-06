@@ -120,7 +120,6 @@ $lang = array_merge($lang, array(
 	'ACP_USER_MCHAT'				=> 'Setări mChat',
 	'LOG_DELETED_MCHAT'				=> '<strong>Mesaje din mChat eliminate</strong><br />» %1$s',
 	'LOG_EDITED_MCHAT'				=> '<strong>Mesaje din mChat modificate</strong><br />» %1$s',
-	'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> 'Caractere rămase: <span class="charsLeft error"><strong>%d</strong></span>',
 	'MCHAT_TOP_POSTERS'				=> 'Top Spameri',
 	'MCHAT_NEW_CHAT'				=> 'Mesaj nou!',
 	'MCHAT_SEND_PM'			 		=> 'Trimite mesaj privat',

@@ -117,7 +117,6 @@ $lang = array_merge($lang, array(
 	'ACP_USER_MCHAT'				=> 'mChat seaded',
 	'LOG_DELETED_MCHAT'				=> '<strong>Kustutatud mChatis sõnum</strong><br />» %1$s',
 	'LOG_EDITED_MCHAT'				=> '<strong>Muudetud mChatis sõnumit</strong><br />» %1$s',
-	'MCHAT_MESSAGE_LNGTH_EXPLAIN'	=> 'Sümboleid jäänud: <span class="charsLeft error"><strong>%d</strong></span>',
 	'MCHAT_TOP_POSTERS'				=> 'Rämpspostitajate TOP',
 	'MCHAT_NEW_CHAT'				=> 'Uus sõnum jututoas!',
 	'MCHAT_SEND_PM'			 		=> 'Saada privaatsõnum',
