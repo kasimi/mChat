@@ -384,7 +384,7 @@ class functions_mchat
 	*/
 	public function mchat_author_for_message($message_id)
 	{
-		$sql = 'SELECT u.user_id, u.username
+		$sql = 'SELECT u.user_id, u.username, m.message_time
 			FROM ' . $this->mchat_table . ' m
 			LEFT JOIN ' . USERS_TABLE . ' u ON m.user_id = u.user_id
 			WHERE m.message_id = ' . (int) $message_id;
@@ -393,6 +393,14 @@ class functions_mchat
 		$this->db->sql_freeresult($result);
 
 		return $row;
+	}
+
+	/**
+	* Checks wether a message posted at the specified time can still be edited or deleted
+	*/
+	public function mchat_is_below_edit_delete_limit($message_time)
+	{
+		return $this->config['mchat_edit_delete_limit'] == 0 || $message_time + $this->config['mchat_edit_delete_limit'] >= time();
 	}
 
 	/**

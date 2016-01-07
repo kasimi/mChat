@@ -176,12 +176,14 @@ class render_helper
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
 			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
+			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->config['mchat_edit_delete_limit'],
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->config['mchat_timeout'],
 			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', $this->config['mchat_timeout']),
 			'MCHAT_WHOIS_REFRESH'			=> $this->config['mchat_whois'] ? 1000 * $this->config['mchat_whois_refresh'] : 0,
 			'MCHAT_PAUSE_ON_INPUT'			=> $this->config['mchat_pause_on_input'],
 			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $this->config['mchat_refresh']),
 			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $this->config['mchat_whois_refresh']),
+			'MCHAT_LIVE_UPDATES'			=> $this->config['mchat_live_updates'],
 			'S_MCHAT_AVATARS'				=> !empty($this->config['mchat_avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'],
 			'S_MCHAT_LOCATION'				=> $this->config['mchat_location'],
 			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
@@ -216,7 +218,8 @@ class render_helper
 				// Request edited messages
 				if ($this->config['mchat_live_updates'])
 				{
-					$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0)', (int) $message_first_id , (int) $message_last_id);
+					$sql_time_limit = $this->config['mchat_edit_delete_limit'] == 0 ? '' : sprintf(' AND m.message_time > %d', time() - $this->config['mchat_edit_delete_limit']);
+					$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0%s)', (int) $message_first_id , (int) $message_last_id, $sql_time_limit);
 				}
 
 				// Exclude post notifications
@@ -310,7 +313,7 @@ class render_helper
 
 				$author = $this->functions_mchat->mchat_author_for_message($message_id);
 
-				if (!$this->auth_message('u_mchat_edit', $author['user_id']))
+				if (!$this->auth_message('u_mchat_edit', $author['user_id'], $author['message_time']))
 				{
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 				}
@@ -350,7 +353,7 @@ class render_helper
 
 				$author = $this->functions_mchat->mchat_author_for_message($message_id);
 
-				if (!$this->auth_message('u_mchat_delete', $author['user_id']))
+				if (!$this->auth_message('u_mchat_delete', $author['user_id'], $author['message_time']))
 				{
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 				}
@@ -521,8 +524,8 @@ class render_helper
 			$this->template->assign_block_vars('mchatrow', array(
 				'S_ROW_COUNT'			=> $i,
 				'MCHAT_ALLOW_BAN'		=> $this->auth->acl_get('a_authusers'),
-				'MCHAT_ALLOW_EDIT'		=> $this->auth_message('u_mchat_edit', $row['user_id']),
-				'MCHAT_ALLOW_DEL'		=> $this->auth_message('u_mchat_delete', $row['user_id']),
+				'MCHAT_ALLOW_EDIT'		=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
+				'MCHAT_ALLOW_DEL'		=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'		=> $user_avatar,
 				'U_VIEWPROFILE'			=> $row['user_id'] != ANONYMOUS ? append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'		=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'],
@@ -545,9 +548,9 @@ class render_helper
 	/*
 	* Checks whether an author has edit or delete permissions for a message
 	*/
-	protected function auth_message($permission, $author_id)
+	protected function auth_message($permission, $author_id, $message_time)
 	{
-		return $this->auth->acl_get($permission) && ($this->user->data['user_id'] == $author_id && $this->user->data['is_registered'] || $this->auth->acl_get('m_'));
+		return $this->auth->acl_get($permission) && ($this->auth->acl_get('m_') || $this->user->data['user_id'] == $author_id && $this->user->data['is_registered'] && $this->functions_mchat->mchat_is_below_edit_delete_limit($message_time));
 	}
 
 	/**

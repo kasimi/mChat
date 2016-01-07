@@ -123,7 +123,7 @@ jQuery(function($) {
 		},
 		edit: function() {
 			var $container = $(this).closest('.mchat-message');
-			var $message = mChat.$$('confirm').find('textarea').show().val($container.data('edit'));
+			var $message = mChat.$$('confirm').find('textarea').show().val($container.data('message'));
 			mChat.$$('confirm').find('p').text(mChat.editInfo);
 			phpbb.confirm(mChat.$$('confirm'), function() {
 				ajaxRequest('edit', true, {
@@ -156,33 +156,44 @@ jQuery(function($) {
 		},
 		refresh: function() {
 			var $messages = mChat.$$('messages').children();
-			var editedMessages = {};
-			$.each($messages, function() {
-				var $message = $(this);
-				var editTime = $message.data('edit-time');
-				if (editTime) {
-					editedMessages[$message.data('id')] = editTime;
-				}
-			});
+			var data = {
+				message_last_id: $messages.filter(mChat.messageTop ? ':first' : ':last').data('id')
+			};
+			if (mChat.liveUpdates) {
+				data.message_first_id = $messages.filter(mChat.messageTop ? ':last' : ':first').data('id');
+				data.message_edits = {};
+				var now = Math.floor(Date.now() / 1000);
+				$.each($messages, function() {
+					var $message = $(this);
+					var editTime = $message.data('edit-time');
+					if (!mChat.editDeleteLimit || editTime >= now - mChat.editDeleteLimit / 1000) {
+						data.message_edits[$message.data('id')] = editTime;
+					}
+				});
+			}
 			mChat.$$('refresh-ok', 'refresh-error', 'refresh-paused').hide();
 			mChat.$$('refresh-load').show();
-			ajaxRequest('refresh', false, {
-				message_first_id: $messages.filter(mChat.messageTop ? ':last' : ':first').data('id'),
-				message_last_id: $messages.filter(mChat.messageTop ? ':first' : ':last').data('id'),
-				message_edits: editedMessages
-			}).done(function(json) {
+			ajaxRequest('refresh', false, data).done(function(json) {
 				var $html = $(json.refresh);
 				if ($html.length) {
 					mChat.sound('add');
 					mChat.notice();
 					mChat.$$('no-messages').remove();
 					$html.hide().each(function(i) {
-						var $this = $(this);
+						var $message = $(this);
 						setTimeout(function() {
-							mChat.$$('messages')[mChat.messageTop ? 'prepend' : 'append']($this);
-							$this.css('opacity', 0).slideDown('slow').animate({opacity: 1}, {queue: false, duration: 'slow'});
+							mChat.$$('messages')[mChat.messageTop ? 'prepend' : 'append']($message);
+							$message.css('opacity', 0).slideDown('slow').animate({opacity: 1}, {queue: false, duration: 'slow'});
 							mChat.$$('main').animate({scrollTop: mChat.messageTop ? 0 : mChat.$$('main')[0].scrollHeight}, 'slow');
 						}, i * 600);
+						if (mChat.editDeleteLimit) {
+							var id = $message.attr('id');
+							setTimeout(function() {
+								$('#' + id).find('[data-mchat-action="edit"], [data-mchat-action="del"]').fadeOut('slow', function() {
+									$(this).remove();
+								});
+							}, mChat.editDeleteLimit);
+						}
 					});
 				}
 				if (json.hasOwnProperty('edit')) {
@@ -315,13 +326,13 @@ jQuery(function($) {
 		quote: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = mChat.entityDecode($container.data('username'));
-			var quote = mChat.entityDecode($container.data('edit'));
+			var quote = mChat.entityDecode($container.data('message'));
 			insert_text('[quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		like: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = mChat.entityDecode($container.data('username'));
-			var quote = mChat.entityDecode($container.data('edit'));
+			var quote = mChat.entityDecode($container.data('message'));
 			insert_text(mChat.likes + '[quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		entityDecode: function(text) {
