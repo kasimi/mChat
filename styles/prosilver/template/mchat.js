@@ -447,7 +447,7 @@ jQuery(function($) {
 		mChat.$$('input').autoGrowInput();
 	}
 
-	$('#page-body').on('click', '[data-mchat-action]', function(e) {
+	$('#phpbb').on('click', '[data-mchat-action]', function(e) {
 		var action = $(this).data('mchat-action');
 		mChat[action].call(this);
 		e.preventDefault();
