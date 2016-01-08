@@ -398,7 +398,7 @@ class functions_mchat
 	/**
 	* Performs add|edit|del|clean|prune actions
 	*/
-	public function mchat_action($action, $sql_ary, $message_id = 0, $log_username = '')
+	public function mchat_action($action, $sql_ary = null, $message_id = 0, $log_username = '')
 	{
 		switch ($action)
 		{

@@ -113,6 +113,7 @@ class render_helper
 		}
 
 		$mchat_view = $this->auth->acl_get('u_mchat_view');
+		$mchat_use = $this->auth->acl_get('u_mchat_use');
 
 		// Assign whois and stats at the bottom of the index page
 		if ($mchat_view && ($this->config['mchat_whois'] || $this->config['mchat_stats_index'] && $this->user->data['user_mchat_stats_index']))
@@ -139,10 +140,85 @@ class render_helper
 		// Add lang file
 		$this->user->add_lang('posting');
 
-		// Access rights
-		$mchat_bbcode	= $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode');
-		$mchat_smilies	= $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies');
-		$mchat_use		= $this->auth->acl_get('u_mchat_use');
+		// Request modes that don't require message rendering
+		switch ($mode)
+		{
+			case 'clean':
+				if ($this->user->data['user_type'] != USER_FOUNDER || !check_form_key('mchat', -1))
+				{
+					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+				}
+
+				$this->functions_mchat->mchat_action('clean');
+
+				return array('clean' => true);
+
+			case 'whois':
+				if (!$this->config['mchat_whois'])
+				{
+					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+				}
+
+				return array('whois' => $this->render('mchat_whois.html'));
+
+			case 'add':
+				if (!$mchat_use || !check_form_key('mchat', -1))
+				{
+					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+				}
+
+				if ($this->functions_mchat->mchat_is_user_flooding())
+				{
+					throw new \phpbb\exception\http_exception(400, 'MCHAT_NOACCESS');
+				}
+
+				$message = $this->request->variable('message', '', true);
+
+				$sql_ary = $this->process_message(utf8_ucfirst($message), array(
+					'user_id'			=> $this->user->data['user_id'],
+					'user_ip'			=> $this->user->data['session_ip'],
+					'message_time'		=> time(),
+				));
+
+				$this->functions_mchat->mchat_action('add', $sql_ary);
+
+				/**
+				* Event render_helper_add
+				*
+				* @event dmzx.mchat.core.render_helper_add
+				* @since 0.1.2
+				*/
+				$this->dispatcher->trigger_event('dmzx.mchat.core.render_helper_add');
+
+				return array('add' => true);
+
+			case 'del':
+				$message_id = $this->request->variable('message_id', 0);
+
+				if (!$message_id || !check_form_key('mchat', -1))
+				{
+					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+				}
+
+				$author = $this->functions_mchat->mchat_author_for_message($message_id);
+
+				if (!$this->auth_message('u_mchat_delete', $author['user_id'], $author['message_time']))
+				{
+					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+				}
+
+				/**
+				* Event render_helper_delete
+				*
+				* @event dmzx.mchat.core.render_helper_delete
+				* @since 0.1.4
+				*/
+				$this->dispatcher->trigger_event('dmzx.mchat.core.render_helper_delete');
+
+				$this->functions_mchat->mchat_action('del', null, $message_id, $author['username']);
+
+				return array('del' => true);
+		}
 
 		$foes_array = $this->functions_mchat->mchat_foes();
 
@@ -151,6 +227,9 @@ class render_helper
 		{
 			$this->config['mchat_static_message'] = $this->user->lang('STATIC_MESSAGE');
 		}
+
+		$mchat_bbcode	= $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode');
+		$mchat_smilies	= $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies');
 
 		$this->template->assign_vars(array(
 			'MCHAT_FILE_NAME'				=> $this->helper->route('dmzx_mchat_controller'),
@@ -195,19 +274,9 @@ class render_helper
 			'STYLE_PATH'					=> generate_board_url() . '/styles/' . $this->user->style['style_path'],
 		));
 
-		// Request mode
+		// Request modes that require message rendering
 		switch ($mode)
 		{
-			case 'clean':
-				if ($this->user->data['user_type'] != USER_FOUNDER || !check_form_key('mchat', -1))
-				{
-					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
-				}
-
-				$this->functions_mchat->mchat_action('clean');
-
-				return array('clean' => true);
-
 			case 'refresh':
 				$message_first_id = $this->request->variable('message_first_id', 0);
 				$message_last_id = $this->request->variable('message_last_id', 0);
@@ -263,47 +332,6 @@ class render_helper
 
 				return $response;
 
-			case 'whois':
-				if (!$this->config['mchat_whois'])
-				{
-					throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
-				}
-
-				return array('whois' => $this->render('mchat_whois.html'));
-
-			case 'add':
-				if (!$mchat_use || !check_form_key('mchat', -1))
-				{
-					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
-				}
-
-				if ($this->functions_mchat->mchat_is_user_flooding())
-				{
-					throw new \phpbb\exception\http_exception(400, 'MCHAT_NOACCESS');
-				}
-
-				$message = utf8_ucfirst($this->request->variable('message', '', true));
-
-				$this->check_message_bounds($message);
-
-				$sql_ary = array_merge($this->sql_ary_message($message), array(
-					'user_id'			=> $this->user->data['user_id'],
-					'user_ip'			=> $this->user->data['session_ip'],
-					'message_time'		=> time(),
-				));
-
-				$this->functions_mchat->mchat_action('add', $sql_ary);
-
-				/**
-				* Event render_helper_add
-				*
-				* @event dmzx.mchat.core.render_helper_add
-				* @since 0.1.2
-				*/
-				$this->dispatcher->trigger_event('dmzx.mchat.core.render_helper_add');
-
-				return array('add' => true);
-
 			case 'edit':
 				$message_id = $this->request->variable('message_id', 0);
 
@@ -321,9 +349,7 @@ class render_helper
 
 				$message = $this->request->variable('message', '', true);
 
-				$this->check_message_bounds($message);
-
-				$sql_ary = array_merge($this->sql_ary_message($message), array(
+				$sql_ary = $this->process_message($message, array(
 					'edit_time' => time(),
 				));
 
@@ -343,33 +369,6 @@ class render_helper
 				$this->assign_messages($rows, $foes_array, $page == 'archive');
 
 				return array('edit' => $this->render('mchat_messages.html'));
-
-			case 'del':
-				$message_id = $this->request->variable('message_id', 0);
-
-				if (!$message_id || !check_form_key('mchat', -1))
-				{
-					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
-				}
-
-				$author = $this->functions_mchat->mchat_author_for_message($message_id);
-
-				if (!$this->auth_message('u_mchat_delete', $author['user_id'], $author['message_time']))
-				{
-					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
-				}
-
-				/**
-				* Event render_helper_delete
-				*
-				* @event dmzx.mchat.core.render_helper_delete
-				* @since 0.1.4
-				*/
-				$this->dispatcher->trigger_event('dmzx.mchat.core.render_helper_delete');
-
-				$this->functions_mchat->mchat_action('del', null, $message_id, $author['username']);
-
-				return array('del' => true);
 		}
 
 		// AJAX requests & unknown modes aren't allowed any further
@@ -567,10 +566,25 @@ class render_helper
 	}
 
 	/**
-	* Generates an array containing the message and BBCode options ready to be sent to the database
+	* Performs bound checks on the message and returns an array containing the message,
+	* BBCode options and additional data ready to be sent to the database
 	*/
-	protected function sql_ary_message($message)
+	protected function process_message($message, $merge_ary)
 	{
+		// Must have something other than bbcode in the message
+		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
+		if (!$message || !utf8_strlen($message_chars))
+		{
+			throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
+		}
+
+		// Must not exceed character limit, excluding whitespaces
+		$message_chars = preg_replace('#\s#m', '', $message);
+		if (utf8_strlen($message_chars) > $this->config['mchat_max_message_lngth'])
+		{
+			throw new \phpbb\exception\http_exception(413, 'MCHAT_MESS_LONG', array($this->config['mchat_max_message_lngth']));
+		}
+
 		// We override the $this->config['min_post_chars'] entry?
 		if ($this->config['mchat_override_min_post_chars'])
 		{
@@ -621,12 +635,12 @@ class render_helper
 			$this->config['max_post_smilies'] = $old_cfg['max_post_smilies'];
 		}
 
-		return array(
+		return array_merge($merge_ary, array(
 			'message'			=> str_replace("'", '&#39;', $message),
 			'bbcode_bitfield'	=> $bitfield,
 			'bbcode_uid'		=> $uid,
 			'bbcode_options'	=> $options,
-		);
+		));
 	}
 
 	/**
@@ -639,26 +653,5 @@ class render_helper
 		$content = $this->template->assign_display('body', '', true);
 
 		return trim(str_replace(array("\r", "\n"), '', $content));
-	}
-
-	/**
-	* Checks whether the message is too short or too long.
-	* Throws an exception if bounds are not exceeded.
-	*/
-	protected function check_message_bounds($message)
-	{
-		// Must have something other than bbcode in the message
-		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
-		if (!$message || !utf8_strlen($message_chars))
-		{
-			throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
-		}
-
-		// Must not exceed character limit, excluding whitespaces
-		$message_chars = preg_replace('#\s#m', '', $message);
-		if (utf8_strlen($message_chars) > $this->config['mchat_max_message_lngth'])
-		{
-			throw new \phpbb\exception\http_exception(413, 'MCHAT_MESS_LONG', array($this->config['mchat_max_message_lngth']));
-		}
 	}
 }
