@@ -165,9 +165,8 @@ jQuery(function($) {
 				var now = Math.floor(Date.now() / 1000);
 				$.each($messages, function() {
 					var $message = $(this);
-					var editTime = $message.data('edit-time');
-					if (!mChat.editDeleteLimit || editTime >= now - mChat.editDeleteLimit / 1000) {
-						data.message_edits[$message.data('id')] = editTime;
+					if (!mChat.editDeleteLimit || $message.data('message-time') >= now - mChat.editDeleteLimit / 1000) {
+						data.message_edits[$message.data('id')] = $message.data('edit-time');
 					}
 				});
 			}
@@ -182,11 +181,15 @@ jQuery(function($) {
 					$html.hide().each(function(i) {
 						var $message = $(this);
 						setTimeout(function() {
-							mChat.$$('messages')[mChat.messageTop ? 'prepend' : 'append']($message);
+							if (mChat.messageTop) {
+								mChat.$$('messages').prepend($message);
+							} else {
+								mChat.$$('messages').append($message);
+							}
 							$message.css('opacity', 0).slideDown('slow').animate({opacity: 1}, {queue: false, duration: 'slow'});
 							mChat.$$('main').animate({scrollTop: mChat.messageTop ? 0 : mChat.$$('main')[0].scrollHeight}, 'slow');
 						}, i * 600);
-						if (mChat.editDeleteLimit) {
+						if (mChat.editDeleteLimit && $message.data('edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
 							var id = $message.attr('id');
 							setTimeout(function() {
 								$('#' + id).find('[data-mchat-action="edit"], [data-mchat-action="del"]').fadeOut('slow', function() {

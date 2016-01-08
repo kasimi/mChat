@@ -396,14 +396,6 @@ class functions_mchat
 	}
 
 	/**
-	* Checks wether a message posted at the specified time can still be edited or deleted
-	*/
-	public function mchat_is_below_edit_delete_limit($message_time)
-	{
-		return $this->config['mchat_edit_delete_limit'] == 0 || $message_time + $this->config['mchat_edit_delete_limit'] >= time();
-	}
-
-	/**
 	* Performs add|edit|del|clean|prune actions
 	*/
 	public function mchat_action($action, $sql_ary, $message_id = 0, $log_username = '')

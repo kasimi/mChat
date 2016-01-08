@@ -177,6 +177,7 @@ class render_helper
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
 			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
 			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->config['mchat_edit_delete_limit'],
+			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->config['mchat_edit_delete_limit'] && $this->auth->acl_get('m_'),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->config['mchat_timeout'],
 			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', $this->config['mchat_timeout']),
 			'MCHAT_WHOIS_REFRESH'			=> $this->config['mchat_whois'] ? 1000 * $this->config['mchat_whois_refresh'] : 0,
@@ -540,17 +541,29 @@ class render_helper
 				'MCHAT_U_BAN'			=> append_sid("{$this->phpbb_root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
 				'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
+				'MCHAT_MESSAGE_TIME'	=> $row['message_time'],
 				'MCHAT_EDIT_TIME'		=> $row['edit_time'],
 			));
 		}
 	}
 
-	/*
+	/**
 	* Checks whether an author has edit or delete permissions for a message
 	*/
 	protected function auth_message($permission, $author_id, $message_time)
 	{
-		return $this->auth->acl_get($permission) && ($this->auth->acl_get('m_') || $this->user->data['user_id'] == $author_id && $this->user->data['is_registered'] && $this->functions_mchat->mchat_is_below_edit_delete_limit($message_time));
+		if (!$this->auth->acl_get($permission))
+		{
+			return false;
+		}
+
+		if ($this->auth->acl_get('m_'))
+		{
+			return true;
+		}
+
+		$can_edit_delete = $this->config['mchat_edit_delete_limit'] == 0 || $message_time >= time() - $this->config['mchat_edit_delete_limit'];
+		return $can_edit_delete && $this->user->data['user_id'] == $author_id && $this->user->data['is_registered'];
 	}
 
 	/**
