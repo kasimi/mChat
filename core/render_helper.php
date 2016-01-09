@@ -231,48 +231,16 @@ class render_helper
 			$this->config['mchat_static_message'] = $this->user->lang('STATIC_MESSAGE');
 		}
 
-		$mchat_bbcode	= $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode');
-		$mchat_smilies	= $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies');
-
 		$this->template->assign_vars(array(
-			'MCHAT_FILE_NAME'				=> $this->helper->route('dmzx_mchat_controller'),
-			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
 			'MCHAT_ARCHIVE_MODE'			=> $page == 'archive',
-			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
-			'MCHAT_RULES'					=> !empty($this->user->lang['MCHAT_RULES']) || !empty($this->config['mchat_rules']),
-			'MCHAT_ALLOW_USE'				=> $mchat_use,
-			'MCHAT_ALLOW_SMILES'			=> $mchat_smilies,
 			'MCHAT_ALLOW_IP'				=> $this->auth->acl_get('u_mchat_ip'),
 			'MCHAT_ALLOW_PM'				=> $this->auth->acl_get('u_mchat_pm'),
 			'MCHAT_ALLOW_LIKE'				=> $mchat_use && $this->auth->acl_get('u_mchat_like'),
 			'MCHAT_ALLOW_QUOTE'				=> $mchat_use && $this->auth->acl_get('u_mchat_quote'),
-			'MCHAT_ALLOW_BBCODES'			=> $mchat_bbcode,
-			'MCHAT_MESSAGE_TOP'				=> $this->config['mchat_message_top'],
-			'MCHAT_ARCHIVE_URL'				=> $this->helper->route('dmzx_mchat_archive_controller'),
-			'MCHAT_CUSTOM_PAGE'				=> $page == 'custom',
-			'MCHAT_INDEX_HEIGHT'			=> $this->config['mchat_index_height'],
-			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
-			'MCHAT_READ_ARCHIVE_BUTTON'		=> $this->auth->acl_get('u_mchat_archive'),
-			'MCHAT_FOUNDER'					=> $this->user->data['user_type'] == USER_FOUNDER,
-			'MCHAT_STATIC_MESS'				=> !empty($this->config['mchat_static_message']) ? htmlspecialchars_decode($this->config['mchat_static_message']) : '',
-			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
-			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
-			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
 			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->config['mchat_edit_delete_limit'],
 			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->config['mchat_edit_delete_limit'] && $this->auth->acl_get('m_'),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->config['mchat_timeout'],
-			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', $this->config['mchat_timeout']),
-			'MCHAT_WHOIS_REFRESH'			=> $this->config['mchat_whois'] ? 1000 * $this->config['mchat_whois_refresh'] : 0,
-			'MCHAT_PAUSE_ON_INPUT'			=> $this->config['mchat_pause_on_input'],
-			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $this->config['mchat_refresh']),
-			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $this->config['mchat_whois_refresh']),
-			'MCHAT_LIVE_UPDATES'			=> $this->config['mchat_live_updates'],
 			'S_MCHAT_AVATARS'				=> !empty($this->config['mchat_avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'],
-			'S_MCHAT_LOCATION'				=> $this->config['mchat_location'],
-			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
-			'U_MORE_SMILIES'				=> append_sid("{$this->phpbb_root_path}posting.{$this->php_ext}", 'mode=smilies'),
-			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_rules_controller'),
-			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && !empty($this->user->data['user_mchat_index']),
 			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
 			'STYLE_PATH'					=> generate_board_url() . '/styles/' . $this->user->style['style_path'],
 		));
@@ -379,6 +347,41 @@ class render_helper
 		{
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
+
+		$mchat_bbcode	= $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode');
+		$mchat_smilies	= $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies');
+
+		$this->template->assign_vars(array(
+			'MCHAT_FILE_NAME'				=> $this->helper->route('dmzx_mchat_controller'),
+			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
+			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
+			'MCHAT_RULES'					=> !empty($this->user->lang['MCHAT_RULES']) || !empty($this->config['mchat_rules']),
+			'MCHAT_ALLOW_USE'				=> $mchat_use,
+			'MCHAT_ALLOW_SMILES'			=> $mchat_smilies,
+			'MCHAT_ALLOW_BBCODES'			=> $mchat_bbcode,
+			'MCHAT_MESSAGE_TOP'				=> $this->config['mchat_message_top'],
+			'MCHAT_ARCHIVE_URL'				=> $this->helper->route('dmzx_mchat_archive_controller'),
+			'MCHAT_CUSTOM_PAGE'				=> $page == 'custom',
+			'MCHAT_INDEX_HEIGHT'			=> $this->config['mchat_index_height'],
+			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
+			'MCHAT_READ_ARCHIVE_BUTTON'		=> $this->auth->acl_get('u_mchat_archive'),
+			'MCHAT_FOUNDER'					=> $this->user->data['user_type'] == USER_FOUNDER,
+			'MCHAT_STATIC_MESS'				=> !empty($this->config['mchat_static_message']) ? htmlspecialchars_decode($this->config['mchat_static_message']) : '',
+			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
+			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
+			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
+			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', $this->config['mchat_timeout']),
+			'MCHAT_WHOIS_REFRESH'			=> $this->config['mchat_whois'] ? 1000 * $this->config['mchat_whois_refresh'] : 0,
+			'MCHAT_PAUSE_ON_INPUT'			=> $this->config['mchat_pause_on_input'],
+			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $this->config['mchat_refresh']),
+			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $this->config['mchat_whois_refresh']),
+			'MCHAT_LIVE_UPDATES'			=> $this->config['mchat_live_updates'],
+			'S_MCHAT_LOCATION'				=> $this->config['mchat_location'],
+			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
+			'U_MORE_SMILIES'				=> append_sid("{$this->phpbb_root_path}posting.{$this->php_ext}", 'mode=smilies'),
+			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_rules_controller'),
+			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && !empty($this->user->data['user_mchat_index']),
+		));
 
 		$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'm.forum_id = 0';
 		$limit = $page == 'archive' ? $this->config['mchat_archive_limit'] : $this->config[$page == 'index' ? 'mchat_message_num' : 'mchat_message_limit'];
