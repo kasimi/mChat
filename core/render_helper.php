@@ -100,12 +100,15 @@ class render_helper
 
 		if ($page == 'custom')
 		{
-			if (!$this->config['mchat_custom_page'] && empty($mode))
+			if (empty($mode))
 			{
-				throw new \phpbb\exception\http_exception(403, 'MCHAT_NO_CUSTOM_PAGE');
-			}
+				if (!$this->config['mchat_custom_page'])
+				{
+					throw new \phpbb\exception\http_exception(403, 'MCHAT_NO_CUSTOM_PAGE');
+				}
 
-			$this->functions_mchat->mchat_add_user_session();
+				$this->functions_mchat->mchat_add_user_session();
+			}
 		}
 		else if ($page == 'archive' && !$this->auth->acl_get('u_mchat_archive'))
 		{
