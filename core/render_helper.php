@@ -301,6 +301,12 @@ class render_helper
 					}
 				}
 
+				// Request deleted messages
+				if ($this->config['mchat_live_updates'])
+				{
+					$response['del'] = $this->functions_mchat->mchat_missing_ids($message_first_id);
+				}
+
 				return $response;
 
 			case 'edit':

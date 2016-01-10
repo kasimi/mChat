@@ -214,12 +214,7 @@ class functions_mchat
 	*/
 	public function mchat_total_message_count()
 	{
-		$sql = 'SELECT COUNT(message_id) AS messages
-			FROM ' . $this->mchat_table;
-		$result = $this->db->sql_query($sql);
-		$total_messages = (int) $this->db->sql_fetchfield('messages');
-		$this->db->sql_freeresult($result);
-		return $total_messages;
+		return $this->db->get_row_count($this->mchat_table);
 	}
 
 	/**
@@ -393,6 +388,63 @@ class functions_mchat
 		$this->db->sql_freeresult($result);
 
 		return $row;
+	}
+
+	/**
+	* Returns an array of message IDs that have been deleted from the message table
+	*/
+	public function mchat_missing_ids($starting_at_id)
+	{
+		$sql = 'SELECT message_id
+			FROM ' . $this->mchat_table . '
+			WHERE message_id <= ' . (int) $starting_at_id . '
+			ORDER BY message_id DESC';
+
+		$result = $this->db->sql_query_limit($sql, 1);
+		$message_id = $this->db->sql_fetchfield('message_id');
+		$this->db->sql_freeresult($result);
+
+		// The very first message(s) have been deleted, fetch smallest message ID
+		if ($message_id === false)
+		{
+			$sql = 'SELECT MIN(message_id) as message_id
+				FROM ' . $this->mchat_table;
+
+			$result = $this->db->sql_query($sql);
+			$message_id = $this->db->sql_fetchfield('message_id');
+			$this->db->sql_freeresult($result);
+		}
+
+		$sql = 'SELECT (t1.message_id + 1) AS start, (
+			SELECT MIN(t3.message_id) - 1
+			FROM ' . $this->mchat_table . ' t3
+			WHERE t3.message_id > t1.message_id AND t3.message_id >= ' . (int) $message_id . '
+		) AS end
+		FROM ' . $this->mchat_table . ' t1
+		WHERE t1.message_id >= ' . (int) $message_id . ' AND NOT EXISTS (
+			SELECT t2.message_id
+			FROM ' . $this->mchat_table . ' t2
+			WHERE t2.message_id = t1.message_id + 1 AND t2.message_id >= ' . (int) $message_id . '
+		)
+		HAVING end IS NOT NULL';
+
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$missing_ids = array();
+		foreach ($rows as $row)
+		{
+			$missing_ids[] = range($row['start'], $row['end']);
+		}
+
+		// Flatten
+		if (!empty($missing_ids))
+		{
+			$missing_ids = call_user_func_array('array_merge', $missing_ids);
+		}
+
+		return $missing_ids;
 	}
 
 	/**

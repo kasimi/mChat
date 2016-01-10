@@ -200,18 +200,26 @@ jQuery(function($) {
 					});
 				}
 				if (json.hasOwnProperty('edit')) {
+					var isFirstEdit = true;
 					$.each(json.edit, function(id, content) {
-						mChat.sound('edit');
 						var $container = $('#mchat-message-' + id);
+						if ($container.length && isFirstEdit) {
+							isFirstEdit = false;
+							mChat.sound('edit');
+						}
 						$container.fadeOut('slow', function() {
 							$container.replaceWith($(content).hide().fadeIn('slow'));
 						});
 					});
 				}
 				if (json.hasOwnProperty('del')) {
+					var isFirstDelete = true;
 					$.each(json.del, function(i, id) {
 						var $container = $('#mchat-message-' + id);
-						mChat.sound('del');
+						if ($container.length && isFirstDelete) {
+							isFirstDelete = false;
+							mChat.sound('del');
+						}
 						$container.fadeOut('slow', function() {
 							$container.remove();
 						});
