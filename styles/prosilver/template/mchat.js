@@ -165,8 +165,9 @@ jQuery(function($) {
 				var now = Math.floor(Date.now() / 1000);
 				$.each($messages, function() {
 					var $message = $(this);
-					if (!mChat.editDeleteLimit || $message.data('message-time') >= now - mChat.editDeleteLimit / 1000) {
-						data.message_edits[$message.data('id')] = $message.data('edit-time');
+					var editTime = $message.data('edit-time');
+					if (editTime && (!mChat.editDeleteLimit || $message.data('message-time') >= now - mChat.editDeleteLimit / 1000)) {
+						data.message_edits[$message.data('id')] = editTime;
 					}
 				});
 			}
@@ -203,26 +204,30 @@ jQuery(function($) {
 					var isFirstEdit = true;
 					$.each(json.edit, function(id, content) {
 						var $container = $('#mchat-message-' + id);
-						if ($container.length && isFirstEdit) {
-							isFirstEdit = false;
-							mChat.sound('edit');
+						if ($container.length) {
+							if (isFirstEdit) {
+								isFirstEdit = false;
+								mChat.sound('edit');
+							}
+							$container.fadeOut('slow', function() {
+								$container.replaceWith($(content).hide().fadeIn('slow'));
+							});
 						}
-						$container.fadeOut('slow', function() {
-							$container.replaceWith($(content).hide().fadeIn('slow'));
-						});
 					});
 				}
 				if (json.hasOwnProperty('del')) {
 					var isFirstDelete = true;
 					$.each(json.del, function(i, id) {
 						var $container = $('#mchat-message-' + id);
-						if ($container.length && isFirstDelete) {
-							isFirstDelete = false;
-							mChat.sound('del');
+						if ($container.length) {
+							if (isFirstDelete) {
+								isFirstDelete = false;
+								mChat.sound('del');
+							}
+							$container.fadeOut('slow', function() {
+								$container.remove();
+							});
 						}
-						$container.fadeOut('slow', function() {
-							$container.remove();
-						});
 					});
 				}
 				setTimeout(function() {

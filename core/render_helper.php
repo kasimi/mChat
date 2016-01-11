@@ -205,7 +205,7 @@ class render_helper
 
 				$author = $this->functions_mchat->mchat_author_for_message($message_id);
 
-				if (!$this->auth_message('u_mchat_delete', $author['user_id'], $author['message_time']))
+				if (!$author || !$this->auth_message('u_mchat_delete', $author['user_id'], $author['message_time']))
 				{
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 				}
@@ -257,7 +257,7 @@ class render_helper
 				$sql_where = 'm.message_id > ' . (int) $message_last_id;
 
 				// Request edited messages
-				if ($this->config['mchat_live_updates'])
+				if ($this->config['mchat_live_updates'] && $message_last_id > 0)
 				{
 					$sql_time_limit = $this->config['mchat_edit_delete_limit'] == 0 ? '' : sprintf(' AND m.message_time > %d', time() - $this->config['mchat_edit_delete_limit']);
 					$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0%s)', (int) $message_first_id , (int) $message_last_id, $sql_time_limit);
@@ -302,9 +302,13 @@ class render_helper
 				}
 
 				// Request deleted messages
-				if ($this->config['mchat_live_updates'])
+				if ($this->config['mchat_live_updates'] && $message_last_id > 0)
 				{
-					$response['del'] = $this->functions_mchat->mchat_missing_ids($message_first_id);
+					$deleted_message_ids = $this->functions_mchat->mchat_missing_ids($message_first_id, $message_last_id);
+					if (!empty($deleted_message_ids))
+					{
+						$response['del'] = $deleted_message_ids;
+					}
 				}
 
 				return $response;
@@ -319,7 +323,7 @@ class render_helper
 
 				$author = $this->functions_mchat->mchat_author_for_message($message_id);
 
-				if (!$this->auth_message('u_mchat_edit', $author['user_id'], $author['message_time']))
+				if (!$author || !$this->auth_message('u_mchat_edit', $author['user_id'], $author['message_time']))
 				{
 					throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 				}

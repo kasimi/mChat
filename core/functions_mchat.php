@@ -393,49 +393,77 @@ class functions_mchat
 	/**
 	* Returns an array of message IDs that have been deleted from the message table
 	*/
-	public function mchat_missing_ids($starting_at_id)
+	public function mchat_missing_ids($start_id, $end_id)
 	{
+		if ($this->config['mchat_edit_delete_limit'])
+		{
+			$sql_where = 'message_time <= ' . (time() - $this->config['mchat_edit_delete_limit']);
+		}
+		else
+		{
+			$sql_where = 'message_id <= ' . (int) $start_id;
+		}
+
 		$sql = 'SELECT message_id
 			FROM ' . $this->mchat_table . '
-			WHERE message_id <= ' . (int) $starting_at_id . '
+			WHERE ' . $sql_where . '
 			ORDER BY message_id DESC';
-
 		$result = $this->db->sql_query_limit($sql, 1);
-		$message_id = $this->db->sql_fetchfield('message_id');
+		$earliest_id = (int) $this->db->sql_fetchfield('message_id');
 		$this->db->sql_freeresult($result);
 
-		// The very first message(s) have been deleted, fetch smallest message ID
-		if ($message_id === false)
+		if (!$earliest_id)
 		{
-			$sql = 'SELECT MIN(message_id) as message_id
-				FROM ' . $this->mchat_table;
-
-			$result = $this->db->sql_query($sql);
-			$message_id = $this->db->sql_fetchfield('message_id');
+			$sql = 'SELECT MIN(message_id) as earliest_id
+				FROM ' . $this->mchat_table . '
+				ORDER BY message_id DESC';
+			$result = $this->db->sql_query_limit($sql, 1);
+			$earliest_id = $this->db->sql_fetchfield('earliest_id');
 			$this->db->sql_freeresult($result);
+		}
+
+		if (!$earliest_id)
+		{
+			return range($start_id, $end_id);
 		}
 
 		$sql = 'SELECT (t1.message_id + 1) AS start, (
 			SELECT MIN(t3.message_id) - 1
 			FROM ' . $this->mchat_table . ' t3
-			WHERE t3.message_id > t1.message_id AND t3.message_id >= ' . (int) $message_id . '
+			WHERE t3.message_id > t1.message_id
 		) AS end
 		FROM ' . $this->mchat_table . ' t1
-		WHERE t1.message_id >= ' . (int) $message_id . ' AND NOT EXISTS (
+		WHERE t1.message_id >= ' . (int) $earliest_id . ' AND NOT EXISTS (
 			SELECT t2.message_id
 			FROM ' . $this->mchat_table . ' t2
-			WHERE t2.message_id = t1.message_id + 1 AND t2.message_id >= ' . (int) $message_id . '
-		)
-		HAVING end IS NOT NULL';
+			WHERE t2.message_id = t1.message_id + 1
+		)';
 
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
 		$missing_ids = array();
+
+		if ($start_id < $earliest_id)
+		{
+			$missing_ids[] = range($start_id, $earliest_id - 1);
+		}
+
 		foreach ($rows as $row)
 		{
-			$missing_ids[] = range($row['start'], $row['end']);
+			if ($row['end'])
+			{
+				$missing_ids[] = range($row['start'], $row['end']);
+			}
+			else
+			{
+				$latest_message = $row['start'] - 1;
+				if ($end_id > $latest_message)
+				{
+					$missing_ids[] = range($latest_message + 1, $end_id);
+				}
+			}
 		}
 
 		// Flatten
