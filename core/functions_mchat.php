@@ -415,8 +415,7 @@ class functions_mchat
 		if (!$earliest_id)
 		{
 			$sql = 'SELECT MIN(message_id) as earliest_id
-				FROM ' . $this->mchat_table . '
-				ORDER BY message_id DESC';
+				FROM ' . $this->mchat_table;
 			$result = $this->db->sql_query_limit($sql, 1);
 			$earliest_id = $this->db->sql_fetchfield('earliest_id');
 			$this->db->sql_freeresult($result);
@@ -445,7 +444,7 @@ class functions_mchat
 
 		$missing_ids = array();
 
-		if ($start_id < $earliest_id)
+		if ($start_id < $earliest_id && !$this->config['mchat_edit_delete_limit'])
 		{
 			$missing_ids[] = range($start_id, $earliest_id - 1);
 		}
