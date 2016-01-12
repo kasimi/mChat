@@ -26,6 +26,9 @@ class functions_mchat
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -38,26 +41,31 @@ class functions_mchat
 	/** @var string */
 	protected $mchat_sessions_table;
 
+	/** @var array */
+	protected $foes = null;
+
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config				$config
-	* @param \phpbb\user						$user
-	* @param \phpbb\auth\auth					$auth
-	* @param \phpbb\log\log_interface			$log
-	* @param \phpbb\db\driver\driver_interface	$db
-	* @param string								$phpbb_root_path
-	* @param string								$php_ext
-	* @param string								$mchat_table
-	* @param string								$mchat_sessions_table
+	* @param \phpbb\config\config					$config
+	* @param \phpbb\user							$user
+	* @param \phpbb\auth\auth						$auth
+	* @param \phpbb\log\log_interface				$log
+	* @param \phpbb\db\driver\driver_interface		$db
+	* @param \phpbb\cache\driver\driver_interface	$cache
+	* @param string									$phpbb_root_path
+	* @param string									$php_ext
+	* @param string									$mchat_table
+	* @param string									$mchat_sessions_table
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $mchat_table, $mchat_sessions_table)
+	function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $phpbb_root_path, $php_ext, $mchat_table, $mchat_sessions_table)
 	{
 		$this->config				= $config;
 		$this->user					= $user;
 		$this->auth					= $auth;
 		$this->log					= $log;
 		$this->db					= $db;
+		$this->cache				= $cache;
 		$this->phpbb_root_path		= $phpbb_root_path;
 		$this->php_ext				= $php_ext;
 		$this->mchat_table			= $mchat_table;
@@ -294,20 +302,23 @@ class functions_mchat
 	*/
 	public function mchat_foes()
 	{
-		$sql = 'SELECT *
-			FROM ' . ZEBRA_TABLE . '
-			WHERE foe = 1 AND user_id = ' . (int) $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		$foes = array();
-		foreach ($rows as $row)
+		if (is_null($this->foes))
 		{
-			$foes[] = $row['zebra_id'];
+			$sql = 'SELECT *
+				FROM ' . ZEBRA_TABLE . '
+				WHERE foe = 1 AND user_id = ' . (int) $this->user->data['user_id'];
+			$result = $this->db->sql_query($sql);
+			$rows = $this->db->sql_fetchrowset($result);
+			$this->db->sql_freeresult($result);
+
+			$this->foes = array();
+			foreach ($rows as $row)
+			{
+				$this->foes[] = $row['zebra_id'];
+			}
 		}
 
-		return $foes;
+		return $this->foes;
 	}
 
 	/**
@@ -408,7 +419,7 @@ class functions_mchat
 			FROM ' . $this->mchat_table . '
 			WHERE ' . $sql_where . '
 			ORDER BY message_id DESC';
-		$result = $this->db->sql_query_limit($sql, 1);
+		$result = $this->db->sql_query_limit($sql, 1, 0, $this->config['mchat_edit_delete_limit'] ? 0 : 3600);
 		$earliest_id = (int) $this->db->sql_fetchfield('message_id');
 		$this->db->sql_freeresult($result);
 
@@ -416,7 +427,7 @@ class functions_mchat
 		{
 			$sql = 'SELECT MIN(message_id) as earliest_id
 				FROM ' . $this->mchat_table;
-			$result = $this->db->sql_query_limit($sql, 1);
+			$result = $this->db->sql_query($sql, 3600);
 			$earliest_id = $this->db->sql_fetchfield('earliest_id');
 			$this->db->sql_freeresult($result);
 		}
@@ -497,16 +508,19 @@ class functions_mchat
 				$sql = 'DELETE FROM ' . $this->mchat_table . ' WHERE message_id = ' . (int) $message_id;
 				$this->mchat_add_user_session();
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, array($log_username));
+				$this->cache->destroy('sql', $this->mchat_table);
 				break;
 			// Founder purges all messages
 			case 'clean':
 				$sql = 'TRUNCATE TABLE ' . $this->mchat_table;
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
+				$this->cache->destroy('sql', $this->mchat_table);
 				break;
 			// User triggers messages to be pruned
 			case 'prune':
 				$sql = 'DELETE FROM ' . $this->mchat_table . ' WHERE message_id < ' . (int) $message_id;
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
+				$this->cache->destroy('sql', $this->mchat_table);
 				break;
 			default:
 				return;

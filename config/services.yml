@@ -57,6 +57,7 @@ services:
             - '@auth'
             - '@log'
             - '@dbal.conn'
+            - '@cache.driver'
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%dmzx.mchat.table.mchat%'

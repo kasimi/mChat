@@ -223,8 +223,6 @@ class render_helper
 				return array('del' => true);
 		}
 
-		$foes_array = $this->functions_mchat->mchat_foes();
-
 		// If the static message is defined in the language file use it, else the entry in the database is used
 		if (isset($this->user->lang['STATIC_MESSAGE']))
 		{
@@ -287,7 +285,7 @@ class render_helper
 				}
 
 				// Assign new messages
-				$this->assign_messages($rows_refresh, $foes_array, $page == 'archive');
+				$this->assign_messages($rows_refresh, $page == 'archive');
 				$response = array('refresh' => $this->render('mchat_messages.html'));
 
 				// Assign edited messages
@@ -296,7 +294,7 @@ class render_helper
 					$response['edit'] = array();
 					foreach ($rows_edit as $row)
 					{
-						$this->assign_messages(array($row), $foes_array, $page == 'archive');
+						$this->assign_messages(array($row), $page == 'archive');
 						$response['edit'][$row['message_id']] = $this->render('mchat_messages.html');
 					}
 				}
@@ -347,7 +345,7 @@ class render_helper
 				// Message edited...now read it
 				$sql_where = 'm.message_id = ' . (int) $message_id;
 				$rows = $this->functions_mchat->mchat_get_messages($sql_where, 1);
-				$this->assign_messages($rows, $foes_array, $page == 'archive');
+				$this->assign_messages($rows, $page == 'archive');
 
 				return array('edit' => $this->render('mchat_messages.html'));
 		}
@@ -398,7 +396,7 @@ class render_helper
 		$start = $page == 'archive' ? $this->request->variable('start', 0) : 0;
 		$rows = $this->functions_mchat->mchat_get_messages($sql_where, $limit, $start);
 
-		$this->assign_messages($rows, $foes_array, $page == 'archive');
+		$this->assign_messages($rows, $page == 'archive');
 
 		if ($page != 'index')
 		{
@@ -494,7 +492,7 @@ class render_helper
 	/**
 	* Assigns all message rows to the template
 	*/
-	protected function assign_messages($rows, $foes, $in_archive)
+	protected function assign_messages($rows, $in_archive)
 	{
 		if (empty($rows))
 		{
@@ -506,6 +504,8 @@ class render_helper
 		{
 			$rows = array_reverse($rows);
 		}
+
+		$foes = $this->functions_mchat->mchat_foes();
 
 		$this->template->destroy_block_vars('mchatrow');
 
