@@ -16,49 +16,34 @@ class listener implements EventSubscriberInterface
 	/** @var \dmzx\mchat\core\functions_mchat */
 	protected $functions_mchat;
 
-	/** @var \dmzx\mchat\core\render_helper */
-	protected $render_helper;
-
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	/** @var \phpbb\auth\auth */
-	protected $auth;
+	/** @var \dmzx\mchat\core\mchat */
+	protected $mchat;
 
 	/** @var \phpbb\controller\helper */
-	protected $controller_helper;
-
-	/** @var \phpbb\template\template */
-	protected $template;
+	protected $helper;
 
 	/** @var \phpbb\user */
 	protected $user;
 
 	/** @var string */
-	protected $phpEx;
+	protected $php_ext;
 
 	/**
 	* Constructor
 	*
 	* @param \dmzx\mchat\core\functions_mchat	$functions_mchat
-	* @param \dmzx\mchat\core\render_helper		$render_helper
-	* @param \phpbb\config\config				$config
-	* @param \phpbb\auth\auth					$auth
-	* @param \phpbb\controller\helper			$controller_helper
-	* @param \phpbb\template\template			$template
+	* @param \dmzx\mchat\core\mchat				$mchat
+	* @param \phpbb\controller\helper			$helper
 	* @param \phpbb\user						$user
-	* @param string								$phpEx
+	* @param string								$php_ext
 	*/
-	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \dmzx\mchat\core\render_helper $render_helper, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\controller\helper $controller_helper, \phpbb\template\template $template, \phpbb\user $user, $phpEx)
+	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \dmzx\mchat\core\mchat $mchat, \phpbb\controller\helper $helper, \phpbb\user $user, $php_ext)
 	{
-		$this->functions_mchat		= $functions_mchat;
-		$this->render_helper		= $render_helper;
-		$this->config				= $config;
-		$this->auth					= $auth;
-		$this->controller_helper	= $controller_helper;
-		$this->template				= $template;
-		$this->user					= $user;
-		$this->phpEx				= $phpEx;
+		$this->functions_mchat	= $functions_mchat;
+		$this->mchat			= $mchat;
+		$this->helper			= $helper;
+		$this->user				= $user;
+		$this->php_ext			= $php_ext;
 	}
 
 	static public function getSubscribedEvents()
@@ -74,15 +59,21 @@ class listener implements EventSubscriberInterface
 		);
 	}
 
+	/**
+	*
+	*/
 	public function add_page_viewonline($event)
 	{
-		if (strrpos($event['row']['session_page'], 'app.' . $this->phpEx . '/mchat') === 0)
+		if (strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/mchat') === 0)
 		{
 			$event['location'] = $this->user->lang('MCHAT_TITLE');
-			$event['location_url'] = $this->controller_helper->route('dmzx_mchat_controller');
+			$event['location_url'] = $this->helper->route('dmzx_mchat_controller');
 		}
 	}
 
+	/**
+	*
+	*/
 	public function load_language_on_setup($event)
 	{
 		$lang_set_ext = $event['lang_set_ext'];
@@ -102,11 +93,7 @@ class listener implements EventSubscriberInterface
 	*/
 	public function add_page_header_link($event)
 	{
-		$this->template->assign_vars(array(
-			'MCHAT_ALLOW_VIEW'		=> $this->auth->acl_get('u_mchat_view'),
-			'S_MCHAT_CUSTOM_PAGE'	=> $this->config['mchat_custom_page'],
-			'U_MCHAT'				=> $this->controller_helper->route('dmzx_mchat_controller'),
-		));
+		$this->mchat->render_page_header_link();
 	}
 
 	/**
@@ -118,9 +105,12 @@ class listener implements EventSubscriberInterface
 	 */
 	public function display_mchat_on_index($event)
 	{
-		$this->render_helper->render_data_for_page('index');
+		$this->mchat->page_index();
 	}
 
+	/**
+	*
+	*/
 	public function posting_modify_submit_post_after($event)
 	{
 		$this->functions_mchat->mchat_insert_posting($event['mode'], array(
@@ -131,6 +121,17 @@ class listener implements EventSubscriberInterface
 		));
 	}
 
+	/**
+	*
+	*/
+	public function display_custom_bbcodes_modify_sql($event)
+	{
+		$event['sql_ary'] = $this->mchat->remove_disallowed_bbcodes($event['sql_ary']);
+	}
+
+	/**
+	*
+	*/
 	public function permissions($event)
 	{
 		$event['permissions'] = array_merge($event['permissions'], array(
@@ -195,17 +196,5 @@ class listener implements EventSubscriberInterface
 		$event['categories'] = array_merge($event['categories'], array(
 			'mChat'	=> 'ACP_CAT_MCHAT',
 		));
-	}
-
-	public function display_custom_bbcodes_modify_sql($event)
-	{
-		// Add disallowed BBCodes to the template only if we're rendering for mChat
-		if ($this->render_helper->is_mchat_rendered && !empty($this->config['mchat_bbcode_disallowed']))
-		{
-			$disallowed_bbcode_array = explode('|', strtoupper($this->config['mchat_bbcode_disallowed']));
-			$sql_ary = $event['sql_ary'];
-			$sql_ary['WHERE'] .= " AND UPPER(b.bbcode_tag) NOT IN ('" . implode("','", $disallowed_bbcode_array) . "')";
-			$event['sql_ary'] = $sql_ary;
-		}
 	}
 }

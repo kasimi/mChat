@@ -14,29 +14,13 @@ services:
             - '@ext.manager'
             - '%core.root_path%'
             - '%core.php_ext%'
-    dmzx.mchat.rules.controller:
-        class: dmzx\mchat\controller\rules_controller
+    dmzx.mchat.main.controller:
+        class: dmzx\mchat\controller\main_controller
         arguments:
-            - '@config'
-            - '@template'
-            - '@user'
-            - '@controller.helper'
-    dmzx.mchat.whois.controller:
-        class: dmzx\mchat\controller\whois_controller
-        arguments:
-            - '@auth'
-            - '@template'
-            - '@user'
-            - '@controller.helper'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-    dmzx.mchat.controller:
-        class: dmzx\mchat\controller\mchat
-        arguments:
-            - '@dmzx.mchat.render_helper'
+            - '@dmzx.mchat.core'
             - '@request'
-    dmzx.mchat.render_helper:
-        class: dmzx\mchat\core\render_helper
+    dmzx.mchat.core:
+        class: dmzx\mchat\core\mchat
         arguments:
             - '@dmzx.mchat.functions_mchat'
             - '@config'
@@ -66,11 +50,8 @@ services:
         class: dmzx\mchat\event\listener
         arguments:
             - '@dmzx.mchat.functions_mchat'
-            - '@dmzx.mchat.render_helper'
-            - '@config'
-            - '@auth'
+            - '@dmzx.mchat.core'
             - '@controller.helper'
-            - '@template'
             - '@user'
             - '%core.php_ext%'
         tags:

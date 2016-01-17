@@ -1,7 +1,7 @@
 /**
  *
  * @package mChat JavaScript Code mini
- * @version 1.5.0 of 2015-12-27
+ * @version 1.5.1 of 2016-01-17
  * @copyright (c) 2009 By Shapoval Andrey Vladimirovich (AllCity) ~ http://allcity.net.ru/
  * @copyright (c) 2013 By Rich McGirr (RMcGirr83) http://rmcgirr83.org
  * @copyright (c) 2015 By dmzx - http://www.dmzx-web.net
@@ -23,9 +23,8 @@ jQuery(function($) {
 		if (sendHiddenFields) {
 			$.extend(data, mChat.hiddenFields);
 		}
-		data.mode = mode;
 		$.ajax({
-			url: mChat.file,
+			url: mChat.file + '-' + mode,
 			timeout: 5000,
 			type: 'POST',
 			dataType: 'json',
@@ -377,7 +376,7 @@ jQuery(function($) {
 	mChat.$$('confirm').detach().show();
 
 	mChat.hiddenFields = {};
-	$('#' + form_name).find('input[type=hidden]').each(function() {
+	$('#postform').find('input[type=hidden]').each(function() {
 		mChat.hiddenFields[this.name] = this.value;
 	});
 

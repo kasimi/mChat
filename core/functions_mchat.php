@@ -322,6 +322,21 @@ class functions_mchat
 	}
 
 	/**
+	* Adds forbidden BBCodes to the passed SQL where statement
+	*/
+	public function mchat_sql_append_forbidden_bbcodes($sql_where)
+	{
+		$disallowed_bbcodes = explode('|', strtoupper($this->config['mchat_bbcode_disallowed']));
+
+		if (!empty($disallowed_bbcodes))
+		{
+			$sql_where .= ' AND ' . $this->db->sql_in_set('UPPER(b.bbcode_tag)', $disallowed_bbcodes, true);
+		}
+
+		return $sql_where;
+	}
+
+	/**
 	* Inserts a message with posting information into the database
 	*/
 	public function mchat_insert_posting($mode, $data)
@@ -408,18 +423,20 @@ class functions_mchat
 	{
 		if ($this->config['mchat_edit_delete_limit'])
 		{
-			$sql_where = 'message_time <= ' . (time() - $this->config['mchat_edit_delete_limit']);
+			$sql_where = 'message_time < ' . (time() - $this->config['mchat_edit_delete_limit']);
+			$cache_ttl = 0;
 		}
 		else
 		{
-			$sql_where = 'message_id <= ' . (int) $start_id;
+			$sql_where = 'message_id < ' . (int) $start_id;
+			$cache_ttl = 3600;
 		}
 
 		$sql = 'SELECT message_id
 			FROM ' . $this->mchat_table . '
 			WHERE ' . $sql_where . '
 			ORDER BY message_id DESC';
-		$result = $this->db->sql_query_limit($sql, 1, 0, $this->config['mchat_edit_delete_limit'] ? 0 : 3600);
+		$result = $this->db->sql_query_limit($sql, 1, 0, $cache_ttl);
 		$earliest_id = (int) $this->db->sql_fetchfield('message_id');
 		$this->db->sql_freeresult($result);
 
@@ -443,7 +460,7 @@ class functions_mchat
 			WHERE t3.message_id > t1.message_id
 		) AS end
 		FROM ' . $this->mchat_table . ' t1
-		WHERE t1.message_id >= ' . (int) $earliest_id . ' AND NOT EXISTS (
+		WHERE t1.message_id > ' . (int) $earliest_id . ' AND NOT EXISTS (
 			SELECT t2.message_id
 			FROM ' . $this->mchat_table . ' t2
 			WHERE t2.message_id = t1.message_id + 1

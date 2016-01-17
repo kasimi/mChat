@@ -130,12 +130,6 @@
 	display: none;
 }
 
-#mchat-sound {
-	position: absolute;
-	left: -1000px;
-	top: -1000px;
-}
-
 #mchat-status {
 	padding: 5px;
 }
