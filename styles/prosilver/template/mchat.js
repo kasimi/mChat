@@ -24,7 +24,7 @@ jQuery(function($) {
 			$.extend(data, mChat.hiddenFields);
 		}
 		$.ajax({
-			url: mChat.file + '-' + mode,
+			url: mChat.file.replace('mchat', 'mchat-' + mode),
 			timeout: 5000,
 			type: 'POST',
 			dataType: 'json',
