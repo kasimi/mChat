@@ -347,10 +347,10 @@ class functions_mchat
 		}
 
 		$mode_config = array(
-			'post'	=> 'mchat_new_posts_topic',
-			'quote'	=> 'mchat_new_posts_quote',
-			'edit'	=> 'mchat_new_posts_edit',
-			'reply'	=> 'mchat_new_posts_reply',
+			'post'	=> $this->config['mchat_new_posts_topic'],
+			'quote'	=> $this->config['mchat_new_posts_quote'],
+			'edit'	=> $this->config['mchat_new_posts_edit'],
+			'reply'	=> $this->config['mchat_new_posts_reply'],
 		);
 
 		if (empty($mode_config[$mode]))
