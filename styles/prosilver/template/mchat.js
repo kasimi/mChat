@@ -376,7 +376,7 @@ jQuery(function($) {
 	mChat.$$('confirm').detach().show();
 
 	mChat.hiddenFields = {};
-	$('#postform').find('input[type=hidden]').each(function() {
+	$('#' + form_name).find('input[type=hidden]').each(function() {
 		mChat.hiddenFields[this.name] = this.value;
 	});
 
@@ -452,7 +452,7 @@ jQuery(function($) {
 			}
 		});
 
-		$('#postform').on('keypress', function(e) {
+		$('#' + form_name).on('keypress', function(e) {
 			if (e.which == 13) {
 				mChat.add();
 				e.preventDefault();
