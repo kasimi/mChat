@@ -72,7 +72,7 @@ jQuery(function($) {
 			}
 		},
 		sound: function(file) {
-			if (!Cookies.get('mchat_no_sound')) {
+			if (!mChat.pageIsUnloading && !Cookies.get('mchat_no_sound')) {
 				var audio = mChat.$$('sound-' + file).get(0);
 				audio.pause();
 				audio.currentTime = 0;
@@ -461,6 +461,10 @@ jQuery(function($) {
 
 		mChat.$$('input').autoGrowInput();
 	}
+
+	$(window).on('beforeunload', function() {
+		mChat.pageIsUnloading = true;
+	});
 
 	$('#phpbb').on('click', '[data-mchat-action]', function(e) {
 		var action = $(this).data('mchat-action');
