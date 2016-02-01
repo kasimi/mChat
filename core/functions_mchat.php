@@ -543,6 +543,19 @@ class functions_mchat
 				return;
 		}
 
-		$this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
+
+		if ($result !== false)
+		{
+			switch ($action)
+			{
+				case 'add':
+					if ($this->db->sql_nextid() == 1)
+					{
+						$this->cache->destroy('sql', $this->mchat_table);
+					}
+					break;
+			}
+		}
 	}
 }
