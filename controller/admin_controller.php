@@ -139,7 +139,16 @@ class admin_controller
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$this->user->lang('\\1'))) ? \$this->user->lang('\\1') : '\\1'", $error);
+			// The /e modifier is deprecated since PHP 5.5.0
+			//$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$this->user->lang('\\1'))) ? \$this->user->lang('\\1') : '\\1'", $error);
+			foreach ($error as $i => $err)
+			{
+				$lang = $this->user->lang($err);
+				if (!empty($lang))
+				{
+					$error[$i] = $lang;
+				}
+			}
 
 			if (empty($error))
 			{

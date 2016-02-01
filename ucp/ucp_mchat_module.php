@@ -65,7 +65,16 @@ class ucp_mchat_module
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					// The /e modifier is deprecated since PHP 5.5.0
+					//$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					foreach ($error as $i => $err)
+					{
+						$lang = $this->user->lang($err);
+						if (!empty($lang))
+						{
+							$error[$i] = $lang;
+						}
+					}
 				}
 
 				$template->assign_vars(array(
