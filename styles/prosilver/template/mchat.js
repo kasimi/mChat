@@ -263,6 +263,7 @@ jQuery(function($) {
 			mChat.$$('confirm').find('textarea').hide();
 			mChat.$$('confirm').find('p').text(mChat.cleanConfirm);
 			phpbb.confirm(mChat.$$('confirm'), function() {
+				mChat.pauseSession();
 				ajaxRequest('clean', true, {}).done(function() {
 					phpbb.alert('mChat', mChat.cleanDone);
 					setTimeout(function() {
