@@ -86,7 +86,7 @@ class ucp_mchat_module
 					'S_TOPICS_MCHAT'		=> $data['user_mchat_topics'],
 					'S_AVATARS_MCHAT'		=> $data['user_mchat_avatars'],
 					'S_INPUT_MCHAT'			=> $data['user_mchat_input_area'],
-					'S_MCHAT_TOPICS'		=> $config['mchat_new_posts'],
+					'S_MCHAT_TOPICS'		=> $config['mchat_new_posts_edit'] || $config['mchat_new_posts_quote'] || $config['mchat_new_posts_reply'] || $config['mchat_new_posts_topic'],
 					'S_MCHAT_INDEX'			=> $config['mchat_on_index'],
 					'S_MCHAT_INDEX_STATS'	=> $config['mchat_stats_index'],
 					'S_MCHAT_AVATARS'		=> $config['mchat_avatars'],

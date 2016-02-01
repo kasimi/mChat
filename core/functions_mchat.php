@@ -341,11 +341,6 @@ class functions_mchat
 	*/
 	public function mchat_insert_posting($mode, $data)
 	{
-		if (!$this->config['mchat_new_posts'])
-		{
-			return;
-		}
-
 		$mode_config = array(
 			'post'	=> $this->config['mchat_new_posts_topic'],
 			'quote'	=> $this->config['mchat_new_posts_quote'],
