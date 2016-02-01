@@ -444,6 +444,10 @@ jQuery(function($) {
 			e.preventDefault();
 		});
 
+		if (!mChat.$$('user-sound').prop('checked')) {
+			Cookies.set('mchat_no_sound', 'yes');
+		}
+
 		mChat.$$('user-sound').change(function() {
 			if (this.checked) {
 				Cookies.remove('mchat_no_sound');
