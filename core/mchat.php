@@ -564,10 +564,18 @@ class mchat
 			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->config['mchat_edit_delete_limit'],
 			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->config['mchat_edit_delete_limit'] && $this->auth->acl_get('m_'),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->config['mchat_timeout'],
-			'S_MCHAT_AVATARS'				=> !empty($this->config['mchat_avatars']) && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'],
+			'S_MCHAT_AVATARS'				=> $this->display_avatars(),
 			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
 			'STYLE_PATH'					=> generate_board_url() . '/styles/' . $this->user->style['style_path'],
 		));
+	}
+
+	/**
+	 * Returns true if we need do display avatars in the messages, otherwise false
+	 */
+	protected function display_avatars()
+	{
+		return $this->config['mchat_avatars'] && $this->user->optionget('viewavatars') && $this->user->data['user_mchat_avatars'];
 	}
 
 	/**
@@ -590,6 +598,22 @@ class mchat
 
 		$this->template->destroy_block_vars('mchatrow');
 
+		$user_avatars = array();
+
+		foreach ($rows as $i => $row)
+		{
+			if (!isset($user_avatars[$row['user_id']]))
+			{
+				$display_avatar = $this->display_avatars() && $row['user_avatar'];
+				$user_avatars[$row['user_id']] = !$display_avatar ? '' : phpbb_get_user_avatar(array(
+					'avatar'        => $row['user_avatar'],
+					'avatar_type'   => $row['user_avatar_type'],
+					'avatar_width'  => $row['user_avatar_width'] > $row['user_avatar_height'] ? 40 : (40 / $row['user_avatar_height']) * $row['user_avatar_width'],
+					'avatar_height' => $row['user_avatar_height'] > $row['user_avatar_width'] ? 40 : (40 / $row['user_avatar_width']) * $row['user_avatar_height'],
+				));
+			}
+		}
+
 		foreach ($rows as $i => $row)
 		{
 			// Auth checks
@@ -611,13 +635,6 @@ class mchat
 			$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
 			$message = str_replace("'", '&rsquo;', $row['message']);
 
-			$user_avatar = !$row['user_avatar'] ? '' : phpbb_get_user_avatar(array(
-				'avatar'		=> $row['user_avatar'],
-				'avatar_type'	=> $row['user_avatar_type'],
-				'avatar_width'	=> $row['user_avatar_width'] > $row['user_avatar_height'] ? 40 : (40 / $row['user_avatar_height']) * $row['user_avatar_width'],
-				'avatar_height'	=> $row['user_avatar_height'] > $row['user_avatar_width'] ? 40 : (40 / $row['user_avatar_width']) * $row['user_avatar_height'],
-			));
-
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 
 			// Remove root path if we render messages for the index page
@@ -631,7 +648,7 @@ class mchat
 				'MCHAT_ALLOW_BAN'		=> $this->auth->acl_get('a_authusers'),
 				'MCHAT_ALLOW_EDIT'		=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'		=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
-				'MCHAT_USER_AVATAR'		=> $user_avatar,
+				'MCHAT_USER_AVATAR'		=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'			=> $row['user_id'] != ANONYMOUS ? generate_board_url() . append_sid("/{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'		=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'],
 				'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? generate_board_url() . append_sid("/{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
