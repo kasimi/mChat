@@ -250,7 +250,7 @@ class mchat
 		*/
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_add');
 
-		return array('add' => true);
+		return $this->action_refresh();
 	}
 
 	/**
@@ -400,7 +400,7 @@ class mchat
 		// Assign new messages
 		$this->assign_global_template_data();
 		$this->assign_messages($rows_refresh);
-		$response = array('refresh' => $this->render_template('mchat_messages.html'));
+		$response = array('refresh' => true, 'add' => $this->render_template('mchat_messages.html'));
 
 		// Assign edited messages
 		if (!empty($rows_edit))
