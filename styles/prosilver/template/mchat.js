@@ -74,9 +74,11 @@ jQuery(function($) {
 		sound: function(file) {
 			if (!mChat.pageIsUnloading && !Cookies.get('mchat_no_sound')) {
 				var audio = mChat.$$('sound-' + file).get(0);
-				audio.pause();
-				audio.currentTime = 0;
-				audio.play();
+				if (audio.duration) {
+					audio.pause();
+					audio.currentTime = 0;
+					audio.play();
+				}
 			}
 		},
 		notice: function() {
