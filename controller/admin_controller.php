@@ -1,11 +1,12 @@
 <?php
+
 /**
-*
-* @package phpBB Extension - mChat
-* @copyright (c) 2015 dmzx - http://www.dmzx-web.net
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package phpBB Extension - mChat
+ * @copyright (c) 2015 dmzx - http://www.dmzx-web.net
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 namespace dmzx\mchat\controller;
 
@@ -30,10 +31,10 @@ class admin_controller
 	protected $request;
 
 	/** @var \phpbb\extension\manager */
-	protected $phpbb_extension_manager;
+	protected $extension_manager;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $root_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -44,35 +45,32 @@ class admin_controller
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config				$config
-	* @param \phpbb\template\template			$template
-	* @param \phpbb\log\log_interface			$log
-	* @param \phpbb\user						$user
-	* @param \phpbb\cache\service				$cache
-	* @param \phpbb\request\request				$request
-	* @param \phpbb\extension\manager			$phpbb_extension_manager
-	* @param string								$phpbb_root_path
-	* @param string								$php_ext
+	* @param \phpbb\config\config		$config
+	* @param \phpbb\template\template	$template
+	* @param \phpbb\log\log_interface	$log
+	* @param \phpbb\user				$user
+	* @param \phpbb\cache\service		$cache
+	* @param \phpbb\request\request		$request
+	* @param \phpbb\extension\manager	$extension_manager
+	* @param string						$root_path
+	* @param string						$php_ext
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\cache\service $cache, \phpbb\request\request $request, \phpbb\extension\manager $phpbb_extension_manager, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\cache\service $cache, \phpbb\request\request $request, \phpbb\extension\manager $extension_manager, $root_path, $php_ext)
 	{
-		$this->config					= $config;
-		$this->template					= $template;
-		$this->log						= $log;
-		$this->user						= $user;
-		$this->cache					= $cache;
-		$this->request					= $request;
-		$this->phpbb_extension_manager	= $phpbb_extension_manager;
-		$this->phpbb_root_path			= $phpbb_root_path;
-		$this->php_ext					= $php_ext;
+		$this->config				= $config;
+		$this->template				= $template;
+		$this->log					= $log;
+		$this->user					= $user;
+		$this->cache				= $cache;
+		$this->request				= $request;
+		$this->extension_manager	= $extension_manager;
+		$this->root_path			= $root_path;
+		$this->php_ext				= $php_ext;
 	}
 
 	/**
-	* Display the options a user can configure for this extension
-	*
-	* @return null
-	* @access public
-	*/
+	 * Display the options a user can configure for this extension
+	 */
 	public function display_options()
 	{
 		add_form_key('acp_mchat');
@@ -116,7 +114,7 @@ class admin_controller
 		{
 			if (!function_exists('validate_data'))
 			{
-				include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 			}
 
 			$mchat_new_config = array();
@@ -190,8 +188,8 @@ class admin_controller
 		$this->template->assign_vars(array_merge($template_variables, array(
 			'MCHAT_ERROR'							=> !empty($error) ? implode('<br />', $error) : '',
 			'MCHAT_VERSION'							=> $this->config['mchat_version'],
-			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN'), '<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'				=> sprintf($this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN'),'<a href="' . append_sid("{$this->phpbb_root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
+			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN'), '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
+			'L_MCHAT_TIMEOUT_EXPLAIN'				=> sprintf($this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN'),'<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
 			'S_MCHAT_DATEFORMAT_OPTIONS'			=> $dateformat_options,
 			'S_CUSTOM_DATEFORMAT'					=> $s_custom,
 			'U_ACTION'								=> $this->u_action,
@@ -200,7 +198,7 @@ class admin_controller
 		// Version check
 		$this->user->add_lang(array('install', 'acp/extensions', 'migrator'));
 		$ext_name = 'dmzx/mchat';
-		$md_manager = new \phpbb\extension\metadata_manager($ext_name, $this->config, $this->phpbb_extension_manager, $this->template, $this->user, $this->phpbb_root_path);
+		$md_manager = new \phpbb\extension\metadata_manager($ext_name, $this->config, $this->extension_manager, $this->template, $this->user, $this->root_path);
 		try
 		{
 			$this->metadata = $md_manager->get_metadata('all');
@@ -232,6 +230,12 @@ class admin_controller
 		}
 	}
 
+	/**
+	 * @param \phpbb\extension\metadata_manager $md_manager
+	 * @param bool $force_update
+	 * @param bool $force_cache
+	 * @return string
+	 */
 	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false)
 	{
 		$meta = $md_manager->get_metadata('all');
@@ -248,12 +252,10 @@ class admin_controller
 	}
 
 	/**
-	* Set page url
-	*
-	* @param string $u_action Custom form action
-	* @return null
-	* @access public
-	*/
+	 * Set page url
+	 *
+	 * @param string $u_action Custom form action
+	 */
 	public function set_page_url($u_action)
 	{
 		$this->u_action = $u_action;

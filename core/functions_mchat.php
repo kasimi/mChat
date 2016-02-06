@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * @package phpBB Extension - mChat
@@ -30,7 +31,7 @@ class functions_mchat
 	protected $cache;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $root_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -53,12 +54,12 @@ class functions_mchat
 	* @param \phpbb\log\log_interface				$log
 	* @param \phpbb\db\driver\driver_interface		$db
 	* @param \phpbb\cache\driver\driver_interface	$cache
-	* @param string									$phpbb_root_path
+	* @param string									$root_path
 	* @param string									$php_ext
 	* @param string									$mchat_table
 	* @param string									$mchat_sessions_table
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $phpbb_root_path, $php_ext, $mchat_table, $mchat_sessions_table)
+	function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $root_path, $php_ext, $mchat_table, $mchat_sessions_table)
 	{
 		$this->config				= $config;
 		$this->user					= $user;
@@ -66,15 +67,18 @@ class functions_mchat
 		$this->log					= $log;
 		$this->db					= $db;
 		$this->cache				= $cache;
-		$this->phpbb_root_path		= $phpbb_root_path;
+		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;
 		$this->mchat_table			= $mchat_table;
 		$this->mchat_sessions_table = $mchat_sessions_table;
 	}
 
 	/**
-	* Converts a number of seconds to a string in the format 'x hours y minutes z seconds'
-	*/
+	 * Converts a number of seconds to a string in the format 'x hours y minutes z seconds'
+	 *
+	 * @param int $time
+	 * @return string
+	 */
 	protected function mchat_format_seconds($time)
 	{
 		$times = array();
@@ -103,16 +107,20 @@ class functions_mchat
 	}
 
 	/**
-	* Returns the total session time in seconds
-	*/
+	 * Returns the total session time in seconds
+	 *
+	 * @return string
+	 */
 	protected function mchat_session_time()
 	{
 		return !empty($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
 	}
 
 	/**
-	* Returns data about users who are currently chatting
-	*/
+	 * Returns data about users who are currently chatting
+	 *
+	 * @return array
+	 */
 	public function mchat_active_users()
 	{
 		$mchat_users = array();
@@ -152,8 +160,8 @@ class functions_mchat
 	}
 
 	/**
-	* Inserts the current user into the mchat_sessions table
-	*/
+	 * Inserts the current user into the mchat_sessions table
+	 */
 	public function mchat_add_user_session()
 	{
 		// Remove expired sessions from the database
@@ -191,8 +199,8 @@ class functions_mchat
 	}
 
 	/**
-	* Prune messages
-	*/
+	 * Prune messages
+	 */
 	public function mchat_prune()
 	{
 		if ($this->config['mchat_prune'])
@@ -218,16 +226,23 @@ class functions_mchat
 	}
 
 	/**
-	* Returns the total number of messages
-	*/
+	 * Returns the total number of messages
+	 *
+	 * @return string
+	 */
 	public function mchat_total_message_count()
 	{
 		return $this->db->get_row_count($this->mchat_table);
 	}
 
 	/**
-	* Fetch messages from the database
-	*/
+	 * Fetch messages from the database
+	 *
+	 * @param $sql_where
+	 * @param int $total
+	 * @param int $offset
+	 * @return array
+	 */
 	public function mchat_get_messages($sql_where, $total = 0, $offset = 0)
 	{
 		$sql_array = array(
@@ -252,8 +267,10 @@ class functions_mchat
 	}
 
 	/**
-	* Generates the user legend markup
-	*/
+	 * Generates the user legend markup
+	 *
+	 * @return array Array of HTML markup for each group
+	 */
 	public function mchat_legend()
 	{
 		// Grab group details for legend display for who is online on the custom page
@@ -290,7 +307,7 @@ class functions_mchat
 			}
 			else
 			{
-				$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=group&amp;g='.$row['group_id']) . '">' . $group_name . '</a>';
+				$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$this->root_path}memberlist.{$this->php_ext}", 'mode=group&amp;g='. $row['group_id']) . '">' . $group_name . '</a>';
 			}
 		}
 
@@ -298,8 +315,10 @@ class functions_mchat
 	}
 
 	/**
-	* Returns a list of all foes of the current user
-	*/
+	 * Returns a list of all foes of the current user
+	 *
+	 * @return array Array of user IDs
+	 */
 	public function mchat_foes()
 	{
 		if (is_null($this->foes))
@@ -322,8 +341,11 @@ class functions_mchat
 	}
 
 	/**
-	* Adds forbidden BBCodes to the passed SQL where statement
-	*/
+	 * Adds forbidden BBCodes to the passed SQL where statement
+	 *
+	 * @param string $sql_where
+	 * @return string
+	 */
 	public function mchat_sql_append_forbidden_bbcodes($sql_where)
 	{
 		$disallowed_bbcodes = explode('|', strtoupper($this->config['mchat_bbcode_disallowed']));
@@ -337,8 +359,11 @@ class functions_mchat
 	}
 
 	/**
-	* Inserts a message with posting information into the database
-	*/
+	 * Inserts a message with posting information into the database
+	 *
+	 * @param string $mode One of post|quote|edit|reply
+	 * @param $data The post data
+	 */
 	public function mchat_insert_posting($mode, $data)
 	{
 		$mode_config = array(
@@ -375,8 +400,10 @@ class functions_mchat
 	}
 
 	/**
-	* Checks if the current user is flooding the chat
-	*/
+	 * Checks if the current user is flooding the chat
+	 *
+	 * @return bool
+	 */
 	public function mchat_is_user_flooding()
 	{
 		if (!$this->config['mchat_flood_time'] || $this->auth->acl_get('u_mchat_flood_ignore'))
@@ -396,8 +423,11 @@ class functions_mchat
 	}
 
 	/**
-	* Returns user ID & name of the specified message
-	*/
+	 * Returns user ID & name of the specified message
+	 *
+	 * @param $message_id
+	 * @return array
+	 */
 	public function mchat_author_for_message($message_id)
 	{
 		$sql = 'SELECT u.user_id, u.username, m.message_time
@@ -412,8 +442,12 @@ class functions_mchat
 	}
 
 	/**
-	* Returns an array of message IDs that have been deleted from the message table
-	*/
+	 * Returns an array of message IDs that have been deleted from the message table
+	 *
+	 * @param $start_id
+	 * @param $end_id
+	 * @return array
+	 */
 	public function mchat_missing_ids($start_id, $end_id)
 	{
 		if ($this->config['mchat_edit_delete_limit'])
@@ -498,8 +532,13 @@ class functions_mchat
 	}
 
 	/**
-	* Performs add|edit|del|clean|prune actions
-	*/
+	 * Performs AJAX actions
+	 *
+	 * @param string $action One of add|edit|del|clean|prune
+	 * @param array $sql_ary
+	 * @param int $message_id
+	 * @param string $log_username
+	 */
 	public function mchat_action($action, $sql_ary = null, $message_id = 0, $log_username = '')
 	{
 		switch ($action)
