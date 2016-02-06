@@ -51,31 +51,31 @@ class mchat
 	/**
 	 * Constructor
 	 *
-	 * @param \dmzx\mchat\core\functions_mchat $functions_mchat
-	 * @param \phpbb\config\config $config
-	 * @param \phpbb\controller\helper $helper
-	 * @param \phpbb\template\template $template
-	 * @param \phpbb\user $user
-	 * @param \phpbb\auth\auth $auth
-	 * @param \phpbb\pagination $pagination
-	 * @param \phpbb\request\request $request
+	 * @param \dmzx\mchat\core\functions_mchat	$functions_mchat
+	 * @param \phpbb\config\config				$config
+	 * @param \phpbb\controller\helper			$helper
+	 * @param \phpbb\template\template			$template
+	 * @param \phpbb\user						$user
+	 * @param \phpbb\auth\auth					$auth
+	 * @param \phpbb\pagination					$pagination
+	 * @param \phpbb\request\request			$request
 	 * @param \phpbb\event\dispatcher_interface $dispatcher
-	 * @param string $root_path
-	 * @param string $php_ext
+	 * @param string							$root_path
+	 * @param string							$php_ext
 	 */
 	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher, $root_path, $php_ext)
 	{
-		$this->functions_mchat		= $functions_mchat;
-		$this->config				= $config;
-		$this->helper				= $helper;
-		$this->template				= $template;
-		$this->user					= $user;
-		$this->auth					= $auth;
-		$this->pagination			= $pagination;
-		$this->request				= $request;
-		$this->dispatcher			= $dispatcher;
-		$this->root_path			= $root_path;
-		$this->php_ext				= $php_ext;
+		$this->functions_mchat	= $functions_mchat;
+		$this->config			= $config;
+		$this->helper			= $helper;
+		$this->template			= $template;
+		$this->user				= $user;
+		$this->auth				= $auth;
+		$this->pagination		= $pagination;
+		$this->request			= $request;
+		$this->dispatcher		= $dispatcher;
+		$this->root_path		= $root_path;
+		$this->php_ext			= $php_ext;
 	}
 
 	/**
@@ -94,18 +94,6 @@ class mchat
 		{
 			return;
 		}
-
-		// TODO This might be redundant
-		// If mChat is used on the index by a user without an avatar, a default avatar is used.
-		// However, T_THEME_PATH points to ./../styles/... because the controller at /mchat is called, but we need it to be ./styles...
-		// Setting this value to true solves this.
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
-		global $root_path;
-		$root_path = './';
 
 		$this->assign_bbcodes_smilies();
 
@@ -268,6 +256,7 @@ class mchat
 	 */
 	public function action_edit()
 	{
+		// Fix avatar path when editing archived messages
 		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
 		{
 			define('PHPBB_USE_BOARD_URL_PATH', true);
@@ -371,11 +360,6 @@ class mchat
 	 */
 	public function action_refresh()
 	{
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
 		$message_first_id = $this->request->variable('message_first_id', 0);
 		$message_last_id = $this->request->variable('message_last_id', 0);
 		$message_edits = $this->request->variable('message_edits', array(0));
@@ -469,7 +453,7 @@ class mchat
 	/**
 	 * Appends a condition to the WHERE key of the SQL array to not fetch disallowed BBCodes from the database
 	 *
-	 * @param $sql_ary array
+	 * @param array $sql_ary
 	 * @return array
 	 */
 	public function remove_disallowed_bbcodes($sql_ary)
@@ -486,7 +470,7 @@ class mchat
 	/**
 	 * Renders data for a page
 	 *
-	 * @param $page The page we are rendering for, one of index|custom|archive
+	 * @param string $page The page we are rendering for, one of index|custom|archive
 	 */
 	protected function render_page($page)
 	{
@@ -602,7 +586,7 @@ class mchat
 	/**
 	 * Assigns all message rows to the template
 	 *
-	 * @param $rows array
+	 * @param array $rows
 	 */
 	protected function assign_messages($rows)
 	{
@@ -658,14 +642,6 @@ class mchat
 			$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
 			$message = str_replace("'", '&rsquo;', $row['message']);
 
-			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
-
-			// Remove root path if we render messages for the index page
-			if (strpos($this->user->data['session_page'], 'app.' . $this->php_ext) === false)
-			{
-				$username_full = str_replace('.' . $this->root_path, '', $username_full);
-			}
-
 			$this->template->assign_block_vars('mchatrow', array(
 				'S_ROW_COUNT'			=> $i,
 				'MCHAT_ALLOW_BAN'		=> $this->auth->acl_get('a_authusers'),
@@ -677,7 +653,7 @@ class mchat
 				'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? generate_board_url() . append_sid("/{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 				'MCHAT_MESSAGE_EDIT'	=> $message_edit,
 				'MCHAT_MESSAGE_ID'		=> $row['message_id'],
-				'MCHAT_USERNAME_FULL'	=> $username_full,
+				'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USER_IP'			=> $row['user_ip'],
@@ -754,9 +730,9 @@ class mchat
 	/**
 	 * Checks whether an author has edit or delete permissions for a message
 	 *
-	 * @param $permission string One of u_mchat_edit|u_mchat_delete
-	 * @param $author_id int The user id of the message
-	 * @param $message_time int The message created time
+	 * @param string $permission One of u_mchat_edit|u_mchat_delete
+	 * @param int $author_id The user id of the message
+	 * @param int $message_time The message created time
 	 * @return bool
 	 */
 	protected function auth_message($permission, $author_id, $message_time)
@@ -779,8 +755,8 @@ class mchat
 	 * Performs bound checks on the message and returns an array containing the message,
 	 * BBCode options and additional data ready to be sent to the database
 	 *
-	 * @param $message string
-	 * @param $merge_ary array
+	 * @param string $message
+	 * @param array $merge_ary
 	 * @return array
 	 */
 	protected function process_message($message, $merge_ary)
@@ -860,7 +836,7 @@ class mchat
 	/**
 	 * Renders a template file and returns it
 	 *
-	 * @param $template_file string
+	 * @param string $template_file
 	 * @return string
 	 */
 	protected function render_template($template_file)
