@@ -1,38 +1,38 @@
 <!-- INCLUDECSS css/mchatacp.css -->
 <!-- INCLUDE overall_header.html -->
+
 <h1 class="ExtensionName"><!-- IF META_DISPLAY_NAME -->{META_DISPLAY_NAME}<!-- ENDIF --></h1>
 <!-- IF S_VERSIONCHECK && S_UP_TO_DATE -->
 	<div class="description_bubble small_bubble" title="{UP_TO_DATE_MSG}">
 		<span class="description_name">{L_VERSION}</span>
 		<span class="description_value description_value_ok" id="meta_version">{META_VERSION}</span>
 	</div>
-	<!-- ELSE IF S_VERSIONCHECK && not S_UP_TO_DATE -->
+<!-- ELSE IF S_VERSIONCHECK && not S_UP_TO_DATE -->
 	<div class="description_bubble small_bubble" title="{UP_TO_DATE_MSG}">
 		<span class="description_name">{L_VERSION}</span>
 		<span class="description_value description_value_old" id="meta_version">{META_VERSION}</span>
 	</div>
-	<!-- ELSE -->
+	<!-- BEGIN updates_available -->
+	<fieldset>
+		<span class="requirements_title">{L_LATEST_VERSION}</span>
+		<div class="extension_latest_version_wrapper">
+			<strong class="extension_latest_version">{updates_available.current}</strong>
+			<!-- IF updates_available.download-->
+			<a href="{updates_available.download}" class="extension_author_link" title="{L_DOWNLOAD_LATEST}">{L_DOWNLOAD} {META_NAME} {LATEST_VERSION}</i></a>
+			<!-- ENDIF -->
+			<!-- IF updates_available.announcement -->
+			<a href="{updates_available.announcement}" class="extension_author_link" title="{L_ANNOUNCEMENT_TOPIC}">{L_RELEASE_ANNOUNCEMENT}</i></a>
+			<!-- ENDIF -->
+		</div>
+	</fieldset>
+	<!-- END updates_available -->
+<!-- ELSE -->
 	<div class="description_bubble small_bubble">
 		<span class="description_name">{L_VERSION}</span>
 		<span class="description_value" id="meta_version">{META_VERSION}</span>
 	</div>
 <!-- ENDIF -->
-<!-- IF S_VERSIONCHECK && not S_UP_TO_DATE -->
-	<!-- BEGIN updates_available -->
-		<fieldset>
-			<span class="requirements_title">{L_LATEST_VERSION}</span>
-			<div class="extension_latest_version_wrapper">
-				<strong class="extension_latest_version">{updates_available.current}</strong>
-				<!-- IF updates_available.download-->
-				<a href="{updates_available.download}" class="extension_author_link" title="{L_DOWNLOAD_LATEST}">{L_DOWNLOAD} {META_NAME} {LATEST_VERSION}</i></a>
-				<!-- ENDIF -->
-				<!-- IF updates_available.announcement -->
-				<a href="{updates_available.announcement}" class="extension_author_link" title="{L_ANNOUNCEMENT_TOPIC}">{L_RELEASE_ANNOUNCEMENT}</i></a>
-				<!-- ENDIF -->
-			</div>
-		</fieldset>
-	<!-- END updates_available -->
-<!-- ENDIF -->
+
 <!-- IF MCHAT_ERROR -->
 	<div class="errorbox"><h3>{L_WARNING}</h3>
 		<p>{MCHAT_ERROR}</p>
@@ -225,8 +225,7 @@
 		<fieldset>
 			<legend>{L_MCHAT_STATS}</legend>
 			<dl>
-				<dt><label for="mchat_whois">{L_MCHAT_WHOIS}{L_COLON}</label><br />
-				<span>{L_MCHAT_WHOIS_EXPLAIN}</span></dt>
+				<dt><label for="mchat_whois">{L_MCHAT_WHOIS}{L_COLON}</label></dt>
 				<dd><label><input type="radio" class="radio" name="mchat_whois" value="1"<!-- IF MCHAT_WHOIS --> id="mchat_whois" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="mchat_whois" value="0"<!-- IF not MCHAT_WHOIS --> id="mchat_whois" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 			</dl>
