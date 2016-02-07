@@ -40,6 +40,14 @@ $lang = array_merge($lang, array(
 	'UCP_CAT_MCHAT'							=> 'mChat Prefs',
 	'UCP_MCHAT_CONFIG'						=> 'User mChat Prefs',
 
+	// ACP configuration sections
+	'MCHAT_SETTINGS_INDEX'					=> 'Index page settings',
+	'MCHAT_SETTINGS_CUSTOM_ARCHIVE'			=> 'Custom page and Archive page settings',
+	'MCHAT_SETTINGS_POSTS'					=> 'New posts settings',
+	'MCHAT_SETTINGS_MESSAGES'				=> 'Message settings',
+	'MCHAT_SETTINGS_PRUNE'					=> 'Pruning settings',
+	'MCHAT_SETTINGS_STATS'					=> 'Who is chatting settings',
+
 	// ACP entries
 	'ACP_MCHAT_RULES'						=> 'Rules',
 	'ACP_MCHAT_RULES_EXPLAIN'				=> 'Enter the rules of the forum here. Each rule on a new line.<em>You are limited to 255 characters.</em><br />This message can be translated: edit the MCHAT_RULES_MESSAGE language key in /ext/dmzx/mchat/language/XX/common.php.',
@@ -98,20 +106,19 @@ $lang = array_merge($lang, array(
 	'MCHAT_NEW_POSTS_EDIT_EXPLAIN'			=> 'Allow edited posts from the forum to be posted in the chat.',
 	'MCHAT_NEW_POSTS_QUOTE'					=> 'Display quoted posts',
 	'MCHAT_NEW_POSTS_QUOTE_EXPLAIN'			=> 'Allow quoted posts from the forum to be posted in the chat.',
-	'MCHAT_MAIN'							=> 'Main Configuration',
-	'MCHAT_STATS'							=> 'Who is chatting',
+
 	'MCHAT_WHOIS'							=> 'Display <em>Who is chatting</em> below the chat',
 	'MCHAT_STATS_INDEX'						=> 'Display <em>Who is chatting</em> in the stats section',
 	'MCHAT_STATS_INDEX_EXPLAIN'				=> 'Displays who is chatting below the <em>Who is online</em> section on the index page',
 	'MCHAT_WHOIS_REFRESH'					=> 'Who is chatting refresh interval',
 	'MCHAT_WHOIS_REFRESH_EXPLAIN'			=> 'Number of seconds before who is chatting refreshes.<br /><em>You are limited from 30 to 300 seconds.</em>',
 	'MCHAT_MESSAGE_TOP'						=> 'Location of new chat messages',
+	'MCHAT_MESSAGE_TOP_EXPLAIN'				=> 'New messages will appear at the top or at the bottom in the chat.',
 	'MCHAT_BOTTOM'							=> 'Bottom',
 	'MCHAT_TOP'								=> 'Top',
-	'MCHAT_MESSAGES'						=> 'Message Settings',
 	'MCHAT_PAUSE_ON_INPUT'					=> 'Pause on input',
 	'MCHAT_PAUSE_ON_INPUT_EXPLAIN'			=> 'Do not autoupdate upon a user entering a message in the input area',
-	'MCHAT_PURGE'							=> 'Purge all messages',
+	'MCHAT_PURGE'							=> 'Delete all messages now',
 	'MCHAT_PURGE_CONFIRM'					=> 'Confirm deleting all messages',
 	'MCHAT_PURGED'							=> 'All mChat messages have been successfully deleted',
 
