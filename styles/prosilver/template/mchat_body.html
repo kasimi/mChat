@@ -116,7 +116,7 @@
 							<br />
 							<input id="mchat-add" type="button" class="button2" data-mchat-action="add" value="{L_MCHAT_ADD}" />
 							<!-- IF MCHAT_USER_TIMEOUT or MCHAT_PAUSE_ON_INPUT -->
-								<input id="mchat-clear" type="button" class="button2" data-mchat-action="clear" value="{L_MCHAT_CLEAR_INPUT}" />
+								<input id="mchat-clear" type="button" class="button2" data-mchat-action="clear" value="{L_RESET}" />
 							<!-- ENDIF -->
 							<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
 								<input type="button" class="button2" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
@@ -131,7 +131,7 @@
 						<!-- ENDIF -->
 						<!-- IF MCHAT_ALLOW_USE -->
 							<!-- IF MCHAT_RULES -->
-								<input type="button" class="button2" onclick="popup('{U_MCHAT_RULES}', 450, 275); return false;" value="{L_MCHAT_HELP}" />
+								<input type="button" class="button2" onclick="popup('{U_MCHAT_RULES}', 450, 275); return false;" value="{L_MCHAT_RULES}" />
 							<!-- ENDIF -->
 							<!-- EVENT dmzx_mchat_buttons_after -->
 							<!-- IF MCHAT_ALLOW_BBCODES -->
@@ -148,13 +148,13 @@
 						<!-- ENDIF -->
 						<!-- EVENT dmzx_mchat_body_smiley_after -->
 						<div id="mchat-status">
-							<img src="{EXT_URL}styles/prosilver/theme/images/load.gif" alt="{L_MCHAT_LOAD}" title="{L_MCHAT_LOAD}" id="mchat-refresh-load" />
+							<img src="{EXT_URL}styles/prosilver/theme/images/load.gif" alt="{L_LOADING}" title="{L_LOADING}" id="mchat-refresh-load" />
 							<img src="{EXT_URL}styles/prosilver/theme/images/ok.gif" alt="{L_MCHAT_OK}" title="{L_MCHAT_OK}" id="mchat-refresh-ok" />
 							<img src="{EXT_URL}styles/prosilver/theme/images/paused.gif" alt="{L_MCHAT_PAUSE}" title="{L_MCHAT_PAUSE}" id="mchat-refresh-paused" />
-							<img src="{EXT_URL}styles/prosilver/theme/images/error.gif" alt="{L_MCHAT_ERROR}" title="{L_MCHAT_ERROR}" id="mchat-refresh-error" />
+							<img src="{EXT_URL}styles/prosilver/theme/images/error.gif" alt="{L_ERROR}" title="{L_ERROR}" id="mchat-refresh-error" />
 							<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
 							<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{L_MCHAT_SESSION_ENDS} {MCHAT_USER_TIMEOUT_TIME}</span><!-- ENDIF --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF S_MCHAT_SOUND_YES --> checked="checked"<!-- ENDIF --> /></label>
-							{L_MCHAT_COPYRIGHT}
+							<a href="http://rmcgirr83.org">RMcGirr83</a> &copy; <a href="http://www.dmzx-web.net" title="www.dmzx-web.net">dmzx</a>
 						</div>
 					</div>
 				<!-- ENDIF -->

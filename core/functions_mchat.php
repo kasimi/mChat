@@ -87,23 +87,23 @@ class functions_mchat
 		if ($hours)
 		{
 			$time -= $hours * 3600;
-			$times[] = $hours . '&nbsp;' . $this->user->lang($hours > 1 ? 'MCHAT_HOURS' : 'MCHAT_HOUR');
+			$times[] = $this->user->lang('MCHAT_HOURS', $hours);
 		}
 
 		$minutes = floor($time / 60);
 		if ($minutes)
 		{
 			$time -= $minutes * 60;
-			$times[] = $minutes . '&nbsp;' . $this->user->lang($minutes > 1 ? 'MCHAT_MINUTES' : 'MCHAT_MINUTE');
+			$times[] = $this->user->lang('MCHAT_MINUTES', $minutes);
 		}
 
 		$seconds = ceil($time);
 		if ($seconds)
 		{
-			$times[] = $seconds . '&nbsp;' . $this->user->lang($seconds > 1 ? 'MCHAT_SECONDS' : 'MCHAT_SECOND');
+			$times[] =  $this->user->lang('MCHAT_SECONDS', $seconds);
 		}
 
-		return sprintf($this->user->lang('MCHAT_ONLINE_EXPLAIN'), implode('&nbsp;', $times));
+		return $this->user->lang('MCHAT_ONLINE_EXPLAIN', implode('&nbsp;', $times));
 	}
 
 	/**
@@ -154,7 +154,7 @@ class functions_mchat
 
 		return array(
 			'online_userlist'	=> implode($this->user->lang('COMMA_SEPARATOR'), $mchat_users),
-			'mchat_users_count'	=> count($mchat_users) ? $this->user->lang(count($mchat_users) > 1 ? 'MCHAT_ONLINE_USERS_TOTAL' : 'MCHAT_ONLINE_USER_TOTAL', count($mchat_users)) : $this->user->lang('MCHAT_NO_CHATTERS'),
+			'mchat_users_count'	=> $this->user->lang('MCHAT_ONLINE_USERS_TOTAL', count($mchat_users)),
 			'refresh_message'	=> $this->mchat_format_seconds($this->mchat_session_time()),
 		);
 	}

@@ -195,20 +195,21 @@ class mchat
 	 */
 	public function page_rules()
 	{
-		if (empty($this->config['mchat_rules']) && empty($this->user->lang['MCHAT_RULES']))
+		if (empty($this->config['mchat_rules']) && !$this->user->lang('MCHAT_RULES_MESSAGE'))
 		{
 			throw new \phpbb\exception\http_exception(404, 'MCHAT_NO_RULES');
 		}
 
 		// If the rules are defined in the language file use them, else just use the entry in the database
-		$mchat_rules = isset($this->user->lang['MCHAT_RULES']) ? $this->user->lang('MCHAT_RULES') : $this->config['mchat_rules'];
+		$mchat_rules = $this->user->lang('MCHAT_RULES_MESSAGE');
+		$mchat_rules = !empty($mchat_rules) ? $mchat_rules : $this->config['mchat_rules'];
 		$mchat_rules = explode("\n", $mchat_rules);
 		$mchat_rules = array_map('utf8_htmlspecialchars', $mchat_rules);
 		$mchat_rules = implode('<br />', $mchat_rules);
 
 		$this->template->assign_var('MCHAT_RULES', $mchat_rules);
 
-		return $this->helper->render('mchat_rules.html', $this->user->lang('MCHAT_HELP'));
+		return $this->helper->render('mchat_rules.html', $this->user->lang('MCHAT_RULES'));
 	}
 
 	/**
@@ -461,16 +462,14 @@ class mchat
 		$this->user->add_lang('posting');
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
-		if (isset($this->user->lang['STATIC_MESSAGE']))
-		{
-			$this->config['mchat_static_message'] = $this->user->lang('STATIC_MESSAGE');
-		}
+		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
+		$static_message = !empty($lang_static_message) ? $lang_static_message : $this->config['mchat_static_message'];
 
 		$this->template->assign_vars(array(
 			'MCHAT_FILE_NAME'				=> $this->helper->route('dmzx_mchat_controller'),
 			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
 			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
-			'MCHAT_RULES'					=> !empty($this->user->lang['MCHAT_RULES']) || !empty($this->config['mchat_rules']),
+			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || !empty($this->config['mchat_rules']),
 			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
 			'MCHAT_ALLOW_SMILES'			=> $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies'),
 			'MCHAT_ALLOW_BBCODES'			=> $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode'),
@@ -479,7 +478,7 @@ class mchat
 			'MCHAT_INDEX_HEIGHT'			=> $this->config['mchat_index_height'],
 			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
 			'MCHAT_READ_ARCHIVE_BUTTON'		=> $this->auth->acl_get('u_mchat_archive'),
-			'MCHAT_STATIC_MESS'				=> !empty($this->config['mchat_static_message']) ? htmlspecialchars_decode($this->config['mchat_static_message']) : '',
+			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
 			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
@@ -638,7 +637,7 @@ class mchat
 				'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
-				'MCHAT_USER_IP'			=> $row['user_ip'],
+				'MCHAT_WHOIS_USER'		=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
 				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'whois', 'ip' => $row['user_ip'])),
 				'MCHAT_U_BAN'			=> generate_board_url() . append_sid("/{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
