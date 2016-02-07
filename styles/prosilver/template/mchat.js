@@ -261,19 +261,6 @@ jQuery(function($) {
 				}
 			});
 		},
-		clean: function() {
-			mChat.$$('confirm').find('textarea').hide();
-			mChat.$$('confirm').find('p').text(mChat.cleanConfirm);
-			phpbb.confirm(mChat.$$('confirm'), function() {
-				mChat.pauseSession();
-				ajaxRequest('clean', true, {}).done(function() {
-					phpbb.alert('mChat', mChat.cleanDone);
-					setTimeout(function() {
-						location.reload();
-					}, 2000);
-				});
-			});
-		},
 		timeLeft: function(sessionTime) {
 			return (new Date(sessionTime * 1000)).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
 		},

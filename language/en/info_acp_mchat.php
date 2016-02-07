@@ -122,6 +122,9 @@ $lang = array_merge($lang, array(
 	'MCHAT_MESSAGES'						=> 'Message Settings',
 	'MCHAT_PAUSE_ON_INPUT'					=> 'Pause on input',
 	'MCHAT_PAUSE_ON_INPUT_EXPLAIN'			=> 'If set Yes, then the chat will not autoupdate upon a user entering a message in the input area',
+	'MCHAT_PURGE'							=> 'Purge all messages',
+	'MCHAT_PURGE_CONFIRM'					=> 'Confirm deleting all messages',
+	'MCHAT_PURGED'							=> 'All mChat messages have been successfully deleted',
 
 	// Error reporting
 	'TOO_LONG_DATE'							=> 'The date format you entered is too long.',

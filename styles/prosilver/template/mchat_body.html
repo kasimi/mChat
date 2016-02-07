@@ -60,10 +60,6 @@
 				editInfo		: '{LA_MCHAT_EDITINFO}',
 				noAccess		: '{LA_NO_AUTH_OPERATION}',
 				flood			: '{LA_MCHAT_FLOOD}',
-				<!-- IF MCHAT_FOUNDER -->
-				cleanConfirm	: '{LA_MCHAT_DELALLMESS}',
-				cleanDone		: '{LA_MCHAT_CLEANED}',
-				<!-- ENDIF -->
 				delConfirm		: '{LA_MCHAT_DELCONFIRM}',
 				clearConfirm	: '{LA_MCHAT_RESET_QUESTION}',
 				sessOut			: '{LA_MCHAT_SESSION_OUT}',
@@ -130,9 +126,6 @@
 						<!-- EVENT dmzx_mchat_buttons_mid -->
 						<!-- IF MCHAT_READ_ARCHIVE_BUTTON -->
 							<input type="button" class="button2" onclick="window.location.href = '{MCHAT_ARCHIVE_URL}';" value="{L_MCHAT_ARCHIVE}" />
-						<!-- ENDIF -->
-						<!-- IF MCHAT_FOUNDER -->
-							<input id="mchat-clean" type="button" class="button2" data-mchat-action="clean" value="{L_MCHAT_CLEAN}" />
 						<!-- ENDIF -->
 						<!-- IF MCHAT_ALLOW_USE -->
 							<!-- IF MCHAT_RULES -->

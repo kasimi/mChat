@@ -24,6 +24,9 @@ class admin_controller
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -32,6 +35,9 @@ class admin_controller
 
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
+
+	/** @var string */
+	protected $mchat_table;
 
 	/** @var string */
 	protected $root_path;
@@ -43,27 +49,31 @@ class admin_controller
 	public $u_action;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\config\config		$config
-	* @param \phpbb\template\template	$template
-	* @param \phpbb\log\log_interface	$log
-	* @param \phpbb\user				$user
-	* @param \phpbb\cache\service		$cache
-	* @param \phpbb\request\request		$request
-	* @param \phpbb\extension\manager	$extension_manager
-	* @param string						$root_path
-	* @param string						$php_ext
-	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\cache\service $cache, \phpbb\request\request $request, \phpbb\extension\manager $extension_manager, $root_path, $php_ext)
+	 * Constructor
+	 *
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\template\template $template
+	 * @param \phpbb\log\log_interface $log
+	 * @param \phpbb\user $user
+	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\cache\service $cache
+	 * @param \phpbb\request\request $request
+	 * @param \phpbb\extension\manager $extension_manager
+	 * @param $mchat_table
+	 * @param $root_path
+	 * @param $php_ext
+	 */
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, \phpbb\extension\manager $extension_manager, $mchat_table, $root_path, $php_ext)
 	{
 		$this->config				= $config;
 		$this->template				= $template;
 		$this->log					= $log;
 		$this->user					= $user;
+		$this->db					= $db;
 		$this->cache				= $cache;
 		$this->request				= $request;
 		$this->extension_manager	= $extension_manager;
+		$this->mchat_table			= $mchat_table;
 		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;
 	}
@@ -110,7 +120,21 @@ class admin_controller
 			'mchat_whois_refresh'			=> array('default' => 60,				'validation' => array('num', false, 30, 300)),
 		);
 
-		if ($this->request->is_set_post('submit'))
+		if ($this->request->is_set_post('mchat_purge'))
+		{
+			$this->template->assign_var('MCHAT_PURGE', true);
+		}
+		else if ($this->request->is_set_post('mchat_purge_confirm'))
+		{
+			if (check_form_key('acp_mchat') && $this->user->data['user_type'] == USER_FOUNDER)
+			{
+				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
+				$this->cache->destroy('sql', $this->mchat_table);
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
+				trigger_error($this->user->lang('LOG_MCHAT_TABLE_PRUNED') . adm_back_link($this->u_action));
+			}
+		}
+		else if ($this->request->is_set_post('submit'))
 		{
 			if (!function_exists('validate_data'))
 			{
@@ -188,6 +212,7 @@ class admin_controller
 		$this->template->assign_vars(array_merge($template_variables, array(
 			'MCHAT_ERROR'							=> !empty($error) ? implode('<br />', $error) : '',
 			'MCHAT_VERSION'							=> $this->config['mchat_version'],
+			'MCHAT_FOUNDER'							=> $this->user->data['user_type'] == USER_FOUNDER,
 			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN'), '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
 			'L_MCHAT_TIMEOUT_EXPLAIN'				=> sprintf($this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN'),'<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
 			'S_MCHAT_DATEFORMAT_OPTIONS'			=> $dateformat_options,

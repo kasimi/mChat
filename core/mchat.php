@@ -337,23 +337,6 @@ class mchat
 	}
 
 	/**
-	 * User purges all messagas
-	 *
-	 * @return array data sent to client as JSON
-	 */
-	public function action_clean()
-	{
-		if ($this->user->data['user_type'] != USER_FOUNDER || !check_form_key('mchat', -1))
-		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
-		}
-
-		$this->functions_mchat->mchat_action('clean');
-
-		return array('clean' => true);
-	}
-
-	/**
 	 * User checks for new messages
 	 *
 	 * @return array sent to client as JSON
@@ -496,7 +479,6 @@ class mchat
 			'MCHAT_INDEX_HEIGHT'			=> $this->config['mchat_index_height'],
 			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
 			'MCHAT_READ_ARCHIVE_BUTTON'		=> $this->auth->acl_get('u_mchat_archive'),
-			'MCHAT_FOUNDER'					=> $this->user->data['user_type'] == USER_FOUNDER,
 			'MCHAT_STATIC_MESS'				=> !empty($this->config['mchat_static_message']) ? htmlspecialchars_decode($this->config['mchat_static_message']) : '',
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],

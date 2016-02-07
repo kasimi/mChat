@@ -561,12 +561,6 @@ class functions_mchat
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, array($log_username));
 				$this->cache->destroy('sql', $this->mchat_table);
 				break;
-			// Founder purges all messages
-			case 'clean':
-				$sql = 'TRUNCATE TABLE ' . $this->mchat_table;
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
-				$this->cache->destroy('sql', $this->mchat_table);
-				break;
 			// User triggers messages to be pruned
 			case 'prune':
 				$sql = 'DELETE FROM ' . $this->mchat_table . ' WHERE message_id < ' . (int) $message_id;

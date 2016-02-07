@@ -122,6 +122,9 @@ $lang = array_merge($lang, array(
 	'MCHAT_MESSAGES'						=> 'Ajustes de mensaje',
 	'MCHAT_PAUSE_ON_INPUT'					=> 'Pausa en la entrada',
 	'MCHAT_PAUSE_ON_INPUT_EXPLAIN'			=> 'Si se establece en Si, el chat no actualizará automáticamente a un usuario al introducir un mensaje en el área de entrada',
+	'MCHAT_PURGE'							=> 'Purge',
+	'MCHAT_PURGE_CONFIRM'					=> '¿Eliminar todos los mensajes?',
+	'MCHAT_PURGED'							=> 'Todos los mensajes han sido eliminados correctamente',
 
 	// Error reporting
 	'TOO_LONG_DATE'							=> 'El formato de la fecha que ha escrito es demasiado largo.',

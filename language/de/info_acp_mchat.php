@@ -122,6 +122,9 @@ $lang = array_merge($lang, array(
 	'MCHAT_MESSAGES'						=> 'Nachrichten-Einstellungen',
 	'MCHAT_PAUSE_ON_INPUT'					=> 'Den Chat während einer Nachrichteneingabe nicht aktualisieren',
 	'MCHAT_PAUSE_ON_INPUT_EXPLAIN'			=> 'Falls JA eingestellt ist, ist das automatische Aktualisieren während der Eingabe einer Nachricht deaktiviert.',
+	'MCHAT_PURGE'							=> 'Alle Nachrichten im mChat löschen',
+	'MCHAT_PURGE_CONFIRM'					=> 'Alle Nachrichten löschen?',
+	'MCHAT_PURGED'							=> 'Alle Nachrichten wurden erfolgreich gelöscht',
 
 	// Error reporting
 	'TOO_LONG_DATE'							=> 'Das angegebene Datumsformat ist zu lang.',
