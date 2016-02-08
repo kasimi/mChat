@@ -31,11 +31,11 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'MCHAT_TITLE'					=> 'Mini-Chat',
+	'MCHAT_TITLE'					=> 'mChat',
 	'MCHAT_ADD'						=> 'Send',
 	'MCHAT_ANNOUNCEMENT'			=> 'Announcement',
 	'MCHAT_ARCHIVE'					=> 'Archive',
-	'MCHAT_ARCHIVE_PAGE'			=> 'Mini-Chat Archive',
+	'MCHAT_ARCHIVE_PAGE'			=> 'mChat Archive',
 	'MCHAT_BBCODES'					=> 'BBCodes',
 	'MCHAT_CUSTOM_BBCODES'			=> 'Custom BBCodes',
 	'MCHAT_DELCONFIRM'				=> 'Do you confirm removal?',
