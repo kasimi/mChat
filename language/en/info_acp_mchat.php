@@ -42,7 +42,8 @@ $lang = array_merge($lang, array(
 
 	// ACP configuration sections
 	'MCHAT_SETTINGS_INDEX'					=> 'Index page settings',
-	'MCHAT_SETTINGS_CUSTOM_ARCHIVE'			=> 'Custom page and Archive page settings',
+	'MCHAT_SETTINGS_CUSTOM'					=> 'Custom page settings',
+	'MCHAT_SETTINGS_ARCHIVE'				=> 'Archive page settings',
 	'MCHAT_SETTINGS_POSTS'					=> 'New posts settings',
 	'MCHAT_SETTINGS_MESSAGES'				=> 'Message settings',
 	'MCHAT_SETTINGS_PRUNE'					=> 'Pruning settings',
