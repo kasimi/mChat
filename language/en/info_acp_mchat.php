@@ -51,7 +51,7 @@ $lang = array_merge($lang, array(
 
 	// ACP entries
 	'ACP_MCHAT_RULES'						=> 'Rules',
-	'ACP_MCHAT_RULES_EXPLAIN'				=> 'Enter the rules of the forum here. Each rule on a new line. <em>You are limited to 255 characters.</em><br />This message can be translated: edit the MCHAT_RULES_MESSAGE language key in /ext/dmzx/mchat/language/XX/common.php.',
+	'ACP_MCHAT_RULES_EXPLAIN'				=> 'Enter the rules of the forum here. Each rule on a new line. HTML code is allowed. <em>You are limited to 255 characters.</em><br />This message can be translated: edit the MCHAT_RULES_MESSAGE language key in /ext/dmzx/mchat/language/XX/common.php.',
 	'LOG_MCHAT_CONFIG_UPDATE'				=> '<strong>Updated mChat config</strong>',
 	'MCHAT_CONFIG_SAVED'					=> 'mChat configuration has been updated',
 	'MCHAT_TITLE'							=> 'mChat',

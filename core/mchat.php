@@ -204,7 +204,7 @@ class mchat
 		$mchat_rules = $this->user->lang('MCHAT_RULES_MESSAGE');
 		$mchat_rules = !empty($mchat_rules) ? $mchat_rules : $this->config['mchat_rules'];
 		$mchat_rules = explode("\n", $mchat_rules);
-		$mchat_rules = array_map('utf8_htmlspecialchars', $mchat_rules);
+		$mchat_rules = array_map('htmlspecialchars_decode', $mchat_rules);
 		$mchat_rules = implode('<br />', $mchat_rules);
 
 		$this->template->assign_var('MCHAT_RULES', $mchat_rules);
