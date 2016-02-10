@@ -446,12 +446,14 @@ jQuery(function($) {
 			}
 		});
 
-		$('#mchat-form').on('keypress', function(e) {
-			if (e.which == 13) {
-				mChat.add();
-				e.preventDefault();
-			}
-		});
+		if (mChat.$$('input').is('input')) {
+			$('#mchat-form').on('keypress', function(e) {
+				if (e.which == 13) {
+					mChat.add();
+					e.preventDefault();
+				}
+			});
+		}
 
 		mChat.$$('input').autoGrowInput();
 	}
