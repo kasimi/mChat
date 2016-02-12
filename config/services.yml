@@ -12,7 +12,6 @@ services:
             - '@dbal.conn'
             - '@cache'
             - '@request'
-            - '@ext.manager'
             - '%dmzx.mchat.table.mchat%'
             - '%core.root_path%'
             - '%core.php_ext%'

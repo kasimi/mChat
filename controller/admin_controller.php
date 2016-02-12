@@ -33,9 +33,6 @@ class admin_controller
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \phpbb\extension\manager */
-	protected $extension_manager;
-
 	/** @var string */
 	protected $mchat_table;
 
@@ -58,12 +55,11 @@ class admin_controller
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param \phpbb\cache\service $cache
 	 * @param \phpbb\request\request $request
-	 * @param \phpbb\extension\manager $extension_manager
 	 * @param $mchat_table
 	 * @param $root_path
 	 * @param $php_ext
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, \phpbb\extension\manager $extension_manager, $mchat_table, $root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, $mchat_table, $root_path, $php_ext)
 	{
 		$this->config				= $config;
 		$this->template				= $template;
@@ -72,7 +68,6 @@ class admin_controller
 		$this->db					= $db;
 		$this->cache				= $cache;
 		$this->request				= $request;
-		$this->extension_manager	= $extension_manager;
 		$this->mchat_table			= $mchat_table;
 		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;
@@ -219,61 +214,6 @@ class admin_controller
 			'S_CUSTOM_DATEFORMAT'					=> $s_custom,
 			'U_ACTION'								=> $this->u_action,
 		)));
-
-		// Version check
-		$this->user->add_lang(array('install', 'acp/extensions', 'migrator'));
-		$ext_name = 'dmzx/mchat';
-		$md_manager = new \phpbb\extension\metadata_manager($ext_name, $this->config, $this->extension_manager, $this->template, $this->user, $this->root_path);
-		try
-		{
-			$this->metadata = $md_manager->get_metadata('all');
-		}
-		catch(\phpbb\extension\exception $e)
-		{
-			trigger_error($e, E_USER_WARNING);
-		}
-		$md_manager->output_template_data();
-		try
-		{
-			$updates_available = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
-			$this->template->assign_vars(array(
-				'S_UP_TO_DATE'		=> empty($updates_available),
-				'S_VERSIONCHECK'	=> true,
-				'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
-			));
-			foreach ($updates_available as $branch => $version_data)
-			{
-				$this->template->assign_block_vars('updates_available', $version_data);
-			}
-		}
-		catch (\RuntimeException $e)
-		{
-			$this->template->assign_vars(array(
-				'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
-				'VERSIONCHECK_FAIL_REASON'		=> $e->getMessage() !== $this->user->lang('VERSIONCHECK_FAIL') ? $e->getMessage() : '',
-			));
-		}
-	}
-
-	/**
-	 * @param \phpbb\extension\metadata_manager $md_manager
-	 * @param bool $force_update
-	 * @param bool $force_cache
-	 * @return string
-	 */
-	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false)
-	{
-		$meta = $md_manager->get_metadata('all');
-		if (!isset($meta['extra']['version-check']))
-		{
-			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'), 1);
-		}
-		$version_check = $meta['extra']['version-check'];
-		$version_helper = new \phpbb\version_helper($this->cache, $this->config, new \phpbb\file_downloader(), $this->user);
-		$version_helper->set_current_version($meta['version']);
-		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename']);
-		$version_helper->force_stability($this->config['extension_force_unstable'] ? 'unstable' : null);
-		return $updates = $version_helper->get_suggested_updates($force_update, $force_cache);
 	}
 
 	/**

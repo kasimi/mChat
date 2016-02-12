@@ -34,9 +34,10 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 
 $lang = array_merge($lang, array(
-	// UMIL stuff
 	'ACP_MCHAT_CONFIG'						=> 'Configuration',
 	'ACP_CAT_MCHAT'							=> 'mChat',
+	'ACP_MCHAT_TITLE'						=> 'mChat Extension',
+	'ACP_MCHAT_VERSION'						=> 'Version',
 	'UCP_CAT_MCHAT'							=> 'mChat Prefs',
 	'UCP_MCHAT_CONFIG'						=> 'User mChat Prefs',
 
