@@ -100,7 +100,7 @@ class functions_mchat
 		$seconds = ceil($time);
 		if ($seconds)
 		{
-			$times[] =	$this->user->lang('MCHAT_SECONDS', $seconds);
+			$times[] = $this->user->lang('MCHAT_SECONDS', $seconds);
 		}
 
 		return $this->user->lang('MCHAT_ONLINE_EXPLAIN', implode('&nbsp;', $times));

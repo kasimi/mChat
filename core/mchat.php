@@ -597,7 +597,7 @@ class mchat
 					'avatar'		=> $row['user_avatar'],
 					'avatar_type'	=> $row['user_avatar_type'],
 					'avatar_width'	=> $row['user_avatar_width'] >= $row['user_avatar_height'] ? 40 : 0,
-					'avatar_height' => $row['user_avatar_width'] >= $row['user_avatar_height'] ? 0 : 40,
+					'avatar_height'	=> $row['user_avatar_width'] >= $row['user_avatar_height'] ? 0 : 40,
 				));
 			}
 		}
