@@ -105,7 +105,7 @@ jQuery(function($) {
 				return;
 			}
 			var messChars = mChat.$$('input').val().replace(/\s/g, '');
-			if (messChars.length > mChat.mssgLngth) {
+			if (mChat.mssgLngth && messChars.length > mChat.mssgLngth) {
 				alert(mChat.mssgLngthLong);
 				return;
 			}

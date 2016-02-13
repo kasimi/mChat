@@ -750,10 +750,13 @@ class mchat
 		}
 
 		// Must not exceed character limit, excluding whitespaces
-		$message_chars = preg_replace('#\s#m', '', $message);
-		if (utf8_strlen($message_chars) > $this->config['mchat_max_message_lngth'])
+		if ($this->config['mchat_max_message_lngth'])
 		{
-			throw new \phpbb\exception\http_exception(413, 'MCHAT_MESS_LONG', array($this->config['mchat_max_message_lngth']));
+			$message_chars = preg_replace('#\s#m', '', $message);
+			if (utf8_strlen($message_chars) > $this->config['mchat_max_message_lngth'])
+			{
+				throw new \phpbb\exception\http_exception(413, 'MCHAT_MESS_LONG', array($this->config['mchat_max_message_lngth']));
+			}
 		}
 
 		// We override the $this->config['min_post_chars'] entry?
