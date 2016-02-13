@@ -1,4 +1,4 @@
-# phpBB mChat Extension for phpBB 3.1
+# mChat Extension for phpBB 3.1
 
 [![Build Status](https://travis-ci.org/dmzx/mChat-Extension.svg?branch=master)](https://travis-ci.org/dmzx/mChat-Extension)
 
