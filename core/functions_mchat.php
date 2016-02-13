@@ -378,9 +378,10 @@ class functions_mchat
 			return;
 		}
 
-		$mchat_new_data = $this->user->lang('MCHAT_NEW_' . strtoupper($mode));
-
-		$message = utf8_normalize_nfc($mchat_new_data . ': [url=' . generate_board_url() . '/viewtopic.' . $this->php_ext . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url] '. $this->user->lang('MCHAT_IN') . ' [url=' . generate_board_url() . '/viewforum.' . $this->php_ext . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . ' [/url] ' . $this->user->lang('MCHAT_IN_SECTION'));
+		$board_url = generate_board_url();
+		$topic_url = '[url=' . $board_url . '/viewtopic.' . $this->php_ext . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url]';
+		$forum_url = '[url=' . $board_url . '/viewforum.' . $this->php_ext . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . '[/url]';
+		$message = $this->user->lang('MCHAT_NEW_' . strtoupper($mode), $topic_url, $forum_url);
 
 		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
 		generate_text_for_storage($message, $uid, $bitfield, $options, true, false, false);
@@ -389,13 +390,13 @@ class functions_mchat
 			'post_id'			=> $data['post_id'],
 			'user_id'			=> $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
-			'message'			=> $message,
+			'message'			=> utf8_normalize_nfc($message),
 			'bbcode_bitfield'	=> $bitfield,
 			'bbcode_uid'		=> $uid,
 			'bbcode_options'	=> $options,
 			'message_time'		=> time(),
 		);
-		$sql = 'INSERT INTO ' .	$this->mchat_table	. ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+		$sql = 'INSERT INTO ' .	$this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
 	}
 

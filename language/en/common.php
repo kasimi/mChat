@@ -33,8 +33,6 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'MCHAT_TITLE'					=> 'mChat',
 	'MCHAT_ADD'						=> 'Send',
-	'MCHAT_IN'						=> 'in',
-	'MCHAT_IN_SECTION'				=> 'section',
 	'MCHAT_ANNOUNCEMENT'			=> 'Announcement',
 	'MCHAT_ARCHIVE'					=> 'Archive',
 	'MCHAT_ARCHIVE_PAGE'			=> 'mChat Archive',
@@ -90,10 +88,10 @@ $lang = array_merge($lang, array(
 	'MCHAT_ONLINE_EXPLAIN'			=> 'based on users active over the past %1$s',
 	'WHO_IS_CHATTING'				=> 'Who is chatting',
 	'WHO_IS_REFRESH_EXPLAIN'		=> 'Refreshes every <strong>%d</strong> seconds',
-	'MCHAT_NEW_POST'				=> 'Made A New Topic',
-	'MCHAT_NEW_REPLY'				=> 'Made A New Reply',
-	'MCHAT_NEW_QUOTE'				=> 'Replied with a Quote',
-	'MCHAT_NEW_EDIT'				=> 'Made A Edit',
+	'MCHAT_NEW_POST'				=> 'Posted a new topic: %1$s in %2$s',
+	'MCHAT_NEW_REPLY'				=> 'Posted a reply: %1$s in %2$s',
+	'MCHAT_NEW_QUOTE'				=> 'Replied with a quote: %1$s in %2$s',
+	'MCHAT_NEW_EDIT'				=> 'Edited a post: %1$s in %2$s',
 
 	// UCP
 	'UCP_PROFILE_MCHAT'				=> 'mChat preferences',
