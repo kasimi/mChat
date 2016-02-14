@@ -219,6 +219,12 @@ class mchat
 	 */
 	public function action_add()
 	{
+		// Fix avatars & smilies
+		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
+		{
+			define('PHPBB_USE_BOARD_URL_PATH', true);
+		}
+
 		if (!$this->auth->acl_get('u_mchat_use') || !check_form_key('mchat', -1))
 		{
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
@@ -257,7 +263,7 @@ class mchat
 	 */
 	public function action_edit()
 	{
-		// Fix avatar path when editing archived messages
+		// Fix avatars & smilies
 		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
 		{
 			define('PHPBB_USE_BOARD_URL_PATH', true);
