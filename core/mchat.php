@@ -94,8 +94,6 @@ class mchat
 		{
 			return;
 		}
-		
-		$this->root_path = './';
 
 		$this->assign_bbcodes_smilies();
 
@@ -622,7 +620,7 @@ class mchat
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 
 			// Remove root path if we render messages for the index page
-			if (strpos($this->user->data['session_page'], 'app.' . $this->php_ext) === false)
+			if (strpos($this->user->data['session_page'], 'app.' . $this->php_ext) === true)
 			{
 				$username_full = str_replace('.' . $this->root_path, '', $username_full);
 			}
