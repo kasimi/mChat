@@ -134,7 +134,9 @@ jQuery(function($) {
 					$container.fadeOut('slow', function() {
 						$container.replaceWith($(json.edit).hide().fadeIn('slow'));
 					});
-					mChat.resetSession(true);
+					if (!mChat.archiveMode) {
+						mChat.resetSession(true);
+					}
 				});
 			});
 		},
@@ -150,7 +152,9 @@ jQuery(function($) {
 					$container.fadeOut('slow', function() {
 						$container.remove();
 					});
-					mChat.resetSession(true);
+					if (!mChat.archiveMode) {
+						mChat.resetSession(true);
+					}
 				});
 			});
 		},
