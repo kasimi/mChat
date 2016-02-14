@@ -56,6 +56,12 @@ class main_controller
 			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
+		// Fix avatars & smilies
+		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
+		{
+			define('PHPBB_USE_BOARD_URL_PATH', true);
+		}
+
 		$data = call_user_func(array($this->mchat, 'action_' . $action));
 
 		return new JsonResponse($data);
