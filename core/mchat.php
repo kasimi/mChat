@@ -94,6 +94,8 @@ class mchat
 		{
 			return;
 		}
+		
+		$this->root_path = './';
 
 		$this->assign_bbcodes_smilies();
 
@@ -616,6 +618,14 @@ class mchat
 
 			$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
 			$message = str_replace("'", '&rsquo;', $row['message']);
+			
+			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
+
+			// Remove root path if we render messages for the index page
+			if (strpos($this->user->data['session_page'], 'app.' . $this->php_ext) === false)
+			{
+				$username_full = str_replace('.' . $this->root_path, '', $username_full);
+			}
 
 			$this->template->assign_block_vars('mchatrow', array(
 				'S_ROW_COUNT'			=> $i,
@@ -628,7 +638,7 @@ class mchat
 				'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? generate_board_url() . append_sid("/{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 				'MCHAT_MESSAGE_EDIT'	=> $message_edit,
 				'MCHAT_MESSAGE_ID'		=> $row['message_id'],
-				'MCHAT_USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+				'MCHAT_USERNAME_FULL'	=> $username_full,
 				'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_WHOIS_USER'		=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
