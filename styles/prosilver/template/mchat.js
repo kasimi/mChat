@@ -23,8 +23,10 @@ jQuery(function($) {
 		if (sendHiddenFields) {
 			$.extend(data, mChat.hiddenFields);
 		}
+		var route = '/mchat';
+		var p = mChat.file.lastIndexOf(route) + route.length;
 		$.ajax({
-			url: mChat.file.replace('mchat', 'mchat-' + mode),
+			url: mChat.file.slice(0, p) + "-" + mode + mChat.file.slice(p),
 			timeout: 5000,
 			type: 'POST',
 			dataType: 'json',
