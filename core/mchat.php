@@ -460,7 +460,7 @@ class mchat
 		$static_message = !empty($lang_static_message) ? $lang_static_message : $this->config['mchat_static_message'];
 
 		$this->template->assign_vars(array(
-			'MCHAT_FILE_NAME'				=> $this->helper->route('dmzx_mchat_controller'),
+			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_controller'),
 			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
 			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
 			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || !empty($this->config['mchat_rules']),
@@ -488,6 +488,18 @@ class mchat
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'rules')),
 			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && !empty($this->user->data['user_mchat_index']),
 		));
+
+		// Populate allowed action URLs
+		$actions = $this->get_allowed_actions($page);
+		foreach ($actions as $i => $action)
+		{
+			$is_last_action = $i + 1 === count($actions);
+			$this->template->assign_block_vars('mchaturl', array(
+				'ACTION'	=> $action,
+				'IS_LAST'	=> $is_last_action,
+				'URL'		=> $this->helper->route('dmzx_mchat_action_controller', array('action' => $action)),
+			));
+		}
 
 		$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'm.forum_id = 0';
 		$limit = $page == 'archive' ? $this->config['mchat_archive_limit'] : $this->config[$page == 'index' ? 'mchat_message_num' : 'mchat_message_limit'];
@@ -527,6 +539,44 @@ class mchat
 		* @since 0.1.2
 		*/
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_aft');
+	}
+
+	/**
+	 * Returns actions that the user is allowed to perform on the current page
+	 *
+	 * @param $page
+	 * @return array
+	 */
+	protected function get_allowed_actions($page)
+	{
+		$actions = array();
+		$time = time();
+
+		if ($this->auth_message('u_mchat_edit', true, $time))
+		{
+			$actions[] = 'edit';
+		}
+
+		if ($this->auth_message('u_mchat_delete', true, $time))
+		{
+			$actions[] = 'del';
+		}
+
+		if ($page != 'archive')
+		{
+			if ($this->auth->acl_get('u_mchat_use'))
+			{
+				$actions[] = 'add';
+				$actions[] = 'refresh';
+			}
+
+			if ($this->config['mchat_whois'])
+			{
+				$actions[] = 'whois';
+			}
+		}
+
+		return $actions;
 	}
 
 	/**
@@ -596,6 +646,8 @@ class mchat
 			}
 		}
 
+		$board_url = generate_board_url() . '/';
+
 		foreach ($rows as $i => $row)
 		{
 			// Auth checks
@@ -619,10 +671,10 @@ class mchat
 
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 
-			// Remove root path if we render messages for the index page
-			if (strpos($this->user->data['session_page'], 'app.' . $this->php_ext) === true)
+			// Fix profile link root path by replacing relative paths with absolute board URL
+			if ($this->request->is_ajax())
 			{
-				$username_full = str_replace('.' . $this->root_path, '', $username_full);
+				$username_full = preg_replace('#(?<=href=").*?/(?=\w)#', $board_url, $username_full);
 			}
 
 			$this->template->assign_block_vars('mchatrow', array(
@@ -631,9 +683,9 @@ class mchat
 				'MCHAT_ALLOW_EDIT'		=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'		=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'		=> $user_avatars[$row['user_id']],
-				'U_VIEWPROFILE'			=> $row['user_id'] != ANONYMOUS ? generate_board_url() . append_sid("/{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
+				'U_VIEWPROFILE'			=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'		=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'],
-				'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? generate_board_url() . append_sid("/{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+				'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 				'MCHAT_MESSAGE_EDIT'	=> $message_edit,
 				'MCHAT_MESSAGE_ID'		=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'	=> $username_full,
@@ -641,7 +693,7 @@ class mchat
 				'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_WHOIS_USER'		=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
 				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'whois', 'ip' => $row['user_ip'])),
-				'MCHAT_U_BAN'			=> generate_board_url() . append_sid("/{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
+				'MCHAT_U_BAN'			=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
 				'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
 				'MCHAT_MESSAGE_TIME'	=> $row['message_time'],

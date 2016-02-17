@@ -26,7 +26,7 @@
 		<ul class="topiclist">
 			<li class="header">
 				<dl class="icon">
-					<dt><!-- IF MCHAT_ARCHIVE_PAGE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSEIF S_MCHAT_CUSTOM_PAGE --><a href="{MCHAT_FILE_NAME}" title="{L_MCHAT_TITLE}">{L_MCHAT_TITLE}</a><!-- ELSE -->{L_MCHAT_TITLE}<!-- ENDIF --></dt>
+					<dt><!-- IF MCHAT_ARCHIVE_PAGE -->{L_MCHAT_ARCHIVE_PAGE}<!-- ELSEIF S_MCHAT_CUSTOM_PAGE --><a href="{U_MCHAT_CUSTOM_PAGE}" title="{L_MCHAT_TITLE}">{L_MCHAT_TITLE}</a><!-- ELSE -->{L_MCHAT_TITLE}<!-- ENDIF --></dt>
 					<dd style="border:none">&nbsp;</dd>
 				</dl>
 			</li>
@@ -39,7 +39,11 @@
 			var text_name = 'message';
 			var mChat = {
 				// General settings
-				file			: '{MCHAT_FILE_NAME}',
+				actionUrls: {
+					<!-- BEGIN mchaturl -->
+					{mchaturl.ACTION}: '{mchaturl.URL}'<!-- IF not mchaturl.IS_LAST -->,<!-- ENDIF -->
+					<!-- END mchaturl -->
+				},
 				extUrl			: '{EXT_URL}',
 				customPage		: <!-- IF MCHAT_CUSTOM_PAGE -->true<!-- ELSE -->false<!-- ENDIF -->,
 				pause			: <!-- IF MCHAT_PAUSE_ON_INPUT -->true<!-- ELSE -->false<!-- ENDIF -->,
@@ -102,7 +106,7 @@
 				<!-- INCLUDE mchat_whois.html -->
 			<!-- ENDIF -->
 
-			<form name="postform" id="mchat-form" action="{MCHAT_FILE_NAME}" method="POST">
+			<form name="postform" id="mchat-form" action="{U_MCHAT_CUSTOM_PAGE}" method="POST">
 				{S_FORM_TOKEN}
 				<!-- IF not MCHAT_ARCHIVE_PAGE -->
 					<div class="mchat-panel">
