@@ -126,7 +126,8 @@ jQuery(function($) {
 			phpbb.confirm(mChat.$$('confirm'), function() {
 				ajaxRequest('edit', true, {
 					message_id: $container.data('id'),
-					message: $message.val()
+					message: $message.val(),
+					archive: mChat.archiveMode ? 1 : 0
 				}).done(function(json) {
 					mChat.sound('edit');
 					$container.fadeOut('slow', function() {

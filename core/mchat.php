@@ -271,6 +271,8 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
+		$this->template->assign_var('MCHAT_ARCHIVE_PAGE', $this->request->variable('archive', 0));
+
 		$message = $this->request->variable('message', '', true);
 
 		$sql_ary = $this->process_message($message, array(
