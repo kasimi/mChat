@@ -565,7 +565,7 @@ class functions_mchat
 			// User triggers messages to be pruned
 			case 'prune':
 				$sql = 'DELETE FROM ' . $this->mchat_table . ' WHERE message_id < ' . (int) $message_id;
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED', false, array($log_username));
 				$this->cache->destroy('sql', $this->mchat_table);
 				break;
 			default:

@@ -19,7 +19,7 @@ class acp_mchat_module
 		global $phpbb_container, $user;
 
 		// Add the ACP lang file
-		$user->add_lang_ext('dmzx/mchat', 'info_acp_mchat');
+		$user->add_lang_ext('dmzx/mchat', 'mchat_acp');
 
 		// Load a template from adm/style for our ACP page
 		$this->tpl_name = 'acp_mchat';

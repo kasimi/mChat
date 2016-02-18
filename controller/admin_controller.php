@@ -125,8 +125,8 @@ class admin_controller
 			{
 				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
 				$this->cache->destroy('sql', $this->mchat_table);
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED');
-				trigger_error($this->user->lang('LOG_MCHAT_TABLE_PRUNED') . adm_back_link($this->u_action));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
+				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($this->u_action));
 			}
 		}
 		else if ($this->request->is_set_post('submit'))
@@ -155,8 +155,6 @@ class admin_controller
 			}
 
 			// Replace "error" strings with their real, localised form
-			// The /e modifier is deprecated since PHP 5.5.0
-			//$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$this->user->lang('\\1'))) ? \$this->user->lang('\\1') : '\\1'", $error);
 			foreach ($error as $i => $err)
 			{
 				$lang = $this->user->lang($err);
@@ -175,7 +173,7 @@ class admin_controller
 				}
 
 				// Add an entry into the log table
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE');
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, array($this->user->data['username']));
 
 				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($this->u_action));
 			}
@@ -204,16 +202,18 @@ class admin_controller
 			$template_variables[strtoupper($key)] = $this->config[$key];
 		}
 
-		$this->template->assign_vars(array_merge($template_variables, array(
+		$this->template->assign_vars($template_variables);
+
+		$this->template->assign_vars(array(
 			'MCHAT_ERROR'							=> !empty($error) ? implode('<br />', $error) : '',
 			'MCHAT_VERSION'							=> $this->config['mchat_version'],
 			'MCHAT_FOUNDER'							=> $this->user->data['user_type'] == USER_FOUNDER,
-			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> sprintf($this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN'), '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'				=> sprintf($this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN'),'<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
+			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
+			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
 			'S_MCHAT_DATEFORMAT_OPTIONS'			=> $dateformat_options,
 			'S_CUSTOM_DATEFORMAT'					=> $s_custom,
 			'U_ACTION'								=> $this->u_action,
-		)));
+		));
 	}
 
 	/**

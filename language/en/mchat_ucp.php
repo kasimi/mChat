@@ -34,19 +34,15 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 
 $lang = array_merge($lang, array(
-	'ACP_CAT_MCHAT'							=> 'mChat',
-	'ACP_MCHAT_TITLE'						=> 'mChat Extension for phpBB 3.1',
-	'ACP_MCHAT_CONFIG'						=> 'Configuration',
-	'ACP_MCHAT_VERSION'						=> 'Version',
+	'MCHAT_PREFERENCES'				=> 'mChat preferences',
 
-	'ACP_USER_MCHAT'						=> 'mChat preferences',
-	'UCP_CAT_MCHAT'							=> 'mChat preferences',
-	'UCP_MCHAT_CONFIG'						=> 'User mChat preferences',
-
-	// Log entries (%1$s is replaced with the user name who triggered the event)
-	'LOG_MCHAT_CONFIG_UPDATE'				=> '<strong>mChat configuration updated</strong><br />» %1$s',
-	'LOG_MCHAT_TABLE_PRUNED'				=> '<strong>mChat messages pruned</strong><br />» %1$s',
-	'LOG_MCHAT_TABLE_PURGED'				=> '<strong>mChat messages purged</strong><br />» %1$s',
-	'LOG_DELETED_MCHAT'						=> '<strong>mChat message deleted</strong><br />» %1$s',
-	'LOG_EDITED_MCHAT'						=> '<strong>mChat message edited</strong><br />» %1$s',
+	'MCHAT_DISPLAY'					=> 'Display mChat on index',
+	'MCHAT_SOUND'					=> 'Enable mChat sound',
+	'MCHAT_DISPLAY_STATS_INDEX'		=> 'Display who is chatting on index',
+	'MCHAT_DISPLAY_NEW_TOPICS'		=> 'Display new topics in the chat',
+	'MCHAT_DISPLAY_AVATARS'			=> 'Display avatars in the chat',
+	'MCHAT_CHAT_AREA'				=> 'Input type',
+	'MCHAT_CHAT_AREA_EXPLAIN'		=> 'The type of area to use for writing messages',
+	'MCHAT_INPUT_AREA'				=> 'Input area',
+	'MCHAT_TEXT_AREA'				=> 'Text area',
 ));

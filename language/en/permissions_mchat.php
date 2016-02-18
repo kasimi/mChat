@@ -34,19 +34,19 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 
 $lang = array_merge($lang, array(
-	'ACP_CAT_MCHAT'							=> 'mChat',
-	'ACP_MCHAT_TITLE'						=> 'mChat Extension for phpBB 3.1',
-	'ACP_MCHAT_CONFIG'						=> 'Configuration',
-	'ACP_MCHAT_VERSION'						=> 'Version',
+	'ACL_U_MCHAT_USE'						=> 'Can use mChat',
+	'ACL_U_MCHAT_VIEW'						=> 'Can view mChat',
+	'ACL_U_MCHAT_EDIT'						=> 'Can edit messages',
+	'ACL_U_MCHAT_DELETE'					=> 'Can delete messages',
+	'ACL_U_MCHAT_IP'						=> 'Can view IP addresses',
+	'ACL_U_MCHAT_PM'						=> 'Can use private message',
+	'ACL_U_MCHAT_LIKE'						=> 'Can like messages',
+	'ACL_U_MCHAT_QUOTE'						=> 'Can quote messages',
+	'ACL_U_MCHAT_FLOOD_IGNORE'				=> 'Can ignore flood limit',
+	'ACL_U_MCHAT_ARCHIVE'					=> 'Can view the archive',
+	'ACL_U_MCHAT_BBCODE'					=> 'Can use bbcodes',
+	'ACL_U_MCHAT_SMILIES'					=> 'Can use smilies',
+	'ACL_U_MCHAT_URLS'						=> 'Can post URLs',
 
-	'ACP_USER_MCHAT'						=> 'mChat preferences',
-	'UCP_CAT_MCHAT'							=> 'mChat preferences',
-	'UCP_MCHAT_CONFIG'						=> 'User mChat preferences',
-
-	// Log entries (%1$s is replaced with the user name who triggered the event)
-	'LOG_MCHAT_CONFIG_UPDATE'				=> '<strong>mChat configuration updated</strong><br />» %1$s',
-	'LOG_MCHAT_TABLE_PRUNED'				=> '<strong>mChat messages pruned</strong><br />» %1$s',
-	'LOG_MCHAT_TABLE_PURGED'				=> '<strong>mChat messages purged</strong><br />» %1$s',
-	'LOG_DELETED_MCHAT'						=> '<strong>mChat message deleted</strong><br />» %1$s',
-	'LOG_EDITED_MCHAT'						=> '<strong>mChat message edited</strong><br />» %1$s',
+	'ACL_A_MCHAT'							=> 'Can manage mChat settings',
 ));

@@ -18,6 +18,8 @@ class ucp_mchat_module
 
 		$error = $data = array();
 
+		$user->add_lang_ext('dmzx/mchat', 'mchat_ucp');
+
 		switch ($mode)
 		{
 			case 'configuration':
@@ -48,13 +50,11 @@ class ucp_mchat_module
 						$db->sql_query($sql);
 
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
 					// Replace "error" strings with their real, localised form
-					// The /e modifier is deprecated since PHP 5.5.0
-					//$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 					foreach ($error as $i => $err)
 					{
 						$lang = $user->lang($err);
@@ -82,10 +82,7 @@ class ucp_mchat_module
 			break;
 		}
 
-		$template->assign_vars(array(
-			'L_TITLE'		=> $user->lang('UCP_PROFILE_MCHAT'),
-			'S_UCP_ACTION'	=> $this->u_action,
-		));
+		$template->assign_var('S_UCP_ACTION', $this->u_action);
 
 		// Set desired template
 		$this->tpl_name = 'ucp_mchat';

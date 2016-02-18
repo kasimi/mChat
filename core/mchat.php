@@ -355,8 +355,11 @@ class mchat
 		// Request edited messages
 		if ($this->config['mchat_live_updates'] && $message_last_id > 0)
 		{
-			$sql_time_limit = $this->config['mchat_edit_delete_limit'] ? sprintf(' AND m.message_time > %d', time() - $this->config['mchat_edit_delete_limit']) : '';
-			$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0%s)', (int) $message_first_id , (int) $message_last_id, $sql_time_limit);
+			$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0)', (int) $message_first_id , (int) $message_last_id);
+			if ($this->config['mchat_edit_delete_limit'])
+			{
+				$sql_where .= sprintf(' AND m.message_time > %d', time() - $this->config['mchat_edit_delete_limit']);
+			}
 		}
 
 		// Exclude post notifications
@@ -482,12 +485,12 @@ class mchat
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
-			'MCHAT_MESS_LONG'				=> sprintf($this->user->lang('MCHAT_MESS_LONG'), $this->config['mchat_max_message_lngth']),
+			'MCHAT_MESS_LONG'				=> $this->user->lang('MCHAT_MESS_LONG', $this->config['mchat_max_message_lngth']),
 			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', (int) $this->config['mchat_timeout']),
 			'MCHAT_WHOIS_REFRESH'			=> $this->config['mchat_whois'] ? 1000 * $this->config['mchat_whois_refresh'] : 0,
-			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> sprintf($this->user->lang('WHO_IS_REFRESH_EXPLAIN'), $this->config['mchat_whois_refresh']),
+			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> $this->user->lang('MCHAT_WHO_IS_REFRESH_EXPLAIN', $this->config['mchat_whois_refresh']),
 			'MCHAT_PAUSE_ON_INPUT'			=> $this->config['mchat_pause_on_input'],
-			'MCHAT_REFRESH_YES'				=> sprintf($this->user->lang('MCHAT_REFRESH_YES'), $this->config['mchat_refresh']),
+			'MCHAT_REFRESH_YES'				=> $this->user->lang('MCHAT_REFRESH_YES', $this->config['mchat_refresh']),
 			'MCHAT_LIVE_UPDATES'			=> $this->config['mchat_live_updates'],
 			'S_MCHAT_LOCATION'				=> $this->config['mchat_location'],
 			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
@@ -522,7 +525,7 @@ class mchat
 			$archive_url = $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive'));
 			$total_messages = $this->functions_mchat->mchat_total_message_count();
 			$this->pagination->generate_template_pagination($archive_url, 'pagination', 'start', $total_messages, $limit, $start);
-			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', sprintf($this->user->lang('MCHAT_TOTALMESSAGES'), $total_messages));
+			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', $this->user->lang('MCHAT_TOTALMESSAGES', $total_messages));
 		}
 
 		// Render legend
@@ -670,7 +673,7 @@ class mchat
 
 			if (in_array($row['user_id'], $foes))
 			{
-				$row['message'] = sprintf($this->user->lang('MCHAT_FOE'), get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')));
+				$row['message'] = $this->user->lang('MCHAT_FOE', get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')));
 			}
 
 			$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
