@@ -107,7 +107,12 @@ class mchat
 	 */
 	public function page_custom()
 	{
-		if (!$this->auth->acl_get('u_mchat_view') || !$this->config['mchat_custom_page'])
+		if (!$this->auth->acl_get('u_mchat_view'))
+		{
+			throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
+		}
+
+		if (!$this->config['mchat_custom_page'])
 		{
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NO_CUSTOM_PAGE');
 		}
@@ -175,7 +180,7 @@ class mchat
 	{
 		if (!$this->auth->acl_get('u_mchat_ip'))
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+			throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		if (!function_exists('user_ipwhois'))
