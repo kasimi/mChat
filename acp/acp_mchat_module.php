@@ -25,7 +25,7 @@ class acp_mchat_module
 		$this->tpl_name = 'acp_mchat';
 
 		// Set the page title for our ACP page
-		$this->page_title = 'MCHAT_TITLE';
+		$this->page_title = 'MCHAT_ACP_TITLE';
 
 		// Get an instance of the admin controller
 		$admin_controller = $phpbb_container->get('dmzx.mchat.admin.controller');

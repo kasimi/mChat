@@ -101,63 +101,32 @@ class install_mchat extends \phpbb\db\migration\migration
 			array('permission.permission_set', array('REGISTERED', 'u_mchat_smilies', 'group')),
 			array('permission.permission_set', array('REGISTERED', 'u_mchat_urls', 'group')),
 
-			// Add ACP module
+			// Add ACP extension category
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_DOT_MODS',
 				'ACP_CAT_MCHAT'
 			)),
 
+			// Add ACP preferences module
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_MCHAT',
 				array(
 					'module_basename'			=> '\dmzx\mchat\acp\acp_mchat_module',
 					'modes'						=> array('configuration'),
-					'module_auth'				=> 'a_mchat',
+					'module_auth'				=> 'acl_a_mchat',
 				),
 			)),
 
-			// Add ACP module
-			array('module.add', array(
-				'acp',
-				'ACP_CAT_USERS',
-				array(
-					'module_basename'			=> 'users',
-					'module_enabled'			=> 1,
-					'module_display'			=> 0,
-					'module_langname'			=> 'ACP_USER_MCHAT',
-					'module_mode'				=> 'mchat',
-					'module_auth'				=> 'acl_a_user',
-					),
-				),
-
-				// First, lets add a new category named UCP_CAT_MCHAT
-				array(
-					'ucp',
-					false,
-					'UCP_CAT_MCHAT'
-				),
-
-				// next let's add our module
-				array(
-					'ucp',
-					'UCP_CAT_MCHAT',
-					array(
-						'module_basename'		=> 'mchat',
-						'modes'					=> array('configuration'),
-						'module_auth'			=> 'u_mchat_use',
-					),
-				),
-			),
-
-			// Add UCP module
+			// Add UCP category
 			array('module.add', array(
 				'ucp',
 				false,
 				'UCP_MCHAT_CONFIG'
 			)),
 
+			// Add UCP preferences module
 			array('module.add', array(
 				'ucp',
 				'UCP_MCHAT_CONFIG',

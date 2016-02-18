@@ -44,11 +44,11 @@ $lang = array_merge($lang, array(
 	'MCHAT_SETTINGS_STATS'					=> 'Who is chatting settings',
 
 	// ACP settings
+	'MCHAT_ACP_TITLE'						=> 'mChat Configuration',
 	'MCHAT_VERSION'							=> 'Version',
 	'MCHAT_RULES'							=> 'Rules',
 	'MCHAT_RULES_EXPLAIN'					=> 'Enter the rules of the forum here. Each rule on a new line. HTML code is allowed. <em>You are limited to 255 characters.</em><br />This message can be translated: edit the MCHAT_RULES_MESSAGE language key in /ext/dmzx/mchat/language/XX/common.php.',
 	'MCHAT_CONFIG_SAVED'					=> 'mChat configuration has been updated',
-	'MCHAT_TITLE'							=> 'mChat',
 	'MCHAT_AVATARS'							=> 'Display avatars',
 	'MCHAT_AVATARS_EXPLAIN'					=> 'If set to yes, resized user avatars will be displayed',
 	'MCHAT_ON_INDEX'						=> 'Display mChat on the index page',

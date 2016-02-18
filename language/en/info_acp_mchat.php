@@ -34,14 +34,9 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 
 $lang = array_merge($lang, array(
+	// Module titles
 	'ACP_CAT_MCHAT'							=> 'mChat',
-	'ACP_MCHAT_TITLE'						=> 'mChat Extension for phpBB 3.1',
 	'ACP_MCHAT_CONFIG'						=> 'Configuration',
-	'ACP_MCHAT_VERSION'						=> 'Version',
-
-	'ACP_USER_MCHAT'						=> 'mChat preferences',
-	'UCP_CAT_MCHAT'							=> 'mChat preferences',
-	'UCP_MCHAT_CONFIG'						=> 'User mChat preferences',
 
 	// Log entries (%1$s is replaced with the user name who triggered the event)
 	'LOG_MCHAT_CONFIG_UPDATE'				=> '<strong>mChat configuration updated</strong><br />» %1$s',
