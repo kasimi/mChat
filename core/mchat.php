@@ -674,7 +674,7 @@ class mchat
 			// Fix profile link root path by replacing relative paths with absolute board URL
 			if ($this->request->is_ajax())
 			{
-				$username_full = preg_replace('#(?<=href=").*?/(?=\w)#', $board_url, $username_full);
+				$username_full = preg_replace('#(?<=href=")[\./]+?/(?=\w)#', $board_url, $username_full);
 			}
 
 			$this->template->assign_block_vars('mchatrow', array(
