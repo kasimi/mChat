@@ -12,7 +12,7 @@ namespace dmzx\mchat\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class listener implements EventSubscriberInterface
+class main_listener implements EventSubscriberInterface
 {
 	/** @var \dmzx\mchat\core\functions_mchat */
 	protected $functions_mchat;
@@ -58,7 +58,6 @@ class listener implements EventSubscriberInterface
 			'core.page_header'							=> 'add_page_header_link',
 			'core.index_modify_page_title'				=> 'display_mchat_on_index',
 			'core.posting_modify_submit_post_after'		=> 'posting_modify_submit_post_after',
-			'core.permissions'							=> 'permissions',
 			'core.display_custom_bbcodes_modify_sql'	=> 'display_custom_bbcodes_modify_sql',
 		);
 	}
@@ -127,74 +126,5 @@ class listener implements EventSubscriberInterface
 	public function display_custom_bbcodes_modify_sql($event)
 	{
 		$event['sql_ary'] = $this->mchat->remove_disallowed_bbcodes($event['sql_ary']);
-	}
-
-	/**
-	 * @param object $event The event object
-	 */
-	public function permissions($event)
-	{
-		$event['permissions'] = array_merge($event['permissions'], array(
-			'u_mchat_use'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_USE',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_view'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_VIEW',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_edit'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_EDIT',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_delete'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_DELETE',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_ip'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_IP',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_pm'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_PM',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_like'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_LIKE',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_quote'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_QUOTE',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_flood_ignore'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_FLOOD_IGNORE',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_archive'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_ARCHIVE',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_bbcode'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_BBCODE',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_smilies'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_SMILIES',
-				'cat'		=> 'mChat'
-			),
-			'u_mchat_urls'	=> array(
-				'lang'		=> 'ACL_U_MCHAT_URLS',
-				'cat'		=> 'mChat'
-			),
-			'a_mchat'		=> array(
-				'lang'		=> 'ACL_A_MCHAT',
-				'cat'		=> 'mChat'
-			),
-		));
-
-		$event['categories'] = array_merge($event['categories'], array(
-			'mChat'	=> 'ACP_CAT_MCHAT',
-		));
 	}
 }

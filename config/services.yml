@@ -55,8 +55,18 @@ services:
             - '%core.php_ext%'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_sessions%'
-    dmzx.mchat.listener:
-        class: dmzx\mchat\event\listener
+    dmzx.mchat.acp.listener:
+        class: dmzx\mchat\event\acp_listener
+        arguments:
+            - '@dmzx.mchat.functions_mchat'
+            - '@dmzx.mchat.core'
+            - '@controller.helper'
+            - '@user'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }
+    dmzx.mchat.main.listener:
+        class: dmzx\mchat\event\main_listener
         arguments:
             - '@dmzx.mchat.functions_mchat'
             - '@dmzx.mchat.core'
