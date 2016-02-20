@@ -54,13 +54,13 @@ class ucp_controller
 	{
 		add_form_key('ucp_mchat');
 
-		$data = array(
-			'user_mchat_index'			=> $this->request->variable('user_mchat_index', (bool)$this->user->data['user_mchat_index']),
-			'user_mchat_sound'			=> $this->request->variable('user_mchat_sound', (bool)$this->user->data['user_mchat_sound']),
-			'user_mchat_stats_index'	=> $this->request->variable('user_mchat_stats_index', (bool)$this->user->data['user_mchat_stats_index']),
-			'user_mchat_topics'			=> $this->request->variable('user_mchat_topics', (bool)$this->user->data['user_mchat_topics']),
-			'user_mchat_avatars'		=> $this->request->variable('user_mchat_avatars', (bool)$this->user->data['user_mchat_avatars']),
-			'user_mchat_input_area'		=> $this->request->variable('user_mchat_input_area', (bool)$this->user->data['user_mchat_input_area']),
+		$mchat_user_config = array(
+			'user_mchat_index',
+			'user_mchat_sound',
+			'user_mchat_stats_index',
+			'user_mchat_topics',
+			'user_mchat_avatars',
+			'user_mchat_input_area',
 		);
 
 		$error = array();
@@ -72,11 +72,17 @@ class ucp_controller
 				$error[] = 'FORM_INVALID';
 			}
 
-			if (!sizeof($error))
+			if (empty($error))
 			{
+				$data = array();
+				foreach ($mchat_user_config as $key)
+				{
+					$data[$key] = $this->request->variable($key, (int) $this->user->data[$key]);
+				}
+
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET ' . $this->db->sql_build_array('UPDATE', $data) . '
-					WHERE user_id = ' . (int)$this->user->data['user_id'];
+					WHERE user_id = ' . (int) $this->user->data['user_id'];
 				$this->db->sql_query($sql);
 
 				meta_refresh(3, $u_action);
@@ -95,16 +101,15 @@ class ucp_controller
 			}
 		}
 
+		foreach ($mchat_user_config as $key)
+		{
+			$this->template->assign_var(strtoupper($key), $this->user->data[$key]);
+		}
+
 		$this->template->assign_vars(array(
 			'ERROR'					=> sizeof($error) ? implode('<br />', $error) : '',
 			'S_UCP_ACTION'			=> $u_action,
 
-			'S_DISPLAY_MCHAT'		=> $data['user_mchat_index'],
-			'S_SOUND_MCHAT'			=> $data['user_mchat_sound'],
-			'S_STATS_MCHAT'			=> $data['user_mchat_stats_index'],
-			'S_TOPICS_MCHAT'		=> $data['user_mchat_topics'],
-			'S_AVATARS_MCHAT'		=> $data['user_mchat_avatars'],
-			'S_INPUT_MCHAT'			=> $data['user_mchat_input_area'],
 			'S_MCHAT_TOPICS'		=> $this->config['mchat_new_posts_edit'] || $this->config['mchat_new_posts_quote'] || $this->config['mchat_new_posts_reply'] || $this->config['mchat_new_posts_topic'],
 			'S_MCHAT_INDEX'			=> $this->config['mchat_on_index'],
 			'S_MCHAT_INDEX_STATS'	=> $this->config['mchat_stats_index'],

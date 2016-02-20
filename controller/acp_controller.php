@@ -153,16 +153,6 @@ class acp_controller
 				$error[] = 'FORM_INVALID';
 			}
 
-			// Replace "error" strings with their real, localised form
-			foreach ($error as $i => $err)
-			{
-				$lang = $this->user->lang($err);
-				if (!empty($lang))
-				{
-					$error[$i] = $lang;
-				}
-			}
-
 			if (empty($error))
 			{
 				// Set the options the user configured
@@ -175,6 +165,16 @@ class acp_controller
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, array($this->user->data['username']));
 
 				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
+			}
+
+			// Replace "error" strings with their real, localised form
+			foreach ($error as $i => $err)
+			{
+				$lang = $this->user->lang($err);
+				if (!empty($lang))
+				{
+					$error[$i] = $lang;
+				}
 			}
 		}
 
@@ -195,13 +195,10 @@ class acp_controller
 		}
 		$dateformat_options .= '>' . $this->user->lang('MCHAT_CUSTOM_DATEFORMAT') . '</option>';
 
-		$template_variables = array();
-		foreach ($mchat_config as $key => $value)
+		foreach (array_keys($mchat_config) as $key)
 		{
-			$template_variables[strtoupper($key)] = $this->config[$key];
+			$this->template->assign_var(strtoupper($key), $this->config[$key]);
 		}
-
-		$this->template->assign_vars($template_variables);
 
 		$this->template->assign_vars(array(
 			'MCHAT_ERROR'							=> !empty($error) ? implode('<br />', $error) : '',
