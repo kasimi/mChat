@@ -168,14 +168,7 @@ class acp_controller
 			}
 
 			// Replace "error" strings with their real, localised form
-			foreach ($error as $i => $err)
-			{
-				$lang = $this->user->lang($err);
-				if (!empty($lang))
-				{
-					$error[$i] = $lang;
-				}
-			}
+			$error = array_map(array($this->user, 'lang'), $error);
 		}
 
 		$dateformat_options = '';
