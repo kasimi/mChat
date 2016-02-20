@@ -26,9 +26,6 @@ class acp_listener implements EventSubscriberInterface
 	/** @var array */
 	protected $user_config_keys;
 
-	/** @var string */
-	protected $php_ext;
-
 	/**
 	* Constructor
 	*
@@ -36,15 +33,13 @@ class acp_listener implements EventSubscriberInterface
 	* @param \phpbb\request\request				$request
 	* @param \phpbb\user						$user
 	* @param array								$user_config_keys
-	* @param string								$php_ext
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user $user, $user_config_keys, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user $user, $user_config_keys)
 	{
 		$this->template			= $template;
 		$this->request			= $request;
 		$this->user				= $user;
 		$this->user_config_keys	= $user_config_keys;
-		$this->php_ext			= $php_ext;
 	}
 
 	/**

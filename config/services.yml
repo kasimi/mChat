@@ -64,7 +64,6 @@ services:
             - '@request'
             - '@user'
             - '%user_config_keys%'
-            - '%core.php_ext%'
         tags:
             - { name: event.listener }
     dmzx.mchat.main.listener:
