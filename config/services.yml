@@ -60,10 +60,10 @@ services:
     dmzx.mchat.acp.listener:
         class: dmzx\mchat\event\acp_listener
         arguments:
-            - '@dmzx.mchat.functions_mchat'
-            - '@dmzx.mchat.core'
-            - '@controller.helper'
+            - '@template'
+            - '@request'
             - '@user'
+            - '%user_config_keys%'
             - '%core.php_ext%'
         tags:
             - { name: event.listener }

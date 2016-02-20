@@ -14,17 +14,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class acp_listener implements EventSubscriberInterface
 {
-	/** @var \dmzx\mchat\core\functions_mchat */
-	protected $functions_mchat;
+	/** @var \phpbb\template\template */
+	protected $template;
 
-	/** @var \dmzx\mchat\core\mchat */
-	protected $mchat;
-
-	/** @var \phpbb\controller\helper */
-	protected $helper;
+	/** @var \phpbb\request\request */
+	protected $request;
 
 	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var array */
+	protected $user_config_keys;
 
 	/** @var string */
 	protected $php_ext;
@@ -32,18 +32,18 @@ class acp_listener implements EventSubscriberInterface
 	/**
 	* Constructor
 	*
-	* @param \dmzx\mchat\core\functions_mchat	$functions_mchat
-	* @param \dmzx\mchat\core\mchat				$mchat
-	* @param \phpbb\controller\helper			$helper
+	* @param \phpbb\template\template			$template
+	* @param \phpbb\request\request				$request
 	* @param \phpbb\user						$user
+	* @param array								$user_config_keys
 	* @param string								$php_ext
 	*/
-	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \dmzx\mchat\core\mchat $mchat, \phpbb\controller\helper $helper, \phpbb\user $user, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user $user, $user_config_keys, $php_ext)
 	{
-		$this->functions_mchat	= $functions_mchat;
-		$this->mchat			= $mchat;
-		$this->helper			= $helper;
+		$this->template			= $template;
+		$this->request			= $request;
 		$this->user				= $user;
+		$this->user_config_keys	= $user_config_keys;
 		$this->php_ext			= $php_ext;
 	}
 
@@ -53,7 +53,10 @@ class acp_listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'core.permissions' => 'permissions',
+			'core.permissions'							=> 'permissions',
+			'core.acp_users_prefs_modify_data'			=> 'acp_users_prefs_modify_data',
+			'core.acp_users_prefs_modify_sql'			=> 'acp_users_prefs_modify_sql',
+			'core.acp_users_prefs_modify_template_data'	=> 'acp_users_prefs_modify_template_data',
 		);
 	}
 
@@ -124,5 +127,48 @@ class acp_listener implements EventSubscriberInterface
 		$event['categories'] = array_merge($event['categories'], array(
 			'mChat'	=> 'ACP_CAT_MCHAT',
 		));
+	}
+
+	/**
+	 * @param object $event The event object
+	 */
+	public function acp_users_prefs_modify_data($event)
+	{
+		$data = $event['data'];
+
+		foreach ($this->user_config_keys as $config_key)
+		{
+			$data[$config_key] = $this->request->variable($config_key, (int) $event['user_row'][$config_key]);
+		}
+
+		$event['data'] = $data;
+	}
+
+	/**
+	 * @param object $event The event object
+	 */
+	public function acp_users_prefs_modify_template_data($event)
+	{
+		$this->user->add_lang_ext('dmzx/mchat', 'mchat_ucp');
+
+		foreach ($this->user_config_keys as $config_key)
+		{
+			$this->template->assign_var(strtoupper($config_key), $event['data'][$config_key]);
+		}
+	}
+
+	/**
+	 * @param object $event The event object
+	 */
+	public function acp_users_prefs_modify_sql($event)
+	{
+		$sql_ary = $event['sql_ary'];
+
+		foreach ($this->user_config_keys as $config_key)
+		{
+			$sql_ary[$config_key] = $event['data'][$config_key];
+		}
+
+		$event['sql_ary'] = $sql_ary;
 	}
 }
