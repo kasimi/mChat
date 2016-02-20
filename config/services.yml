@@ -15,6 +15,14 @@ services:
             - '%dmzx.mchat.table.mchat%'
             - '%core.root_path%'
             - '%core.php_ext%'
+    dmzx.mchat.ucp.controller:
+        class: dmzx\mchat\controller\ucp_controller
+        arguments:
+            - '@config'
+            - '@template'
+            - '@user'
+            - '@dbal.conn'
+            - '@request'
     dmzx.mchat.main.controller:
         class: dmzx\mchat\controller\main_controller
         arguments:
