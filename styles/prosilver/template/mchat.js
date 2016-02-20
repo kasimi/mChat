@@ -1,11 +1,11 @@
 /**
  *
  * @package mChat JavaScript Code mini
- * @version 1.5.1 of 2016-01-17
+ * @version 1.5.2 of 2016-02-20
  * @copyright (c) 2009 By Shapoval Andrey Vladimirovich (AllCity) ~ http://allcity.net.ru/
  * @copyright (c) 2013 By Rich McGirr (RMcGirr83) http://rmcgirr83.org
  * @copyright (c) 2015 By dmzx - http://www.dmzx-web.net
- * @copyright (c) 2015 By kasimi
+ * @copyright (c) 2016 By kasimi
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
