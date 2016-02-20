@@ -21,19 +21,12 @@ class acp_mchat_module
 		// Add the ACP lang file
 		$user->add_lang_ext('dmzx/mchat', 'mchat_acp');
 
-		// Load a template from adm/style for our ACP page
+		// Set template
 		$this->tpl_name = 'acp_mchat';
-
-		// Set the page title for our ACP page
 		$this->page_title = 'MCHAT_ACP_TITLE';
 
-		// Get an instance of the admin controller
-		$admin_controller = $phpbb_container->get('dmzx.mchat.admin.controller');
-
-		// Make the $u_action url available in the admin controller
-		$admin_controller->set_page_url($this->u_action);
-
-		// Load the display settings handle in the admin controller
-		$admin_controller->display_options();
+		// Get an instance of the ACP controller and display the options
+		$controller = $phpbb_container->get('dmzx.mchat.acp.controller');
+		$controller->display_options($this->u_action);
 	}
 }

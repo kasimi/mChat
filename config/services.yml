@@ -2,8 +2,8 @@ imports:
     - { resource: tables.yml }
 
 services:
-    dmzx.mchat.admin.controller:
-        class: dmzx\mchat\controller\admin_controller
+    dmzx.mchat.acp.controller:
+        class: dmzx\mchat\controller\acp_controller
         arguments:
             - '@config'
             - '@template'

@@ -10,7 +10,7 @@
 
 namespace dmzx\mchat\controller;
 
-class admin_controller
+class acp_controller
 {
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -42,9 +42,6 @@ class admin_controller
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string */
-	public $u_action;
-
 	/**
 	 * Constructor
 	 *
@@ -74,9 +71,11 @@ class admin_controller
 	}
 
 	/**
-	 * Display the options a user can configure for this extension
+	 * Display the options the admin can configure for this extension
+	 *
+	 * @param $u_action
 	 */
-	public function display_options()
+	public function display_options($u_action)
 	{
 		add_form_key('acp_mchat');
 
@@ -126,7 +125,7 @@ class admin_controller
 				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
 				$this->cache->destroy('sql', $this->mchat_table);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
-				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($this->u_action));
+				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
 			}
 		}
 		else if ($this->request->is_set_post('submit'))
@@ -175,7 +174,7 @@ class admin_controller
 				// Add an entry into the log table
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, array($this->user->data['username']));
 
-				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($this->u_action));
+				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
 			}
 		}
 
@@ -212,17 +211,7 @@ class admin_controller
 			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->config['session_length']),
 			'S_MCHAT_DATEFORMAT_OPTIONS'			=> $dateformat_options,
 			'S_CUSTOM_DATEFORMAT'					=> $s_custom,
-			'U_ACTION'								=> $this->u_action,
+			'U_ACTION'								=> $u_action,
 		));
-	}
-
-	/**
-	 * Set page url
-	 *
-	 * @param string $u_action Custom form action
-	 */
-	public function set_page_url($u_action)
-	{
-		$this->u_action = $u_action;
 	}
 }
