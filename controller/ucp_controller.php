@@ -27,6 +27,9 @@ class ucp_controller
 	/** @var \phpbb\request\request */
 	protected $request;
 
+	/** @var array */
+	protected $user_config_keys;
+
 	/**
 	 * Constructor
 	 *
@@ -35,14 +38,16 @@ class ucp_controller
 	 * @param \phpbb\user						$user
 	 * @param \phpbb\db\driver\driver_interface	$db
 	 * @param \phpbb\request\request			$request
+	 * @param array								$user_config_keys
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request)
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, $user_config_keys)
 	{
-		$this->config		= $config;
-		$this->template		= $template;
-		$this->user			= $user;
-		$this->db			= $db;
-		$this->request		= $request;
+		$this->config			= $config;
+		$this->template			= $template;
+		$this->user				= $user;
+		$this->db				= $db;
+		$this->request			= $request;
+		$this->user_config_keys	= $user_config_keys;
 	}
 
 	/**
@@ -53,15 +58,6 @@ class ucp_controller
 	public function display_options($u_action)
 	{
 		add_form_key('ucp_mchat');
-
-		$mchat_user_config = array(
-			'user_mchat_index',
-			'user_mchat_sound',
-			'user_mchat_stats_index',
-			'user_mchat_topics',
-			'user_mchat_avatars',
-			'user_mchat_input_area',
-		);
 
 		$error = array();
 
@@ -75,9 +71,9 @@ class ucp_controller
 			if (empty($error))
 			{
 				$data = array();
-				foreach ($mchat_user_config as $key)
+				foreach ($this->user_config_keys as $config_key)
 				{
-					$data[$key] = $this->request->variable($key, (int) $this->user->data[$key]);
+					$data[$config_key] = $this->request->variable($config_key, (int) $this->user->data[$config_key]);
 				}
 
 				$sql = 'UPDATE ' . USERS_TABLE . '
@@ -101,9 +97,9 @@ class ucp_controller
 			}
 		}
 
-		foreach ($mchat_user_config as $key)
+		foreach ($this->user_config_keys as $config_key)
 		{
-			$this->template->assign_var(strtoupper($key), $this->user->data[$key]);
+			$this->template->assign_var(strtoupper($config_key), $this->user->data[$config_key]);
 		}
 
 		$this->template->assign_vars(array(

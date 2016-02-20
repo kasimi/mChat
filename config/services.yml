@@ -1,5 +1,6 @@
 imports:
     - { resource: tables.yml }
+    - { resource: user_config_keys.yml }
 
 services:
     dmzx.mchat.acp.controller:
@@ -23,6 +24,7 @@ services:
             - '@user'
             - '@dbal.conn'
             - '@request'
+            - '%user_config_keys%'
     dmzx.mchat.main.controller:
         class: dmzx\mchat\controller\main_controller
         arguments:
