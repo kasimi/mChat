@@ -483,8 +483,15 @@ class mchat
 			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && !empty($this->user->data['user_mchat_index']),
 		));
 
-		// Populate allowed action URLs
-		$actions = $this->get_allowed_actions($page);
+		// Get actions which the user is allowed to perform on the current page
+		$actions = array_keys(array_filter(array(
+			'edit'		=> $this->auth_message('u_mchat_edit', true, time()),
+			'del'		=> $this->auth_message('u_mchat_delete', true, time()),
+			'refresh'	=> $page != 'archive' && $this->auth->acl_get('u_mchat_view'),
+			'add'		=> $page != 'archive' && $this->auth->acl_get('u_mchat_use'),
+			'whois'		=> $page != 'archive' && $this->config['mchat_whois'],
+		)));
+
 		foreach ($actions as $i => $action)
 		{
 			$is_last_action = $i + 1 === count($actions);
@@ -531,44 +538,6 @@ class mchat
 		* @since 0.1.2
 		*/
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_aft');
-	}
-
-	/**
-	 * Returns actions that the user is allowed to perform on the current page
-	 *
-	 * @param $page
-	 * @return array
-	 */
-	protected function get_allowed_actions($page)
-	{
-		$actions = array();
-		$time = time();
-
-		if ($this->auth_message('u_mchat_edit', true, $time))
-		{
-			$actions[] = 'edit';
-		}
-
-		if ($this->auth_message('u_mchat_delete', true, $time))
-		{
-			$actions[] = 'del';
-		}
-
-		if ($page != 'archive')
-		{
-			if ($this->auth->acl_get('u_mchat_use'))
-			{
-				$actions[] = 'add';
-				$actions[] = 'refresh';
-			}
-
-			if ($this->config['mchat_whois'])
-			{
-				$actions[] = 'whois';
-			}
-		}
-
-		return $actions;
 	}
 
 	/**
