@@ -162,7 +162,7 @@
 }
 
 #mchat-colour {
-	margin-top: 5px;
+	display: none;
 }
 
 #mchat-colour table {
@@ -174,4 +174,16 @@
 #mchat-bbcodes {
 	padding: 5px;
 	display: none;
+}
+
+#mchat-bbcodes #format-buttons {
+	margin: 0;
+}
+
+#mchat-bbcodes #colour_palette label {
+	display: none;
+}
+
+#mchat-bbcodes #colour_palette table {
+	margin: 0 auto 5px;
 }

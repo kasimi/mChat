@@ -349,11 +349,11 @@ class functions_mchat
 	 */
 	public function mchat_sql_append_forbidden_bbcodes($sql_where)
 	{
-		$disallowed_bbcodes = explode('|', strtoupper($this->config['mchat_bbcode_disallowed']));
+		$disallowed_bbcodes = explode('|', $this->config['mchat_bbcode_disallowed']);
 
 		if (!empty($disallowed_bbcodes))
 		{
-			$sql_where .= ' AND ' . $this->db->sql_in_set('UPPER(b.bbcode_tag)', $disallowed_bbcodes, true);
+			$sql_where .= ' AND ' . $this->db->sql_in_set('b.bbcode_tag', $disallowed_bbcodes, true);
 		}
 
 		return $sql_where;

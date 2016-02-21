@@ -47,7 +47,7 @@ class mchat
 	protected $php_ext;
 
 	/** @var boolean */
-	protected $is_mchat_rendered = false;
+	protected $remove_disallowed_bbcodes = false;
 
 	/**
 	 * Constructor
@@ -440,23 +440,6 @@ class mchat
 	}
 
 	/**
-	 * Appends a condition to the WHERE key of the SQL array to not fetch disallowed BBCodes from the database
-	 *
-	 * @param array $sql_ary
-	 * @return array
-	 */
-	public function remove_disallowed_bbcodes($sql_ary)
-	{
-		// Add disallowed BBCodes to the template only if we're rendering for mChat
-		if ($this->is_mchat_rendered)
-		{
-			$sql_ary['WHERE'] = $this->functions_mchat->mchat_sql_append_forbidden_bbcodes($sql_ary['WHERE']);
-		}
-
-		return $sql_ary;
-	}
-
-	/**
 	 * Renders data for a page
 	 *
 	 * @param string $page The page we are rendering for, one of index|custom|archive
@@ -477,7 +460,7 @@ class mchat
 			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || !empty($this->config['mchat_rules']),
 			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
 			'MCHAT_ALLOW_SMILES'			=> $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies'),
-			'MCHAT_ALLOW_BBCODES'			=> $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode'),
+			'S_BBCODE_ALLOWED'				=> $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode'),
 			'MCHAT_MESSAGE_TOP'				=> $this->config['mchat_message_top'],
 			'MCHAT_ARCHIVE_URL'				=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive')),
 			'MCHAT_INDEX_HEIGHT'			=> $this->config['mchat_index_height'],
@@ -540,8 +523,6 @@ class mchat
 		{
 			add_form_key('mchat');
 		}
-
-		$this->is_mchat_rendered = true;
 
 		/**
 		* Event render_helper_aft
@@ -718,33 +699,46 @@ class mchat
 	 */
 	protected function assign_bbcodes_smilies()
 	{
-		// Display custom bbcodes
+		// Display BBCodes
 		if ($this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode'))
 		{
-			$default_bbcodes = array('B', 'I', 'U', 'QUOTE', 'CODE', 'LIST', 'IMG', 'URL', 'SIZE', 'COLOR', 'EMAIL', 'FLASH');
+			$bbcode_template_vars = array(
+				'quote'	=> array(
+					'allow'			=> true,
+					'template_var'	=> 'S_BBCODE_QUOTE',
+				),
+				'img'	=> array(
+					'allow'			=> true,
+					'template_var'	=> 'S_BBCODE_IMG',
+				),
+				'url'	=> array(
+					'allow'			=> $this->config['allow_post_links'],
+					'template_var'	=> 'S_LINKS_ALLOWED',
+				),
+				'flash'	=> array(
+					'allow'			=> $this->config['allow_post_flash'],
+					'template_var'	=> 'S_BBCODE_FLASH',
+				),
+			);
 
-			// Let's remove the default bbcodes
-			$disallowed_bbcode_array = explode('|', strtoupper($this->config['mchat_bbcode_disallowed']));
-
-			foreach ($default_bbcodes as $default_bbcode)
+			foreach ($bbcode_template_vars as $bbcode => $option)
 			{
-				if (!in_array($default_bbcode, $disallowed_bbcode_array))
-				{
-					$this->template->assign_vars(array(
-						'S_MCHAT_BBCODE_' . $default_bbcode => true,
-					));
-				}
+				$is_disallowed = preg_match('#(^|\|)' . $bbcode . '($|\|)#Usi', $this->config['mchat_bbcode_disallowed']) || !$option['allow'];
+				$this->template->assign_var($option['template_var'], !$is_disallowed);
 			}
+
+			$this->template->assign_var('S_DISALLOWED_BBCODES', $this->config['mchat_bbcode_disallowed']);
 
 			if (!function_exists('display_custom_bbcodes'))
 			{
 				include($this->root_path . 'includes/functions_display.' . $this->php_ext);
 			}
 
+			$this->remove_disallowed_bbcodes = true;
 			display_custom_bbcodes();
 		}
 
-		// Smile row
+		// Display smilies
 		if ($this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies'))
 		{
 			if (!function_exists('generate_smilies'))
@@ -754,6 +748,23 @@ class mchat
 
 			generate_smilies('inline', 0);
 		}
+	}
+
+	/**
+	 * Appends a condition to the WHERE key of the SQL array to not fetch disallowed BBCodes from the database
+	 *
+	 * @param array $sql_ary
+	 * @return array
+	 */
+	public function remove_disallowed_bbcodes($sql_ary)
+	{
+		// Add disallowed BBCodes to the template only if we're rendering for mChat
+		if ($this->remove_disallowed_bbcodes)
+		{
+			$sql_ary['WHERE'] = $this->functions_mchat->mchat_sql_append_forbidden_bbcodes($sql_ary['WHERE']);
+		}
+
+		return $sql_ary;
 	}
 
 	/**

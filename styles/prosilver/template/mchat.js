@@ -197,7 +197,7 @@ jQuery(function($) {
 							mChat.$$('main').animate({scrollTop: mChat.messageTop ? 0 : mChat.$$('main')[0].scrollHeight}, 'slow');
 						}, i * 600);
 						if (mChat.editDeleteLimit && $message.data('edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
-							var id = $message.attr('id');
+							var id = $message.prop('id');
 							setTimeout(function() {
 								$('#' + id).find('[data-mchat-action="edit"], [data-mchat-action="del"]').fadeOut('slow', function() {
 									$(this).remove();
@@ -415,39 +415,30 @@ jQuery(function($) {
 			mChat.$$('main').animate({scrollTop: mChat.$$('main')[0].scrollHeight}, 'slow', 'swing');
 		}
 
-		mChat.$$('user-sound').prop('checked', mChat.playSound && !Cookies.get('mchat_no_sound'));
-
-		if (Cookies.get('mchat_show_smilies')) {
-			mChat.$$('smilies').slideToggle('slow');
-		}
-
-		if (Cookies.get('mchat_show_bbcodes')) {
-			mChat.$$('bbcodes').slideToggle('slow', function() {
-				if (Cookies.get('mchat_show_colour')) {
-					mChat.$$('colour').slideToggle('slow');
-				}
-			});
-		}
-
-		if (Cookies.get('mchat_show_userlist')) {
-			mChat.$$('userlist').slideToggle('slow');
-		}
-
-		mChat.$$('colour').html(phpbb.colorPalette('h', 15, 10)).on('click', 'a', function(e) {
-			var color = $(this).data('color');
-			bbfontstyle('[color=#' + color + ']', '[/color]');
-			e.preventDefault();
-		});
-
 		if (!mChat.$$('user-sound').prop('checked')) {
 			Cookies.set('mchat_no_sound', 'yes');
 		}
+
+		mChat.$$('user-sound').prop('checked', mChat.playSound && !Cookies.get('mchat_no_sound'));
 
 		mChat.$$('user-sound').change(function() {
 			if (this.checked) {
 				Cookies.remove('mchat_no_sound');
 			} else {
 				Cookies.set('mchat_no_sound', 'yes');
+			}
+		});
+
+		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
+			$('#format-buttons .bbcode-' + bbcode).remove();
+		});
+
+		$('#colour_palette').wrap('<div id="mchat-colour"></div>').show();
+		$('#bbpalette').prop('onclick', null).attr('data-mchat-toggle', 'colour');
+
+		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
+			if (Cookies.get('mchat_show_' + elem)) {
+				mChat.$$(elem).toggle();
 			}
 		});
 
