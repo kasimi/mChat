@@ -119,42 +119,44 @@
 							<!-- ELSE -->
 								<textarea name="message" class="inputbox no-auto-resize" id="mchat-input" cols="32" rows="5"></textarea>
 							<!-- ENDIF -->
-							<br />
-							<input id="mchat-add" type="button" class="button2" data-mchat-action="add" value="{L_MCHAT_ADD}" />
-							<!-- IF MCHAT_USER_TIMEOUT or MCHAT_PAUSE_ON_INPUT -->
-								<input id="mchat-clear" type="button" class="button2" data-mchat-action="clear" value="{L_RESET}" />
-							<!-- ENDIF -->
-							<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
-								<input type="button" class="button2" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
-							<!-- ENDIF -->
-							<!-- IF S_BBCODE_ALLOWED -->
-								<input type="button" class="button2" data-mchat-toggle="bbcodes" value="{L_MCHAT_BBCODES}" />
-							<!-- ENDIF -->
 						<!-- ENDIF -->
-						<!-- EVENT dmzx_mchat_buttons_mid -->
-						<!-- IF MCHAT_READ_ARCHIVE_BUTTON -->
-							<input type="button" class="button2" onclick="window.location.href = '{MCHAT_ARCHIVE_URL}';" value="{L_MCHAT_ARCHIVE}" />
+						<!-- EVENT dmzx_mchat_buttons_before -->
+						<div id="mchat-buttons">
+							<!-- IF MCHAT_ALLOW_USE -->
+								<input id="mchat-add" type="button" class="button2" data-mchat-action="add" value="{L_MCHAT_ADD}" />
+								<!-- IF MCHAT_USER_TIMEOUT or MCHAT_PAUSE_ON_INPUT -->
+									<input id="mchat-clear" type="button" class="button2" data-mchat-action="clear" value="{L_RESET}" />
+								<!-- ENDIF -->
+								<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
+									<input type="button" class="button2" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
+								<!-- ENDIF -->
+								<!-- IF S_BBCODE_ALLOWED -->
+									<input type="button" class="button2" data-mchat-toggle="bbcodes" value="{L_MCHAT_BBCODES}" />
+								<!-- ENDIF -->
+								<!-- IF MCHAT_RULES -->
+									<input type="button" class="button2" onclick="popup('{U_MCHAT_RULES}', 450, 275); return false;" value="{L_MCHAT_RULES}" />
+								<!-- ENDIF -->
+							<!-- ENDIF -->
+							<!-- EVENT dmzx_mchat_buttons_mid -->
+							<!-- IF MCHAT_READ_ARCHIVE_BUTTON -->
+								<input type="button" class="button2" onclick="window.location.href = '{MCHAT_ARCHIVE_URL}';" value="{L_MCHAT_ARCHIVE}" />
+							<!-- ENDIF -->
+						</div>
+						<!-- EVENT dmzx_mchat_buttons_after -->
+						<!-- IF MCHAT_ALLOW_USE and S_BBCODE_ALLOWED -->
+							<div id="mchat-bbcodes">
+								<!-- INCLUDE posting_buttons.html -->
+							</div>
 						<!-- ENDIF -->
-						<!-- IF MCHAT_ALLOW_USE -->
-							<!-- IF MCHAT_RULES -->
-								<input type="button" class="button2" onclick="popup('{U_MCHAT_RULES}', 450, 275); return false;" value="{L_MCHAT_RULES}" />
-							<!-- ENDIF -->
-							<!-- EVENT dmzx_mchat_buttons_after -->
-							<!-- IF S_BBCODE_ALLOWED -->
-								<div id="mchat-bbcodes">
-									<!-- INCLUDE posting_buttons.html -->
-								</div>
-							<!-- ENDIF -->
-							<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
-								<div id="mchat-smilies" class="hidden">
-									<!-- BEGIN smiley -->
-									<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
-									<!-- END smiley -->
-									<!-- IF S_SHOW_SMILEY_LINK -->
-										<a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
-									<!-- ENDIF -->
-								</div>
-							<!-- ENDIF -->
+						<!-- IF MCHAT_ALLOW_USE and MCHAT_ALLOW_SMILES and .smiley -->
+							<div id="mchat-smilies" class="hidden">
+								<!-- BEGIN smiley -->
+								<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
+								<!-- END smiley -->
+								<!-- IF S_SHOW_SMILEY_LINK -->
+									<a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
+								<!-- ENDIF -->
+							</div>
 						<!-- ENDIF -->
 						<!-- EVENT dmzx_mchat_body_smiley_after -->
 						<div id="mchat-status">
