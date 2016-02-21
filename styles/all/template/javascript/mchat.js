@@ -433,7 +433,7 @@ jQuery(function($) {
 			$('#format-buttons .bbcode-' + bbcode).remove();
 		});
 
-		$('#colour_palette').wrap('<div id="mchat-colour"></div>').show();
+		$('#colour_palette').insertAfter('#format-buttons').wrap('<div id="mchat-colour"></div>').show();
 		$('#bbpalette').prop('onclick', null).attr('data-mchat-toggle', 'colour');
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
