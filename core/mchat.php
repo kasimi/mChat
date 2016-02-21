@@ -789,7 +789,7 @@ class mchat
 	{
 		// Must have something other than bbcode in the message
 		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
-		if (!$message || !utf8_strlen($message_chars))
+		if (!utf8_strlen($message_chars))
 		{
 			throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
 		}
