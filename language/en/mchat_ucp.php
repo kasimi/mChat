@@ -42,6 +42,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_DISPLAY_STATS_INDEX'		=> 'Display who is chatting on index',
 	'MCHAT_DISPLAY_NEW_TOPICS'		=> 'Display new topics in the chat',
 	'MCHAT_DISPLAY_AVATARS'			=> 'Display avatars in the chat',
+	'MCHAT_CAPITAL_LETTER'			=> 'Capital first letter in your messages',
 	'MCHAT_CHAT_AREA'				=> 'Input type',
 	'MCHAT_CHAT_AREA_EXPLAIN'		=> 'The type of area to use for writing messages',
 	'MCHAT_INPUT_AREA'				=> 'Input area',

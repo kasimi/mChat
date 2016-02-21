@@ -237,7 +237,12 @@ class mchat
 
 		$message = $this->request->variable('message', '', true);
 
-		$sql_ary = $this->process_message(utf8_ucfirst($message), array(
+		if ($this->user->data['user_mchat_capital_letter'])
+		{
+			$message = utf8_ucfirst($message);
+		}
+
+		$sql_ary = $this->process_message($message, array(
 			'user_id'			=> $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
 			'message_time'		=> time(),

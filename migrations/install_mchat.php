@@ -178,6 +178,7 @@ class install_mchat extends \phpbb\db\migration\migration
 					'user_mchat_stats_index'	=> array('BOOL', '1'),
 					'user_mchat_topics' 		=> array('BOOL', '1'),
 					'user_mchat_avatars' 		=> array('BOOL', '1'),
+					'user_mchat_capital_letter'	=> array('BOOL', '1'),
 					'user_mchat_input_area'		=> array('BOOL', '1'),
 				),
 			),
