@@ -190,8 +190,8 @@ jQuery(function($) {
 					mChat.sound('add');
 					mChat.notice();
 					mChat.$$('no-messages').remove();
-					mChat.messageLastId = $html.last().data('id');
-					$html.hide().each(function(i) {
+					mChat.messageLastId = $html.first().data('id');
+					(mChat.messageTop ? $($html.get().reverse()) : $html).hide().each(function(i) {
 						var $message = $(this);
 						setTimeout(function() {
 							if (mChat.messageTop) {
