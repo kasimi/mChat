@@ -85,8 +85,8 @@
 	width: 98%;
 }
 
-.mchat-text ul {
-	margin-left: 10px;
+.mchat-text ul, .mchat-text ol {
+	list-style-position: inside;
 }
 
 .mchat-text blockquote {
@@ -146,7 +146,7 @@
 
 .mchat-avatar {
 	float: left;
-    width: 40px;
+	width: 40px;
 	padding-right: 5px;
 }
 
