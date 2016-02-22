@@ -144,9 +144,14 @@ jQuery(function($) {
 			mChat.$$('confirm').find('textarea').hide();
 			mChat.$$('confirm').find('p').text(mChat.delConfirm);
 			phpbb.confirm(mChat.$$('confirm'), function() {
+				var delId = $container.data('id');
 				ajaxRequest('del', true, {
-					message_id: $container.data('id')
+					message_id: delId
 				}).done(function() {
+					var $messages = mChat.$$('messages').children();
+					var idPredicate = function(id) { return id != delId; };
+					mChat.updateId('messageFirstId', mChat.messageTop ? $($messages.get().reverse()) : $messages, idPredicate);
+					mChat.updateId('messageLastId', mChat.messageTop ? $messages : $($messages.get().reverse()), idPredicate);
 					mChat.sound('del');
 					$container.fadeOut('slow', function() {
 						$container.remove();
@@ -160,13 +165,13 @@ jQuery(function($) {
 		refresh: function(message) {
 			var $messages = mChat.$$('messages').children();
 			var data = {
-				message_last_id: $messages.filter(mChat.messageTop ? ':first' : ':last').data('id')
+				message_last_id: mChat.messageLastId
 			};
 			if (message) {
 				data.message = message;
 			}
 			if (mChat.liveUpdates) {
-				data.message_first_id = $messages.filter(mChat.messageTop ? ':last' : ':first').data('id');
+				data.message_first_id = mChat.messageFirstId;
 				data.message_edits = {};
 				var now = Math.floor(Date.now() / 1000);
 				$.each($messages, function() {
@@ -185,6 +190,7 @@ jQuery(function($) {
 					mChat.sound('add');
 					mChat.notice();
 					mChat.$$('no-messages').remove();
+					mChat.messageLastId = $html.last().data('id');
 					$html.hide().each(function(i) {
 						var $message = $(this);
 						setTimeout(function() {
@@ -222,6 +228,9 @@ jQuery(function($) {
 					});
 				}
 				if (json.del) {
+					var idPredicate = function(id) { return $.inArray(id, json.del) === -1; };
+					mChat.updateId('messageFirstId', mChat.messageTop ? $($messages.get().reverse()) : $messages, idPredicate);
+					mChat.updateId('messageLastId', mChat.messageTop ? $messages : $($messages.get().reverse()), idPredicate);
 					var isFirstDelete = true;
 					$.each(json.del, function(i, id) {
 						var $container = $('#mchat-message-' + id);
@@ -322,6 +331,16 @@ jQuery(function($) {
 			mChat.$$('refresh-paused').show();
 			mChat.$$('refresh-text').html(mChat.refreshNo);
 		},
+		updateId: function(idKey, $messages, idPredicate) {
+			mChat[idKey] = 0;
+			$messages.each(function() {
+				var id = $(this).data('id');
+				if (idPredicate(id)) {
+					mChat[idKey] = id;
+					return false;
+				}
+			});
+		},
 		mention: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = mChat.entityDecode($container.data('username'));
@@ -369,6 +388,10 @@ jQuery(function($) {
 
 	mChat.cache = {};
 	mChat.$$('confirm').detach().show();
+
+	var $messages = mChat.$$('messages').children();
+	mChat.messageFirstId = $messages.eq(mChat.messageTop ? -1 : 0).data('id');
+	mChat.messageLastId = $messages.eq(mChat.messageTop ? 0 : -1).data('id');
 
 	mChat.hiddenFields = {};
 	$('#mchat-form').find('input[type=hidden]').each(function() {
