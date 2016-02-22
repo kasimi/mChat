@@ -110,12 +110,12 @@ jQuery(function($) {
 				return;
 			}
 			mChat.pauseSession();
-			mChat.$$('add').prop('disabled', true);
+			mChat.$$('add').add(mChat.$$('input')).prop('disabled', true);
 			mChat.refresh(mChat.$$('input').val()).done(function() {
 				mChat.$$('input').val('');
 			}).always(function() {
 				mChat.$$('input').focus();
-				mChat.$$('add').prop('disabled', false);
+				mChat.$$('add').add(mChat.$$('input')).prop('disabled', false);
 				mChat.resetSession(false);
 			});
 		},
