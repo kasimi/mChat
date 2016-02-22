@@ -701,7 +701,7 @@ class mchat
 				$this->template->assign_var($option['template_var'], !$is_disallowed);
 			}
 
-			$this->template->assign_var('S_DISALLOWED_BBCODES', $this->config['mchat_bbcode_disallowed']);
+			$this->template->assign_var('S_DISALLOWED_BBCODES', str_replace('=', '-', $this->config['mchat_bbcode_disallowed']));
 
 			if (!function_exists('display_custom_bbcodes'))
 			{
