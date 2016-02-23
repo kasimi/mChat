@@ -16,12 +16,12 @@ if (typeof document.hasFocus === 'undefined') {
 	};
 }
 
-jQuery(function($) {
-	jQuery.fn.reverse = function(reverse) {
-		reverse = typeof reverse === 'undefined' ? true : reverse;
-		return reverse ? $(this.toArray().reverse()) : this;
-	};
+jQuery.fn.reverse = function(reverse) {
+	reverse = typeof reverse === 'undefined' ? true : reverse;
+	return reverse ? $(this.toArray().reverse()) : this;
+};
 
+jQuery(function($) {
 	var ajaxRequest = function(mode, sendHiddenFields, data) {
 		var deferred = $.Deferred();
 		var promise = deferred.promise();
