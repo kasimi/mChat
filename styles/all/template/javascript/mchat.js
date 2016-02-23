@@ -17,6 +17,11 @@ if (typeof document.hasFocus === 'undefined') {
 }
 
 jQuery(function($) {
+	jQuery.fn.reverse = function(reverse) {
+		reverse = typeof reverse === 'undefined' ? true : reverse;
+		return reverse ? $(this.toArray().reverse()) : this;
+	};
+
 	var ajaxRequest = function(mode, sendHiddenFields, data) {
 		var deferred = $.Deferred();
 		var promise = deferred.promise();
@@ -150,8 +155,8 @@ jQuery(function($) {
 				}).done(function() {
 					var $messages = mChat.$$('messages').children();
 					var idPredicate = function(id) { return id != delId; };
-					mChat.updateId('messageFirstId', mChat.messageTop ? $($messages.get().reverse()) : $messages, idPredicate);
-					mChat.updateId('messageLastId', mChat.messageTop ? $messages : $($messages.get().reverse()), idPredicate);
+					mChat.updateId('messageFirstId', $messages.reverse(mChat.messageTop), idPredicate);
+					mChat.updateId('messageLastId', $messages.reverse(!mChat.messageTop), idPredicate);
 					mChat.sound('del');
 					$container.fadeOut('slow', function() {
 						$container.remove();
@@ -191,7 +196,7 @@ jQuery(function($) {
 					mChat.notice();
 					mChat.$$('no-messages').remove();
 					mChat.messageLastId = $html.first().data('id');
-					(mChat.messageTop ? $($html.get().reverse()) : $html).hide().each(function(i) {
+					$html.reverse(mChat.messageTop).hide().each(function(i) {
 						var $message = $(this);
 						setTimeout(function() {
 							if (mChat.messageTop) {
@@ -229,8 +234,8 @@ jQuery(function($) {
 				}
 				if (json.del) {
 					var idPredicate = function(id) { return $.inArray(id, json.del) === -1; };
-					mChat.updateId('messageFirstId', mChat.messageTop ? $($messages.get().reverse()) : $messages, idPredicate);
-					mChat.updateId('messageLastId', mChat.messageTop ? $messages : $($messages.get().reverse()), idPredicate);
+					mChat.updateId('messageFirstId', $messages.reverse(mChat.messageTop), idPredicate);
+					mChat.updateId('messageLastId', $messages.reverse(!mChat.messageTop), idPredicate);
 					var isFirstDelete = true;
 					$.each(json.del, function(i, id) {
 						var $container = $('#mchat-message-' + id);
