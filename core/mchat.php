@@ -644,7 +644,6 @@ class mchat
 			}
 
 			$this->template->assign_block_vars('mchatrow', array(
-				'S_ROW_COUNT'			=> $i,
 				'MCHAT_ALLOW_BAN'		=> $this->auth->acl_get('a_authusers'),
 				'MCHAT_ALLOW_EDIT'		=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'		=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
