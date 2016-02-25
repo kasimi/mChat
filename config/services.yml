@@ -34,7 +34,7 @@ services:
     dmzx.mchat.core:
         class: dmzx\mchat\core\mchat
         arguments:
-            - '@dmzx.mchat.functions_mchat'
+            - '@dmzx.mchat.functions'
             - '@config'
             - '@controller.helper'
             - '@template'
@@ -45,8 +45,8 @@ services:
             - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
-    dmzx.mchat.functions_mchat:
-        class: dmzx\mchat\core\functions_mchat
+    dmzx.mchat.functions:
+        class: dmzx\mchat\core\functions
         arguments:
             - '@config'
             - '@user'
@@ -71,7 +71,7 @@ services:
     dmzx.mchat.main.listener:
         class: dmzx\mchat\event\main_listener
         arguments:
-            - '@dmzx.mchat.functions_mchat'
+            - '@dmzx.mchat.functions'
             - '@dmzx.mchat.core'
             - '@controller.helper'
             - '@user'

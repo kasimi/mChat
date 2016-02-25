@@ -11,7 +11,7 @@
 
 namespace dmzx\mchat\core;
 
-class functions_mchat
+class functions
 {
 	/** @var \phpbb\config\config */
 	protected $config;

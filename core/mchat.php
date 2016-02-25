@@ -13,8 +13,8 @@ namespace dmzx\mchat\core;
 
 class mchat
 {
-	/** @var \dmzx\mchat\core\functions_mchat */
-	protected $functions_mchat;
+	/** @var \dmzx\mchat\core\functions */
+	protected $functions;
 
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -52,7 +52,7 @@ class mchat
 	/**
 	 * Constructor
 	 *
-	 * @param \dmzx\mchat\core\functions_mchat	$functions_mchat
+	 * @param \dmzx\mchat\core\functions		$functions
 	 * @param \phpbb\config\config				$config
 	 * @param \phpbb\controller\helper			$helper
 	 * @param \phpbb\template\template			$template
@@ -64,19 +64,19 @@ class mchat
 	 * @param string							$root_path
 	 * @param string							$php_ext
 	 */
-	public function __construct(\dmzx\mchat\core\functions_mchat $functions_mchat, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher, $root_path, $php_ext)
+	public function __construct(\dmzx\mchat\core\functions $functions, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher, $root_path, $php_ext)
 	{
-		$this->functions_mchat	= $functions_mchat;
-		$this->config			= $config;
-		$this->helper			= $helper;
-		$this->template			= $template;
-		$this->user				= $user;
-		$this->auth				= $auth;
-		$this->pagination		= $pagination;
-		$this->request			= $request;
-		$this->dispatcher		= $dispatcher;
-		$this->root_path		= $root_path;
-		$this->php_ext			= $php_ext;
+		$this->functions	= $functions;
+		$this->config		= $config;
+		$this->helper		= $helper;
+		$this->template		= $template;
+		$this->user			= $user;
+		$this->auth			= $auth;
+		$this->pagination	= $pagination;
+		$this->request		= $request;
+		$this->dispatcher	= $dispatcher;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
 	}
 
 	/**
@@ -118,9 +118,9 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NO_CUSTOM_PAGE');
 		}
 
-		$this->functions_mchat->mchat_prune();
+		$this->functions->mchat_prune();
 
-		$this->functions_mchat->mchat_add_user_session();
+		$this->functions->mchat_add_user_session();
 
 		$this->assign_whois();
 
@@ -151,7 +151,7 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS_ARCHIVE');
 		}
 
-		$this->functions_mchat->mchat_prune();
+		$this->functions->mchat_prune();
 
 		$this->template->assign_var('MCHAT_ARCHIVE_PAGE', true);
 
@@ -230,7 +230,7 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
-		if ($this->functions_mchat->mchat_is_user_flooding())
+		if ($this->functions->mchat_is_user_flooding())
 		{
 			throw new \phpbb\exception\http_exception(400, 'MCHAT_NOACCESS');
 		}
@@ -248,7 +248,7 @@ class mchat
 			'message_time'		=> time(),
 		));
 
-		$this->functions_mchat->mchat_action('add', $sql_ary);
+		$this->functions->mchat_action('add', $sql_ary);
 
 		/**
 		 * Event render_helper_add
@@ -275,7 +275,7 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
-		$author = $this->functions_mchat->mchat_author_for_message($message_id);
+		$author = $this->functions->mchat_author_for_message($message_id);
 
 		if (!$author || !$this->auth_message('u_mchat_edit', $author['user_id'], $author['message_time']))
 		{
@@ -291,7 +291,7 @@ class mchat
 		));
 
 		// TODO Don't update the message if the user submitted it unedited
-		$this->functions_mchat->mchat_action('edit', $sql_ary, $message_id, $author['username']);
+		$this->functions->mchat_action('edit', $sql_ary, $message_id, $author['username']);
 
 		/**
 		 * Event render_helper_edit
@@ -302,7 +302,7 @@ class mchat
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_edit');
 
 		$sql_where = 'm.message_id = ' . (int) $message_id;
-		$rows = $this->functions_mchat->mchat_get_messages($sql_where, 1);
+		$rows = $this->functions->mchat_get_messages($sql_where, 1);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows);
@@ -324,7 +324,7 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
-		$author = $this->functions_mchat->mchat_author_for_message($message_id);
+		$author = $this->functions->mchat_author_for_message($message_id);
 
 		if (!$author || !$this->auth_message('u_mchat_delete', $author['user_id'], $author['message_time']))
 		{
@@ -339,7 +339,7 @@ class mchat
 		 */
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_delete');
 
-		$this->functions_mchat->mchat_action('del', null, $message_id, $author['username']);
+		$this->functions->mchat_action('del', null, $message_id, $author['username']);
 
 		return array('del' => true);
 	}
@@ -374,7 +374,7 @@ class mchat
 			$sql_where = '(' . $sql_where . ') AND m.forum_id = 0';
 		}
 
-		$rows = $this->functions_mchat->mchat_get_messages($sql_where);
+		$rows = $this->functions->mchat_get_messages($sql_where);
 		$rows_refresh = array();
 		$rows_edit = array();
 
@@ -416,7 +416,7 @@ class mchat
 		// Assign deleted messages
 		if ($this->config['mchat_live_updates'] && $message_last_id > 0)
 		{
-			$deleted_message_ids = $this->functions_mchat->mchat_deleted_ids($message_first_id);
+			$deleted_message_ids = $this->functions->mchat_deleted_ids($message_first_id);
 			if (!empty($deleted_message_ids))
 			{
 				$response['del'] = $deleted_message_ids;
@@ -516,7 +516,7 @@ class mchat
 		$sql_where = $this->user->data['user_mchat_topics'] ? '' : 'm.forum_id = 0';
 		$limit = $page == 'archive' ? $this->config['mchat_archive_limit'] : $this->config[$page == 'index' ? 'mchat_message_num' : 'mchat_message_limit'];
 		$start = $page == 'archive' ? $this->request->variable('start', 0) : 0;
-		$rows = $this->functions_mchat->mchat_get_messages($sql_where, $limit, $start);
+		$rows = $this->functions->mchat_get_messages($sql_where, $limit, $start);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows);
@@ -525,7 +525,7 @@ class mchat
 		if ($page == 'archive')
 		{
 			$archive_url = $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive'));
-			$total_messages = $this->functions_mchat->mchat_total_message_count();
+			$total_messages = $this->functions->mchat_total_message_count();
 			$this->pagination->generate_template_pagination($archive_url, 'pagination', 'start', $total_messages, $limit, $start);
 			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', $this->user->lang('MCHAT_TOTALMESSAGES', $total_messages));
 		}
@@ -533,7 +533,7 @@ class mchat
 		// Render legend
 		if ($page != 'index' && $this->config['mchat_whois'])
 		{
-			$legend = $this->functions_mchat->mchat_legend();
+			$legend = $this->functions->mchat_legend();
 			$this->template->assign_var('LEGEND', implode(', ', $legend));
 		}
 
@@ -598,7 +598,7 @@ class mchat
 			$rows = array_reverse($rows);
 		}
 
-		$foes = $this->functions_mchat->mchat_foes();
+		$foes = $this->functions->mchat_foes();
 
 		$this->template->destroy_block_vars('mchatrow');
 
@@ -740,7 +740,7 @@ class mchat
 		// Add disallowed BBCodes to the template only if we're rendering for mChat
 		if ($this->remove_disallowed_bbcodes)
 		{
-			$sql_ary['WHERE'] = $this->functions_mchat->mchat_sql_append_forbidden_bbcodes($sql_ary['WHERE']);
+			$sql_ary['WHERE'] = $this->functions->mchat_sql_append_forbidden_bbcodes($sql_ary['WHERE']);
 		}
 
 		return $sql_ary;
@@ -753,7 +753,7 @@ class mchat
 	{
 		if ($this->config['mchat_whois'] || $this->config['mchat_stats_index'] && $this->user->data['user_mchat_stats_index'])
 		{
-			$mchat_stats = $this->functions_mchat->mchat_active_users();
+			$mchat_stats = $this->functions->mchat_active_users();
 			$this->template->assign_vars(array(
 				'MCHAT_INDEX_STATS'		=> $this->config['mchat_stats_index'] && $this->user->data['user_mchat_stats_index'],
 				'MCHAT_USERS_COUNT'		=> $mchat_stats['mchat_users_count'],
