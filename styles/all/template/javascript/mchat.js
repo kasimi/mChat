@@ -404,39 +404,6 @@ jQuery(function($) {
 	});
 
 	if (!mChat.archiveMode) {
-		$.fn.autoGrowInput = function() {
-			this.filter('input:text').each(function() {
-				var comfortZone = 20;
-				var minWidth = $(this).width();
-				var val = '';
-				var input = $(this);
-				var testSubject = $('<div>').css({
-					position: 'absolute',
-					top: -9999,
-					left: -9999,
-					width: 'auto',
-					fontSize: input.css('fontSize'),
-					fontFamily: input.css('fontFamily'),
-					fontWeight: input.css('fontWeight'),
-					letterSpacing: input.css('letterSpacing'),
-					whiteSpace: 'nowrap'
-				});
-				testSubject.insertAfter(input);
-				$(this).on('keypress blur change submit focus', function() {
-					if (val === (val = input.val())) {
-						return;
-					}
-					var escaped = val.replace(/&/g, '&amp;').replace(/\s/g, ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-					var testerWidth = testSubject.html(escaped).width();
-					var newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;
-					if ((newWidth < input.width() && newWidth >= minWidth) || (newWidth > minWidth && newWidth < $('.mchat-panel').width() - comfortZone)) {
-						input.width(newWidth);
-					}
-				});
-			});
-			return this;
-		};
-
 		mChat.resetSession(true);
 
 		if (!mChat.messageTop) {
@@ -480,7 +447,10 @@ jQuery(function($) {
 			});
 		}
 
-		mChat.$$('input').autoGrowInput();
+		mChat.$$('input').autoGrowInput({
+			minWidth: mChat.$$('input').width(),
+			maxWidth: mChat.$$('form').width() - (mChat.$$('input').outerWidth(true) - mChat.$$('input').width())
+		});
 	}
 
 	$(window).on('beforeunload', function() {
