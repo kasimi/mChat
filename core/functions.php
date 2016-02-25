@@ -167,6 +167,8 @@ class functions
 
 	/**
 	 * Inserts the current user into the mchat_sessions table
+	 *
+	 * @return bool
 	 */
 	public function mchat_add_user_session()
 	{
@@ -175,6 +177,8 @@ class functions
 		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
 			WHERE user_lastupdate < ' . $check_time;
 		$this->db->sql_query($sql);
+
+		$is_new_session = false;
 
 		if ($this->user->data['user_type'] == USER_FOUNDER || $this->user->data['user_type'] == USER_NORMAL && $this->user->data['user_id'] != ANONYMOUS && !$this->user->data['is_bot'])
 		{
@@ -193,6 +197,7 @@ class functions
 			}
 			else
 			{
+				$is_new_session = true;
 				$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
 					'user_id'			=> $this->user->data['user_id'],
 					'user_ip'			=> $this->user->data['user_ip'],
@@ -202,6 +207,8 @@ class functions
 
 			$this->db->sql_query($sql);
 		}
+
+		return $is_new_session;
 	}
 
 	/**
@@ -480,27 +487,30 @@ class functions
 	 * @param array $sql_ary
 	 * @param int $message_id
 	 * @param string $log_username
+	 * @return bool
 	 */
 	public function mchat_action($action, $sql_ary = null, $message_id = 0, $log_username = '')
 	{
+		$is_new_session = false;
+
 		switch ($action)
 		{
 			// User adds a message
 			case 'add':
-				$this->mchat_add_user_session();
+				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('INSERT INTO ' . $this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 				break;
 
 			// User edits a message
 			case 'edit':
-				$this->mchat_add_user_session();
+				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('UPDATE ' . $this->mchat_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE message_id = ' . (int) $message_id);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EDITED_MCHAT', false, array($log_username));
 				break;
 
 			// User deletes a message
 			case 'del':
-				$this->mchat_add_user_session();
+				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE message_id = ' . (int) $message_id);
 				$this->db->sql_query('INSERT INTO ' . $this->mchat_deleted_messages_table . ' ' . $this->db->sql_build_array('INSERT', array('message_id' => (int) $message_id)));
 				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
@@ -529,5 +539,7 @@ class functions
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED', false, array($log_username));
 				break;
 		}
+
+		return $is_new_session;
 	}
 }

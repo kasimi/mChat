@@ -252,6 +252,9 @@ jQuery(function($) {
 						}
 					});
 				}
+				if (json.whois) {
+					mChat.whois();
+				}
 				if (mChat.refreshInterval) {
 					mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
 					mChat.$$('refresh-ok').show();

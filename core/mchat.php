@@ -250,7 +250,7 @@ class mchat
 			'message_time'		=> time(),
 		));
 
-		$this->functions->mchat_action('add', $sql_ary);
+		$is_new_session = $this->functions->mchat_action('add', $sql_ary);
 
 		/**
 		 * Event render_helper_add
@@ -260,7 +260,14 @@ class mchat
 		 */
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_add');
 
-		return $this->action_refresh();
+		$data = $this->action_refresh();
+
+		if ($is_new_session)
+		{
+			$data['whois'] = true;
+		}
+
+		return $data;
 	}
 
 	/**
@@ -292,7 +299,6 @@ class mchat
 			'edit_time' => time(),
 		));
 
-		// TODO Don't update the message if the user submitted it unedited
 		$this->functions->mchat_action('edit', $sql_ary, $message_id, $author['username']);
 
 		/**
