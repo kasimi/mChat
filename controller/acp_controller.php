@@ -38,6 +38,9 @@ class acp_controller
 	protected $mchat_table;
 
 	/** @var string */
+	protected $mchat_deleted_messages_table;
+
+	/** @var string */
 	protected $root_path;
 
 	/** @var string */
@@ -46,29 +49,31 @@ class acp_controller
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\config\config $config
-	 * @param \phpbb\template\template $template
-	 * @param \phpbb\log\log_interface $log
-	 * @param \phpbb\user $user
-	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param \phpbb\cache\service $cache
-	 * @param \phpbb\request\request $request
-	 * @param $mchat_table
-	 * @param $root_path
-	 * @param $php_ext
+	 * @param \phpbb\config\config				$config
+	 * @param \phpbb\template\template			$template
+	 * @param \phpbb\log\log_interface			$log
+	 * @param \phpbb\user						$user
+	 * @param \phpbb\db\driver\driver_interface	$db
+	 * @param \phpbb\cache\service				$cache
+	 * @param \phpbb\request\request			$request
+	 * @param string							$mchat_table
+	 * @param string							$mchat_deleted_messages_table
+	 * @param string							$root_path
+	 * @param string							$php_ext
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, $mchat_table, $root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, $mchat_table, $mchat_deleted_messages_table, $root_path, $php_ext)
 	{
-		$this->config				= $config;
-		$this->template				= $template;
-		$this->log					= $log;
-		$this->user					= $user;
-		$this->db					= $db;
-		$this->cache				= $cache;
-		$this->request				= $request;
-		$this->mchat_table			= $mchat_table;
-		$this->root_path			= $root_path;
-		$this->php_ext				= $php_ext;
+		$this->config						= $config;
+		$this->template						= $template;
+		$this->log							= $log;
+		$this->user							= $user;
+		$this->db							= $db;
+		$this->cache						= $cache;
+		$this->request						= $request;
+		$this->mchat_table					= $mchat_table;
+		$this->mchat_deleted_messages_table	= $mchat_deleted_messages_table;
+		$this->root_path					= $root_path;
+		$this->php_ext						= $php_ext;
 	}
 
 	/**
@@ -124,7 +129,9 @@ class acp_controller
 			if (check_form_key('acp_mchat') && $this->user->data['user_type'] == USER_FOUNDER)
 			{
 				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
+				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_deleted_messages_table);
 				$this->cache->destroy('sql', $this->mchat_table);
+				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
 				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
 			}

@@ -161,6 +161,13 @@ class install_mchat extends \phpbb\db\migration\migration
 					'PRIMARY_KEY'	=> 'message_id',
 				),
 
+				$this->table_prefix . 'mchat_deleted_messages'	=> array(
+					'COLUMNS'		=> array(
+						'message_id'			=> array('UINT', null),
+					),
+					'PRIMARY_KEY'	=> 'message_id',
+				),
+
 				$this->table_prefix . 'mchat_sessions'	=> array(
 					'COLUMNS'		=> array(
 						'user_id'				=> array('UINT', 0),
@@ -190,6 +197,7 @@ class install_mchat extends \phpbb\db\migration\migration
 		return array(
 			'drop_tables'	=> array(
 				$this->table_prefix . 'mchat',
+				$this->table_prefix . 'mchat_deleted_messages',
 				$this->table_prefix . 'mchat_sessions',
 			),
 

@@ -391,26 +391,32 @@ class mchat
 			}
 		}
 
+		if (!empty($rows_refresh) || !empty($rows_edit))
+		{
+			$this->assign_global_template_data();
+		}
+
+		$response = array('refresh' => true);
+
 		// Assign new messages
-		$this->assign_global_template_data();
-		$this->assign_messages($rows_refresh);
-		$response = array('refresh' => true, 'add' => $this->render_template('mchat_messages.html'));
+		if (!empty($rows_refresh))
+		{
+
+			$this->assign_messages($rows_refresh);
+			$response['add'] = $this->render_template('mchat_messages.html');
+		}
 
 		// Assign edited messages
 		if (!empty($rows_edit))
 		{
-			$response['edit'] = array();
-			foreach ($rows_edit as $row)
-			{
-				$this->assign_messages(array($row));
-				$response['edit'][$row['message_id']] = $this->render_template('mchat_messages.html');
-			}
+			$this->assign_messages($rows_edit);
+			$response['edit'] = $this->render_template('mchat_messages.html');
 		}
 
-		// Request deleted messages
+		// Assign deleted messages
 		if ($this->config['mchat_live_updates'] && $message_last_id > 0)
 		{
-			$deleted_message_ids = $this->functions_mchat->mchat_missing_ids($message_first_id, $message_last_id);
+			$deleted_message_ids = $this->functions_mchat->mchat_deleted_ids($message_first_id);
 			if (!empty($deleted_message_ids))
 			{
 				$response['del'] = $deleted_message_ids;
