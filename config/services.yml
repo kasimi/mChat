@@ -29,6 +29,7 @@ services:
     dmzx.mchat.main.controller:
         class: dmzx\mchat\controller\main_controller
         arguments:
+            - '@user'
             - '@dmzx.mchat.core'
             - '@request'
     dmzx.mchat.core:

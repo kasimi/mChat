@@ -15,6 +15,9 @@ use \Symfony\Component\HttpFoundation\JsonResponse;
 
 class main_controller
 {
+	/** @var \phpbb\user */
+	protected $user;
+
 	/** @var \dmzx\mchat\core\mchat */
 	protected $mchat;
 
@@ -24,11 +27,13 @@ class main_controller
 	/**
 	* Constructor
 	*
+	* @param \phpbb\user				$user
 	* @param \dmzx\mchat\core\mchat		$mchat
 	* @param \phpbb\request\request		$request
 	*/
-	public function __construct(\dmzx\mchat\core\mchat $mchat, \phpbb\request\request $request)
+	public function __construct(\phpbb\user $user, \dmzx\mchat\core\mchat $mchat, \phpbb\request\request $request)
 	{
+		$this->user		= $user;
 		$this->mchat	= $mchat;
 		$this->request	= $request;
 	}
@@ -41,6 +46,7 @@ class main_controller
 	*/
 	public function page($page)
 	{
+		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
 		return call_user_func(array($this->mchat, 'page_' . $page));
 	}
 
@@ -63,6 +69,7 @@ class main_controller
 			define('PHPBB_USE_BOARD_URL_PATH', true);
 		}
 
+		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
 		$data = call_user_func(array($this->mchat, 'action_' . $action));
 
 		return new JsonResponse($data);

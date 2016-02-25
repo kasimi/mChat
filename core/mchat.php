@@ -96,6 +96,8 @@ class mchat
 			return;
 		}
 
+		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+
 		$this->assign_bbcodes_smilies();
 
 		$this->render_page('index');
