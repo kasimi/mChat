@@ -166,13 +166,13 @@
 	clear: both;
 }
 
-#mchat-static, #mchat-stats, #mchat-whois, #mchat-refresh, #mchat-legend {
+.mchat-static, #mchat-stats, #mchat-whois, #mchat-refresh, #mchat-legend {
 	padding: 5px 0;
 	text-align: left;
 	font-size: 1.1em;
 }
 
-#mchat-static {
+.mchat-static {
 	padding: 5px 5px 7px;
 }
 

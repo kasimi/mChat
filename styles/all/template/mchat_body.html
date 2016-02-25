@@ -102,17 +102,19 @@
 			<div id="mchat-main">
 				<!-- IF MCHAT_STATIC_MESS and not MCHAT_ARCHIVE_PAGE -->
 					<ul class="topiclist forums">
-						<li id="mchat-static" class="row">{MCHAT_STATIC_MESS}</li>
+						<li class="row mchat-static">{MCHAT_STATIC_MESS}</li>
+					</ul>
+				<!-- ENDIF -->
+
+				<!-- IF not .mchatrow -->
+					<ul id="mchat-no-messages" class="topiclist forums">
+						<li class="row mchat-static">{L_MCHAT_NOMESSAGE}</li>
 					</ul>
 				<!-- ENDIF -->
 
 				<ul id="mchat-messages" class="topiclist forums mchat-row-limit"<!-- IF not MCHAT_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
 					<!-- INCLUDE mchat_messages.html -->
 				</ul>
-
-				<!-- IF not .mchatrow -->
-					<div id="mchat-no-messages">{L_MCHAT_NOMESSAGE}</div>
-				<!-- ENDIF -->
 			</div>
 
 			<div id="mchat-panel" class="panel cp-mini">
