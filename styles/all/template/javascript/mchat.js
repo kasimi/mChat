@@ -81,7 +81,9 @@ jQuery(function($) {
 					mChat.resetSession(true);
 					mChat.$$('input').val('');
 				}
-				mChat.$$('input').focus();
+				setTimeout(function() {
+					mChat.$$('input').focus();
+				}, 1);
 			}
 		},
 		sound: function(file) {
@@ -127,7 +129,9 @@ jQuery(function($) {
 			mChat.refresh(mChat.$$('input').val()).done(function() {
 				mChat.$$('input').val('');
 			}).always(function() {
-				mChat.$$('input').focus();
+				setTimeout(function() {
+					mChat.$$('input').focus();
+				}, 1);
 				mChat.$$('add').add(mChat.$$('input')).prop('disabled', false);
 				mChat.resetSession(false);
 			});
