@@ -453,6 +453,7 @@ class mchat
 	{
 		$this->template->assign_vars(array(
 			'MCHAT_ALLOW_VIEW'		=> $this->auth->acl_get('u_mchat_view'),
+			'MCHAT_NAVBAR_LINK'		=> $this->config['mchat_navbar_link'],
 			'S_MCHAT_CUSTOM_PAGE'	=> $this->config['mchat_custom_page'],
 			'U_MCHAT'				=> $this->helper->route('dmzx_mchat_controller'),
 		));

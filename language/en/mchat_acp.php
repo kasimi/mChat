@@ -69,6 +69,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_MESSAGE_LIMIT_EXPLAIN'			=> '<em>Recommended from 10 to 30.</em>',
 	'MCHAT_MESSAGE_NUM'						=> 'Initial number of messages to display on the index page',
 	'MCHAT_MESSAGE_NUM_EXPLAIN'				=> '<em>Recommended from 10 to 50.</em>',
+	'MCHAT_NAVBAR_LINK'						=> 'Display link to the custom page in the navbar',
 	'MCHAT_ARCHIVE_LIMIT'					=> 'Number of messages to display on the archive page',
 	'MCHAT_ARCHIVE_LIMIT_EXPLAIN'			=> 'The maximum number of messages to show per page on the archive page.<br /><em>Recommended from 25 to 50.</em>',
 	'MCHAT_FLOOD_TIME'						=> 'Flood time',
