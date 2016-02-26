@@ -75,12 +75,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_USESOUND'				=> 'Use sound',
 	'MCHAT_WHO_IS_REFRESH_EXPLAIN'	=> 'Refreshes every <strong>%1$d</strong> seconds',
 
-	// Post notification messages (%1$s is replaced with a link to the new/edited post, %2$s is replaced with a link to the forum)
-	'MCHAT_NEW_POST'				=> 'Posted a new topic: %1$s in %2$s',
-	'MCHAT_NEW_REPLY'				=> 'Posted a reply: %1$s in %2$s',
-	'MCHAT_NEW_QUOTE'				=> 'Replied with a quote: %1$s in %2$s',
-	'MCHAT_NEW_EDIT'				=> 'Edited a post: %1$s in %2$s',
-
 	// Custom translations for administrators
 	'MCHAT_RULES_MESSAGE'			=> '',
 	'MCHAT_STATIC_MESSAGE'			=> '',
