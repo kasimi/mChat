@@ -7,6 +7,11 @@
  *
  */
 
+#mChat {
+	position: absolute;
+	visibility: hidden;
+}
+
 #mchat-body {
 	width: 100% !important;
 }
