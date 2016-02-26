@@ -178,7 +178,7 @@
 }
 
 .mchat-static {
-	padding: 5px 5px 7px;
+	padding: 5px 5px 7px !important;
 }
 
 #mchat-colour {
