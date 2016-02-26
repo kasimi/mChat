@@ -57,11 +57,10 @@ $lang = array_merge($lang, array(
 		1 => '%1$d second',
 		2 => '%1$d seconds',
 	),
-	
+
 	// Post notification messages (%1$s is replaced with a link to the new/edited post, %2$s is replaced with a link to the forum)
 	'MCHAT_NEW_POST'				=> 'Posted a new topic: %1$s in %2$s',
 	'MCHAT_NEW_REPLY'				=> 'Posted a reply: %1$s in %2$s',
 	'MCHAT_NEW_QUOTE'				=> 'Replied with a quote: %1$s in %2$s',
 	'MCHAT_NEW_EDIT'				=> 'Edited a post: %1$s in %2$s',
-	
 ));
