@@ -12,6 +12,10 @@
 	visibility: hidden;
 }
 
+.icon-mchat {
+	background-image: url("./images/icon_mchat.png");
+}
+
 #mchat-body {
 	width: 100% !important;
 }
@@ -55,7 +59,7 @@
 
 .mchat-text {
 	clear: both;
-	padding: 0 15px 5px;
+	padding: 0 15px 2px;
 	font-size: 1.1em;
 }
 
