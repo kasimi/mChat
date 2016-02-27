@@ -41,8 +41,8 @@ $lang = array_merge($lang, array(
 	'MCHAT_WHO_IS_CHATTING'			=> 'Who is chatting',
 	'MCHAT_ONLINE_USERS_TOTAL'		=> array(
 		0 => 'No one is chatting',
-		1 => 'In total there is <strong>%1$d</strong> user chatting',
-		2 => 'In total there are <strong>%1$d</strong> users chatting',
+		1 => 'There is <strong>%1$d</strong> user chatting',
+		2 => 'There are <strong>%1$d</strong> users chatting',
 	),
 	'MCHAT_ONLINE_EXPLAIN'			=> 'based on users active over the past %1$s',
 	'MCHAT_HOURS'					=> array(
