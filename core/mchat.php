@@ -291,7 +291,8 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
-		$this->template->assign_var('MCHAT_ARCHIVE_PAGE', $this->request->variable('archive', 0));
+		$is_archive = $this->request->variable('archive', 0);
+		$this->template->assign_var('MCHAT_ARCHIVE_PAGE', $is_archive);
 
 		$message = $this->request->variable('message', '', true);
 
@@ -313,7 +314,7 @@ class mchat
 		$rows = $this->functions->mchat_get_messages($sql_where, 1);
 
 		$this->assign_global_template_data();
-		$this->assign_messages($rows);
+		$this->assign_messages($rows, $is_archive ? 'archive' : '');
 
 		return array('edit' => $this->render_template('mchat_messages.html'));
 	}
@@ -409,7 +410,6 @@ class mchat
 		// Assign new messages
 		if (!empty($rows_refresh))
 		{
-
 			$this->assign_messages($rows_refresh);
 			$response['add'] = $this->render_template('mchat_messages.html');
 		}
@@ -503,6 +503,20 @@ class mchat
 			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && !empty($this->user->data['user_mchat_index']),
 		));
 
+		// The template needs some language variables if we display relative time for messages
+		if ($this->config['mchat_relative_time'] && $page != 'archive')
+		{
+			$minutes_limit = $this->get_relative_minutes_limit();
+			for ($i = 0; $i < $minutes_limit; $i++)
+			{
+				$this->template->assign_block_vars('mchattime', array(
+					'KEY'		=> $i,
+					'LANG'		=> $this->user->lang('MCHAT_MINUTES_AGO', $i),
+					'IS_LAST'	=> $i + 1 === $minutes_limit,
+				));
+			}
+		}
+
 		// Get actions which the user is allowed to perform on the current page
 		$actions = array_keys(array_filter(array(
 			'edit'		=> $this->auth_message('u_mchat_edit', true, time()),
@@ -514,11 +528,10 @@ class mchat
 
 		foreach ($actions as $i => $action)
 		{
-			$is_last_action = $i + 1 === count($actions);
 			$this->template->assign_block_vars('mchaturl', array(
 				'ACTION'	=> $action,
-				'IS_LAST'	=> $is_last_action,
 				'URL'		=> $this->helper->route('dmzx_mchat_action_controller', array('action' => $action)),
+				'IS_LAST'	=> $i + 1 === count($actions),
 			));
 		}
 
@@ -528,7 +541,7 @@ class mchat
 		$rows = $this->functions->mchat_get_messages($sql_where, $limit, $start);
 
 		$this->assign_global_template_data();
-		$this->assign_messages($rows);
+		$this->assign_messages($rows, $page);
 
 		// Render pagination
 		if ($page == 'archive')
@@ -561,7 +574,7 @@ class mchat
 	}
 
 	/**
-	 * Assigns all message rows to the template
+	 * Assigns common template data that is required for displaying messages
 	 */
 	protected function assign_global_template_data()
 	{
@@ -572,6 +585,7 @@ class mchat
 			'MCHAT_ALLOW_QUOTE'				=> $this->auth->acl_get('u_mchat_quote'),
 			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->config['mchat_edit_delete_limit'],
 			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->config['mchat_edit_delete_limit'] && $this->auth->acl_get('m_'),
+			'MCHAT_RELATIVE_TIME'			=> $this->config['mchat_relative_time'],
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->config['mchat_timeout'],
 			'S_MCHAT_AVATARS'				=> $this->display_avatars(),
 			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
@@ -593,8 +607,9 @@ class mchat
 	 * Assigns all message rows to the template
 	 *
 	 * @param array $rows
+	 * @param string $page
 	 */
-	protected function assign_messages($rows)
+	protected function assign_messages($rows, $page = '')
 	{
 		if (empty($rows))
 		{
@@ -658,6 +673,10 @@ class mchat
 				$username_full = preg_replace('#(?<=href=")[\./]+?/(?=\w)#', $board_url, $username_full);
 			}
 
+			$message_age = time() - $row['message_time'];
+			$minutes_ago = $this->get_minutes_ago($message_age, $page);
+			$datetime = $this->user->format_date($row['message_time'], $this->config['mchat_date']);
+
 			$this->template->assign_block_vars('mchatrow', array(
 				'MCHAT_ALLOW_BAN'		=> $this->auth->acl_get('a_authusers'),
 				'MCHAT_ALLOW_EDIT'		=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
@@ -675,11 +694,47 @@ class mchat
 				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'whois', 'ip' => $row['user_ip'])),
 				'MCHAT_U_BAN'			=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
-				'MCHAT_TIME'			=> $this->user->format_date($row['message_time'], $this->config['mchat_date']),
+				'MCHAT_TIME'			=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
+				'MCHAT_DATETIME'		=> $datetime,
+				'MCHAT_MINUTES_AGO'		=> $minutes_ago,
+				'MCHAT_RELATIVE_UPDATE'	=> 60 - $message_age % 60,
 				'MCHAT_MESSAGE_TIME'	=> $row['message_time'],
 				'MCHAT_EDIT_TIME'		=> $row['edit_time'],
 			));
 		}
+	}
+
+	/**
+	 * Calculates the number of minutes that have passed since the message was posted. If relative time is disabled
+	 * or the message is older than 59 minutes or we render for the archive, -1 is returned.
+	 *
+	 * @param int $message_age
+	 * @param string $page
+	 * @return int
+	 */
+	protected function get_minutes_ago($message_age, $page)
+	{
+		if ($this->config['mchat_relative_time'] && $page != 'archive')
+		{
+			$minutes_ago = floor($message_age / 60);
+			if ($minutes_ago < $this->get_relative_minutes_limit())
+			{
+				return $minutes_ago;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Calculates the amount of time after which messages switch from displaying relative time to displaying absolute time.
+	 * Uses mChat's timeout if it's not zero, otherwise phpBB's global session timeout, but always limited to 60 minutes.
+	 *
+	 * @return int
+	 */
+	protected function get_relative_minutes_limit()
+	{
+		return min((int) round(($this->config['mchat_timeout'] ?: $this->config['session_length']) / 60), 60);
 	}
 
 	/**

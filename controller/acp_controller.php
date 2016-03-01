@@ -91,6 +91,7 @@ class acp_controller
 			'mchat_bbcode_disallowed'		=> array('default' => '',				'validation' => array('string', false, 0, 255)),
 			'mchat_custom_height'			=> array('default' => 350,				'validation' => array('num', false, 50, 1000)),
 			'mchat_custom_page'				=> array('default' => 1,				'validation' => array()),
+			'mchat_relative_time'			=> array('default' => 1,				'validation' => array()),
 			'mchat_date'					=> array('default' => 'D M d, Y g:i a',	'validation' => array('string', false, 0, 255)),
 			'mchat_edit_delete_limit'		=> array('default' => 0,				'validation' => array()),
 			'mchat_flood_time'				=> array('default' => 0,				'validation' => array('num', false, 0, 30)),

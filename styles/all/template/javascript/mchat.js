@@ -225,6 +225,7 @@ jQuery(function($) {
 								});
 							}, mChat.editDeleteLimit);
 						}
+						mChat.initRelativeTimeUpdate($message);
 					});
 					mChat.sound('add');
 					mChat.notice();
@@ -284,6 +285,29 @@ jQuery(function($) {
 					mChat.$$('refresh-explain').show();
 				}
 			});
+		},
+		initRelativeTimeUpdate: function($messages) {
+			if (mChat.relativeTime) {
+				$messages.find('time[data-mchat-relative-update]').each(function() {
+					var $time = $(this);
+					setTimeout(function() {
+						mChat.relativeTimeUpdate($time);
+						$time.data('mchat-relative-interval', setInterval(function() {
+							mChat.relativeTimeUpdate($time);
+						}, 60 * 1000));
+					}, $time.data('mchat-relative-update') * 1000);
+				});
+			}
+		},
+		relativeTimeUpdate: function($time) {
+			var minutesAgo = $time.data('mchat-minutes-ago') + 1;
+			if (minutesAgo < 60) {
+				$time.text(mChat.minutesAgo[minutesAgo]);
+				$time.data('mchat-minutes-ago', minutesAgo);
+			} else {
+				clearInterval($time.data('mchat-relative-interval'));
+				$time.text($time.attr('title')).removeAttr('data-mchat-relative-update data-mchat-minutes-ago data-mchat-relative-interval');
+			}
 		},
 		timeLeft: function(sessionTime) {
 			return (new Date(sessionTime * 1000)).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
@@ -423,8 +447,8 @@ jQuery(function($) {
 			$('#format-buttons .bbcode-' + bbcode).remove();
 		});
 
-		var $colour_palette = $('#colour_palette');
-		$colour_palette.appendTo($colour_palette.parent()).wrap('<div id="mchat-colour"></div>').show();
+		var $colourPalette = $('#colour_palette');
+		$colourPalette.appendTo($colourPalette.parent()).wrap('<div id="mchat-colour"></div>').show();
 		$('#bbpalette,#abbc3_bbpalette').prop('onclick', null).attr('data-mchat-toggle', 'colour');
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
@@ -441,6 +465,8 @@ jQuery(function($) {
 				}
 			});
 		}
+
+		mChat.initRelativeTimeUpdate(mChat.$$('messages'));
 
 		mChat.$$('input').autoGrowInput({
 			minWidth: mChat.$$('input').width(),

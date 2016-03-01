@@ -33,6 +33,7 @@ class install_mchat extends \phpbb\db\migration\migration
 			array('config.add', array('mchat_bbcode_disallowed', '')),
 			array('config.add', array('mchat_custom_height', 350)),
 			array('config.add', array('mchat_custom_page', 1)),
+			array('config.add', array('mchat_relative_time', 1)),
 			array('config.add', array('mchat_date', 'D M d, Y g:i a')),
 			array('config.add', array('mchat_edit_delete_limit', 0)),
 			array('config.add', array('mchat_flood_time', 0)),

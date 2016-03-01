@@ -85,6 +85,8 @@ $lang = array_merge($lang, array(
 	'MCHAT_DATE_FORMAT'						=> 'Date format',
 	'MCHAT_DATE_FORMAT_EXPLAIN'				=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date">date()</a> function.',
 	'MCHAT_CUSTOM_DATEFORMAT'				=> 'Custom…',
+	'MCHAT_RELATIVE_TIME'					=> 'Display relative time for new messages',
+	'MCHAT_RELATIVE_TIME_EXPLAIN'			=> 'Displays "just now", "1 minute ago" and so on for each message. Displays the full date for messages older than the current session length but limited to 60 minutes.<br />Set to <em>No</em> to always display the full date.',
 	'MCHAT_BBCODES_DISALLOWED'				=> 'Disallowed bbcodes',
 	'MCHAT_BBCODES_DISALLOWED_EXPLAIN'		=> 'Here you can input the bbcodes that are <strong>not</strong> to be used in a message.<br />Separate bbcodes with a vertical bar, for example: <br />b|i|u|code|list|list=|flash|quote and/or a %1$scustom bbcode tag name%2$s',
 	'MCHAT_STATIC_MESSAGE'					=> 'Static message',

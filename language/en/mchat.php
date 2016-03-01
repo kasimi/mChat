@@ -74,6 +74,11 @@ $lang = array_merge($lang, array(
 	'MCHAT_TOTALMESSAGES'			=> 'Total messages: <strong>%1$d</strong>',
 	'MCHAT_USESOUND'				=> 'Use sound',
 	'MCHAT_WHO_IS_REFRESH_EXPLAIN'	=> 'Refreshes every <strong>%1$d</strong> seconds',
+	'MCHAT_MINUTES_AGO'				=> array(
+		0 => 'just now',
+		1 => '%1$d minute ago',
+		2 => '%1$d minutes ago',
+	),
 
 	// Custom translations for administrators
 	'MCHAT_RULES_MESSAGE'			=> '',
