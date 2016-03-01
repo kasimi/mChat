@@ -647,23 +647,18 @@ class mchat
 		foreach ($rows as $i => $row)
 		{
 			// Auth checks
-			if ($row['forum_id'] != 0 && !$this->auth->acl_get('f_read', $row['forum_id']))
+			if ($row['forum_id'] && !$this->auth->acl_get('f_read', $row['forum_id']))
 			{
 				continue;
 			}
 
 			$message_edit = $row['message'];
 			decode_message($message_edit, $row['bbcode_uid']);
-			$message_edit = str_replace('"', '&quot;', $message_edit);
-			$message_edit = mb_ereg_replace("'", '&#146;', $message_edit);
 
 			if (in_array($row['user_id'], $foes))
 			{
 				$row['message'] = $this->user->lang('MCHAT_FOE', get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')));
 			}
-
-			$row['username'] = mb_ereg_replace("'", "&#146;", $row['username']);
-			$message = str_replace("'", '&rsquo;', $row['message']);
 
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 
@@ -693,7 +688,7 @@ class mchat
 				'MCHAT_WHOIS_USER'		=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
 				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'whois', 'ip' => $row['user_ip'])),
 				'MCHAT_U_BAN'			=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
-				'MCHAT_MESSAGE'			=> censor_text(generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'])),
+				'MCHAT_MESSAGE'			=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
 				'MCHAT_TIME'			=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
 				'MCHAT_DATETIME'		=> $datetime,
 				'MCHAT_MINUTES_AGO'		=> $minutes_ago,
