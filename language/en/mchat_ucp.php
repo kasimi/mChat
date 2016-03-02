@@ -37,8 +37,8 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'MCHAT_PREFERENCES'				=> 'mChat preferences',
 
-	'MCHAT_DISPLAY'					=> 'Display mChat on index',
-	'MCHAT_SOUND'					=> 'Enable mChat sound',
+	'MCHAT_DISPLAY'					=> 'Display on index',
+	'MCHAT_SOUND'					=> 'Enable sound',
 	'MCHAT_DISPLAY_STATS_INDEX'		=> 'Display who is chatting on index',
 	'MCHAT_DISPLAY_NEW_TOPICS'		=> 'Display new topics in the chat',
 	'MCHAT_DISPLAY_AVATARS'			=> 'Display avatars in the chat',
