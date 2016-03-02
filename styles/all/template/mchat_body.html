@@ -191,7 +191,7 @@
 	</div>
 </div>
 
-<!-- IF MCHAT_ARCHIVE_PAGE and (.pagination or MCHAT_TOTAL_MESSAGES) -->
+<!-- IF MCHAT_ARCHIVE_PAGE -->
 <div class="action-bar bottom">
 	<div class="pagination">
 		{MCHAT_TOTAL_MESSAGES}
@@ -213,7 +213,7 @@
 	</div>
 <!-- ENDIF -->
 
-<!-- IF  MCHAT_CUSTOM_PAGE and MCHAT_WHOIS_REFRESH or MCHAT_ARCHIVE_PAGE and LEGEND -->
+<!-- IF (MCHAT_CUSTOM_PAGE or MCHAT_ARCHIVE_PAGE) and LEGEND -->
 	<div id="mchat-legend">
 		<em>{L_LEGEND}{L_COLON} {LEGEND}</em>
 	</div>
