@@ -146,13 +146,8 @@ jQuery(function($) {
 					message: $message.val(),
 					archive: mChat.archiveMode ? 1 : 0
 				}).done(function(json) {
-					mChat.sound('edit');
-					$container.fadeOut(function() {
-						$container.replaceWith($(json.edit).hide().fadeIn());
-					});
-					if (!mChat.archiveMode) {
-						mChat.resetSession(true);
-					}
+					mChat.updateMessages($(json.edit));
+					mChat.resetSession(true);
 				});
 			});
 		},
@@ -165,17 +160,8 @@ jQuery(function($) {
 				ajaxRequest('del', true, {
 					message_id: delId
 				}).done(function() {
-					var index = 0;
-					while ((index = $.inArray(delId, mChat.messageIds, index)) !== -1) {
-						mChat.messageIds.splice(index, 1);
-					}
-					mChat.sound('del');
-					$container.fadeOut(function() {
-						$container.remove();
-					});
-					if (!mChat.archiveMode) {
-						mChat.resetSession(true);
-					}
+					mChat.removeMessages([delId]);
+					mChat.resetSession(true);
 				});
 			});
 		},
@@ -225,37 +211,16 @@ jQuery(function($) {
 								});
 							}, mChat.editDeleteLimit);
 						}
-						mChat.initRelativeTimeUpdate($message);
+						mChat.startRelativeTimeUpdate($message);
 					});
 					mChat.sound('add');
 					mChat.notice();
 				}
 				if (json.edit) {
-					mChat.sound('edit');
-					$(json.edit).each(function() {
-						var $newMessage = $(this);
-						var $oldMessage = $('#mchat-message-' + $newMessage.data('mchat-id'));
-						$oldMessage.fadeOut(function() {
-							$oldMessage.replaceWith($newMessage.hide().fadeIn());
-						});
-					});
+					mChat.updateMessages($(json.edit));
 				}
 				if (json.del) {
-					var soundPlayed = false;
-					$.each(json.del, function(i, id) {
-						var index = 0;
-						while ((index = $.inArray(id, mChat.messageIds, index)) !== -1) {
-							mChat.messageIds.splice(index, 1);
-							var $container = $('#mchat-message-' + id);
-							$container.fadeOut(function() {
-								$container.remove();
-							});
-							if (!soundPlayed) {
-								soundPlayed = true;
-								mChat.sound('del');
-							}
-						}
-					});
+					mChat.removeMessages(json.del);
 				}
 				if (json.whois) {
 					mChat.whois();
@@ -286,7 +251,41 @@ jQuery(function($) {
 				}
 			});
 		},
-		initRelativeTimeUpdate: function($messages) {
+		updateMessages: function($messages) {
+			var soundPlayed = false;
+			$messages.each(function() {
+				var $newMessage = $(this);
+				var $oldMessage = $('#mchat-message-' + $newMessage.data('mchat-id'));
+				mChat.stopRelativeTimeUpdate($oldMessage);
+				mChat.startRelativeTimeUpdate($newMessage);
+				$oldMessage.fadeOut(function() {
+					$oldMessage.replaceWith($newMessage.hide().fadeIn());
+				});
+				if (!soundPlayed) {
+					soundPlayed = true;
+					mChat.sound('edit');
+				}
+			});
+		},
+		removeMessages: function(ids) {
+			var soundPlayed = false;
+			$.each(ids, function(i, id) {
+				var index = 0;
+				while ((index = $.inArray(id, mChat.messageIds, index)) !== -1) {
+					mChat.messageIds.splice(index, 1);
+					var $message = $('#mchat-message-' + id);
+					mChat.stopRelativeTimeUpdate($message);
+					$message.fadeOut(function() {
+						$message.remove();
+					});
+					if (!soundPlayed) {
+						soundPlayed = true;
+						mChat.sound('del');
+					}
+				}
+			});
+		},
+		startRelativeTimeUpdate: function($messages) {
 			if (mChat.relativeTime) {
 				$messages.find('time[data-mchat-relative-update]').each(function() {
 					var $time = $(this);
@@ -305,7 +304,14 @@ jQuery(function($) {
 				$time.text(mChat.minutesAgo[minutesAgo]);
 				$time.data('mchat-minutes-ago', minutesAgo);
 			} else {
-				clearInterval($time.data('mchat-relative-interval'));
+				mChat.stopRelativeTimeUpdate($time, true);
+			}
+		},
+		stopRelativeTimeUpdate: function($message, setFullDateTime) {
+			var selector = 'time[data-mchat-relative-update]';
+			var $time = $message.find(selector).addBack(selector);
+			clearInterval($time.data('mchat-relative-interval'));
+			if (setFullDateTime) {
 				$time.text($time.attr('title')).removeAttr('data-mchat-relative-update data-mchat-minutes-ago data-mchat-relative-interval');
 			}
 		},
@@ -329,25 +335,27 @@ jQuery(function($) {
 			}
 		},
 		resetSession: function(updateUi) {
-			clearInterval(mChat.refreshInterval);
-			mChat.refreshInterval = setInterval(mChat.refresh, mChat.refreshTime);
-			if (mChat.userTimeout) {
-				mChat.sessionTime = mChat.userTimeout / 1000;
-				clearInterval(mChat.sessionCountdown);
-				mChat.$$('session').html(mChat.sessEnds + ' ' + mChat.timeLeft(mChat.sessionTime));
-				mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
-			}
-			if (mChat.whoisRefresh) {
-				clearInterval(mChat.whoisInterval);
-				mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
-			}
-			if (mChat.pause) {
-				mChat.$$('input').one('keypress', mChat.endSession);
-			}
-			if (updateUi) {
-				mChat.$$('refresh-ok').show();
-				mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
-				mChat.$$('refresh-text').html(mChat.refreshYes);
+			if (!mChat.archiveMode) {
+				clearInterval(mChat.refreshInterval);
+				mChat.refreshInterval = setInterval(mChat.refresh, mChat.refreshTime);
+				if (mChat.userTimeout) {
+					mChat.sessionTime = mChat.userTimeout / 1000;
+					clearInterval(mChat.sessionCountdown);
+					mChat.$$('session').html(mChat.sessEnds + ' ' + mChat.timeLeft(mChat.sessionTime));
+					mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
+				}
+				if (mChat.whoisRefresh) {
+					clearInterval(mChat.whoisInterval);
+					mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
+				}
+				if (mChat.pause) {
+					mChat.$$('input').one('keypress', mChat.endSession);
+				}
+				if (updateUi) {
+					mChat.$$('refresh-ok').show();
+					mChat.$$('refresh-load', 'refresh-error', 'refresh-paused').hide();
+					mChat.$$('refresh-text').html(mChat.refreshYes);
+				}
 			}
 		},
 		endSession: function() {
@@ -466,7 +474,7 @@ jQuery(function($) {
 			});
 		}
 
-		mChat.initRelativeTimeUpdate(mChat.$$('messages'));
+		mChat.startRelativeTimeUpdate(mChat.$$('messages'));
 
 		mChat.$$('input').autoGrowInput({
 			minWidth: mChat.$$('input').width(),
