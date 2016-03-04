@@ -59,6 +59,10 @@
     }
 }
 
+.mchat-avatar a {
+    unicode-bidi: normal;
+}
+
 .mchat-avatar img {
 	display: block;
 }
