@@ -132,7 +132,6 @@ class acp_controller
 			{
 				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
 				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_deleted_messages_table);
-				$this->cache->destroy('sql', $this->mchat_table);
 				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
 				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
