@@ -374,6 +374,11 @@ class mchat
 	 */
 	public function action_refresh()
 	{
+		if (!$this->auth->acl_get('u_mchat_view'))
+		{
+			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+		}
+
 		$message_first_id = $this->request->variable('message_first_id', 0);
 		$message_last_id = $this->request->variable('message_last_id', 0);
 		$message_edits = $this->request->variable('message_edits', array(0));
