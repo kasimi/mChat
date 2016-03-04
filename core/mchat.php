@@ -40,6 +40,9 @@ class mchat
 	/** @var \phpbb\event\dispatcher_interface */
 	protected $dispatcher;
 
+	/** @var \phpbb\extension\manager */
+	protected $phpbb_extension_manager;
+
 	/** @var string */
 	protected $root_path;
 
@@ -61,22 +64,24 @@ class mchat
 	 * @param \phpbb\pagination					$pagination
 	 * @param \phpbb\request\request			$request
 	 * @param \phpbb\event\dispatcher_interface $dispatcher
+	 * @param \phpbb\extension\manager 			$phpbb_extension_manager
 	 * @param string							$root_path
 	 * @param string							$php_ext
 	 */
-	public function __construct(\dmzx\mchat\core\functions $functions, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher, $root_path, $php_ext)
+	public function __construct(\dmzx\mchat\core\functions $functions, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher,\phpbb\extension\manager $phpbb_extension_manager, $root_path, $php_ext)
 	{
-		$this->functions	= $functions;
-		$this->config		= $config;
-		$this->helper		= $helper;
-		$this->template		= $template;
-		$this->user			= $user;
-		$this->auth			= $auth;
-		$this->pagination	= $pagination;
-		$this->request		= $request;
-		$this->dispatcher	= $dispatcher;
-		$this->root_path	= $root_path;
-		$this->php_ext		= $php_ext;
+		$this->functions				= $functions;
+		$this->config					= $config;
+		$this->helper					= $helper;
+		$this->template					= $template;
+		$this->user						= $user;
+		$this->auth						= $auth;
+		$this->pagination				= $pagination;
+		$this->request					= $request;
+		$this->dispatcher				= $dispatcher;
+		$this->phpbb_extension_manager 	= $phpbb_extension_manager;
+		$this->root_path				= $root_path;
+		$this->php_ext					= $php_ext;
 	}
 
 	/**
@@ -511,6 +516,18 @@ class mchat
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'rules')),
 			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && $this->user->data['user_mchat_index'],
 		));
+
+		$ext_name = 'dmzx/mchat';
+		$md_manager = new \phpbb\extension\metadata_manager($ext_name, $this->config, $this->phpbb_extension_manager, $this->template, $this->user, $this->root_path);
+		try
+		{
+			$this->metadata = $md_manager->get_metadata('all');
+		}
+		catch(\phpbb\extension\exception $e)
+		{
+			trigger_error($e, E_USER_WARNING);
+		}
+		$md_manager->output_template_data();
 
 		// The template needs some language variables if we display relative time for messages
 		if ($this->config['mchat_relative_time'] && $page != 'archive')
