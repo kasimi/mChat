@@ -208,6 +208,11 @@ class mchat
 	 */
 	public function page_rules()
 	{
+		if (!$this->auth->acl_get('u_mchat_view'))
+		{
+			throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
+		}
+
 		$lang_rules = $this->user->lang('MCHAT_RULES_MESSAGE');
 		if (!$this->config['mchat_rules'] && !$lang_rules)
 		{
