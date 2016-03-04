@@ -203,17 +203,16 @@ class mchat
 	 */
 	public function page_rules()
 	{
-		if (empty($this->config['mchat_rules']) && !$this->user->lang('MCHAT_RULES_MESSAGE'))
+		$lang_rules = $this->user->lang('MCHAT_RULES_MESSAGE');
+		if (!$this->config['mchat_rules'] && !$lang_rules)
 		{
 			throw new \phpbb\exception\http_exception(404, 'MCHAT_NO_RULES');
 		}
 
 		// If the rules are defined in the language file use them, else just use the entry in the database
-		$mchat_rules = $this->user->lang('MCHAT_RULES_MESSAGE');
-		$mchat_rules = !empty($mchat_rules) ? $mchat_rules : $this->config['mchat_rules'];
-		$mchat_rules = explode("\n", $mchat_rules);
-		$mchat_rules = array_map('htmlspecialchars_decode', $mchat_rules);
-		$mchat_rules = implode('<br />', $mchat_rules);
+		$mchat_rules = $lang_rules ?: $this->config['mchat_rules'];
+		$mchat_rules = htmlspecialchars_decode($mchat_rules);
+		$mchat_rules = str_replace("\n", '<br />', $mchat_rules);
 
 		$this->template->assign_var('MCHAT_RULES', $mchat_rules);
 
@@ -400,7 +399,7 @@ class mchat
 			}
 		}
 
-		if (!empty($rows_refresh) || !empty($rows_edit))
+		if ($rows_refresh || $rows_edit)
 		{
 			$this->assign_global_template_data();
 		}
@@ -408,14 +407,14 @@ class mchat
 		$response = array('refresh' => true);
 
 		// Assign new messages
-		if (!empty($rows_refresh))
+		if ($rows_refresh)
 		{
 			$this->assign_messages($rows_refresh);
 			$response['add'] = $this->render_template('mchat_messages.html');
 		}
 
 		// Assign edited messages
-		if (!empty($rows_edit))
+		if ($rows_edit)
 		{
 			$this->assign_messages($rows_edit);
 			$response['edit'] = $this->render_template('mchat_messages.html');
@@ -425,7 +424,7 @@ class mchat
 		if ($this->config['mchat_live_updates'] && $message_last_id > 0)
 		{
 			$deleted_message_ids = $this->functions->mchat_deleted_ids($message_first_id);
-			if (!empty($deleted_message_ids))
+			if ($deleted_message_ids)
 			{
 				$response['del'] = $deleted_message_ids;
 			}
@@ -471,13 +470,13 @@ class mchat
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
 		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
-		$static_message = !empty($lang_static_message) ? $lang_static_message : $this->config['mchat_static_message'];
+		$static_message = $lang_static_message ?: $this->config['mchat_static_message'];
 
 		$this->template->assign_vars(array(
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_controller'),
 			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
 			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
-			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || !empty($this->config['mchat_rules']),
+			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || $this->config['mchat_rules'],
 			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
 			'MCHAT_ALLOW_SMILES'			=> $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies'),
 			'S_BBCODE_ALLOWED'				=> $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode'),
@@ -500,7 +499,7 @@ class mchat
 			'S_MCHAT_SOUND_YES'				=> $this->user->data['user_mchat_sound'],
 			'U_MORE_SMILIES'				=> generate_board_url() . append_sid("/{$this->root_path}/posting.{$this->php_ext}", 'mode=smilies'),
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'rules')),
-			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && !empty($this->user->data['user_mchat_index']),
+			'S_MCHAT_ON_INDEX'				=> $this->config['mchat_on_index'] && $this->user->data['user_mchat_index'],
 		));
 
 		// The template needs some language variables if we display relative time for messages
@@ -611,7 +610,7 @@ class mchat
 	 */
 	protected function assign_messages($rows, $page = '')
 	{
-		if (empty($rows))
+		if (!$rows)
 		{
 			return;
 		}
@@ -816,7 +815,7 @@ class mchat
 			$this->template->assign_vars(array(
 				'MCHAT_INDEX_STATS'		=> $this->config['mchat_stats_index'] && $this->user->data['user_mchat_stats_index'],
 				'MCHAT_USERS_COUNT'		=> $mchat_stats['mchat_users_count'],
-				'MCHAT_USERS_LIST'		=> !empty($mchat_stats['online_userlist']) ? $mchat_stats['online_userlist'] : '',
+				'MCHAT_USERS_LIST'		=> $mchat_stats['online_userlist'] ?: '',
 				'MCHAT_ONLINE_EXPLAIN'	=> $mchat_stats['refresh_message'],
 			));
 		}
