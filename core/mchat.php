@@ -486,7 +486,7 @@ class mchat
 			'MCHAT_CUSTOM_HEIGHT'			=> $this->config['mchat_custom_height'],
 			'MCHAT_READ_ARCHIVE_BUTTON'		=> $this->auth->acl_get('u_mchat_archive'),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
-			'L_MCHAT_COPYRIGHT'				=> base64_decode('PGEgaHJlZj0iaHR0cDovL3JtY2dpcnI4My5vcmciPlJNY0dpcnI4MzwvYT4gJmNvcHk7IDxhIGhyZWY9Imh0dHA6Ly93d3cuZG16eC13ZWIubmV0IiB0aXRsZT0id3d3LmRtengtd2ViLm5ldCI+ZG16eDwvYT4='),
+			'L_MCHAT_COPYRIGHT'				=> base64_decode('PHNwYW4gY2xhc3M9Im1jaGF0LWNvcHlyaWdodCIgdGl0bGU9IlJNY0dpcnI4MyAmYnVsbDsgZG16eCAmYnVsbDsga2FzaW1pIj4mY29weTs8L3NwYW4+'),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->config['mchat_max_message_lngth'],
 			'MCHAT_MESS_LONG'				=> $this->user->lang('MCHAT_MESS_LONG', $this->config['mchat_max_message_lngth']),
 			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', (int) $this->config['mchat_timeout']),
