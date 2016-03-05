@@ -379,6 +379,12 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
+		// Keep the session alive forever if there is no user session timeout
+		if (!$this->config['mchat_timeout'])
+		{
+			$this->user->update_session_infos();
+		}
+
 		$message_first_id = $this->request->variable('message_first_id', 0);
 		$message_last_id = $this->request->variable('message_last_id', 0);
 		$message_edits = $this->request->variable('message_edits', array(0));

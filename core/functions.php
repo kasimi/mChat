@@ -497,12 +497,14 @@ class functions
 		{
 			// User adds a message
 			case 'add':
+				$this->user->update_session_infos();
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('INSERT INTO ' . $this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 				break;
 
 			// User edits a message
 			case 'edit':
+				$this->user->update_session_infos();
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('UPDATE ' . $this->mchat_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE message_id = ' . (int) $message_id);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EDITED_MCHAT', false, array($log_username));
@@ -510,6 +512,7 @@ class functions
 
 			// User deletes a message
 			case 'del':
+				$this->user->update_session_infos();
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE message_id = ' . (int) $message_id);
 				$this->db->sql_query('INSERT INTO ' . $this->mchat_deleted_messages_table . ' ' . $this->db->sql_build_array('INSERT', array('message_id' => (int) $message_id)));
