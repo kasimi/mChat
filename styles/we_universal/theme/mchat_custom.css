@@ -10,3 +10,7 @@
 #mchat-panel {
     border-radius: 0;
 }
+
+#mChat + .inner li.header dd {
+    width: 0;
+}
