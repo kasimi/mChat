@@ -54,13 +54,13 @@
 }
 
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
-    .mchat-avatar {
-        display: none;
-    }
+	.mchat-avatar {
+		display: none;
+	}
 }
 
 .mchat-avatar a {
-    unicode-bidi: normal;
+	unicode-bidi: normal;
 }
 
 .mchat-avatar img {
@@ -192,11 +192,27 @@
 }
 
 .mchat-copyright {
-    position: relative;
-    top: 1px;
-    font-weight: bold;
-    font-size: 1.1em;
-    cursor: help;
+	position: relative;
+	top: 1px;
+	font-weight: bold;
+	font-size: 1.1em;
+	cursor: help;
+}
+
+#mchat-copyright-footer {
+	display: inline;
+}
+
+#mchat-copyright-footer li {
+   display: inline;
+}
+
+#mchat-copyright-footer li:first-child:before{
+	content: "";
+}
+
+#mchat-copyright-footer li:before{
+	content: "• ";
 }
 
 .mchat-static {
