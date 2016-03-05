@@ -15,7 +15,7 @@ class install_mchat extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], '1.0.0-RC1', '>=');
+		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], '1.0.0-RC2', '>=');
 	}
 
 	static public function depends_on()
@@ -27,7 +27,7 @@ class install_mchat extends \phpbb\db\migration\migration
 	{
 		return array(
 			// Add configs
-			array('config.add', array('mchat_version', '1.0.0-RC1')),
+			array('config.add', array('mchat_version', '1.0.0-RC2')),
 			array('config.add', array('mchat_archive_limit', 25)),
 			array('config.add', array('mchat_avatars', 1)),
 			array('config.add', array('mchat_bbcode_disallowed', '')),
