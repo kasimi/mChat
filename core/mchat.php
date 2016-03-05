@@ -751,14 +751,22 @@ class mchat
 	}
 
 	/**
-	 * Calculates the amount of time after which messages switch from displaying relative time to displaying absolute time.
-	 * Uses mChat's timeout if it's not zero, otherwise phpBB's global session timeout, but always limited to 60 minutes.
+	 * Calculates the amount of time after which messages switch from displaying relative time
+	 * to displaying absolute time. Uses mChat's timeout if it's not zero, otherwise phpBB's
+	 * global session timeout, but never shorter than 1 minute and never longer than 60 minutes.
 	 *
 	 * @return int
 	 */
 	protected function get_relative_minutes_limit()
 	{
-		return min((int) round(($this->config['mchat_timeout'] ?: $this->config['session_length']) / 60), 60);
+		$timeout = $this->config['session_length'];
+
+		if ($this->config['mchat_timeout'])
+		{
+			$timeout = $this->config['mchat_timeout'];
+		}
+
+		return min(max((int) ceil($timeout / 60), 1), 60);
 	}
 
 	/**

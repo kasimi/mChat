@@ -303,20 +303,17 @@ jQuery(function($) {
 		},
 		relativeTimeUpdate: function($time) {
 			var minutesAgo = $time.data('mchat-minutes-ago') + 1;
-			if (minutesAgo < 60) {
-				$time.text(mChat.minutesAgo[minutesAgo]);
-				$time.data('mchat-minutes-ago', minutesAgo);
+			var langMinutesAgo = mChat.minutesAgo[minutesAgo];
+			if (langMinutesAgo) {
+				$time.text(langMinutesAgo).data('mchat-minutes-ago', minutesAgo);
 			} else {
-				mChat.stopRelativeTimeUpdate($time, true);
-			}
-		},
-		stopRelativeTimeUpdate: function($message, setFullDateTime) {
-			var selector = 'time[data-mchat-relative-update]';
-			var $time = $message.find(selector).addBack(selector);
-			clearInterval($time.data('mchat-relative-interval'));
-			if (setFullDateTime) {
+				mChat.stopRelativeTimeUpdate($time);
 				$time.text($time.attr('title')).removeAttr('data-mchat-relative-update data-mchat-minutes-ago data-mchat-relative-interval');
 			}
+		},
+		stopRelativeTimeUpdate: function($message) {
+			var selector = 'time[data-mchat-relative-update]';
+			clearInterval($message.find(selector).addBack(selector).data('mchat-relative-interval'));
 		},
 		timeLeft: function(sessionTime) {
 			return (new Date(sessionTime * 1000)).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
