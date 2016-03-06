@@ -12,6 +12,10 @@
 	visibility: hidden;
 }
 
+#mChat + .inner li.header dd {
+    width: 0;
+}
+
 .icon-mchat {
 	background-image: url("./images/icon_mchat.png");
 }
