@@ -290,7 +290,7 @@ jQuery(function($) {
 		},
 		startRelativeTimeUpdate: function($messages) {
 			if (mChat.relativeTime) {
-				$messages.find('time[data-mchat-relative-update]').each(function() {
+				$messages.find('.mchat-time[data-mchat-relative-update]').each(function() {
 					var $time = $(this);
 					setTimeout(function() {
 						mChat.relativeTimeUpdate($time);
@@ -312,7 +312,7 @@ jQuery(function($) {
 			}
 		},
 		stopRelativeTimeUpdate: function($message) {
-			var selector = 'time[data-mchat-relative-update]';
+			var selector = '.mchat-time[data-mchat-relative-update]';
 			clearInterval($message.find(selector).addBack(selector).data('mchat-relative-interval'));
 		},
 		timeLeft: function(sessionTime) {

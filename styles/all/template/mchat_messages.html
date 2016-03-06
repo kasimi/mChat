@@ -10,7 +10,7 @@
 	<div class="mchat-message-wrapper">
 		<div class="mchat-message-header">
 			<!-- IF not MCHAT_ARCHIVE_PAGE --><span class="mchat-mention" data-mchat-action="mention" title="{L_MCHAT_RESPOND}" <!-- IF mchatrow.MCHAT_USERNAME_COLOR --> style="color:{mchatrow.MCHAT_USERNAME_COLOR}"<!-- ENDIF -->><strong>&#64;</strong></span><!-- ENDIF -->
-			{mchatrow.MCHAT_USERNAME_FULL} &bull; <time title="{mchatrow.MCHAT_DATETIME}"<!-- IF mchatrow.MCHAT_MINUTES_AGO != -1 --> data-mchat-minutes-ago="{mchatrow.MCHAT_MINUTES_AGO}" data-mchat-relative-update="{mchatrow.MCHAT_RELATIVE_UPDATE}"<!-- ENDIF -->>{mchatrow.MCHAT_TIME}</time>
+			{mchatrow.MCHAT_USERNAME_FULL} &bull; <span class="mchat-time" title="{mchatrow.MCHAT_DATETIME}"<!-- IF mchatrow.MCHAT_MINUTES_AGO != -1 --> data-mchat-minutes-ago="{mchatrow.MCHAT_MINUTES_AGO}" data-mchat-relative-update="{mchatrow.MCHAT_RELATIVE_UPDATE}"<!-- ENDIF -->>{mchatrow.MCHAT_TIME}</span>
 		</div>
 		<div class="mchat-message-icons">
 			<!-- IF MCHAT_ALLOW_PM and mchatrow.MCHAT_PM and mchatrow.U_VIEWPROFILE --><a href="{mchatrow.MCHAT_PM}" title="{L_MCHAT_SEND_PM}"><img src="{EXT_URL}styles/all/theme/images/message.gif" alt="{L_MCHAT_SEND_PM}" title="{L_MCHAT_SEND_PM}" /></a><!-- ENDIF -->
