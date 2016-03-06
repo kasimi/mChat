@@ -25,8 +25,7 @@ Array.prototype.min = function() {
 };
 
 jQuery.fn.reverse = function(reverse) {
-	reverse = typeof reverse === 'undefined' ? true : reverse;
-	return reverse ? jQuery(this.toArray().reverse()) : this;
+	return reverse === 'undefined' || reverse ? jQuery(this.toArray().reverse()) : this;
 };
 
 jQuery(function($) {
