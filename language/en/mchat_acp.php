@@ -112,6 +112,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_WHOIS_REFRESH_EXPLAIN'			=> 'Number of seconds before who is chatting refreshes.<br /><em>You are limited from 30 to 300 seconds.</em>',
 	'MCHAT_MESSAGE_TOP'						=> 'Location of new chat messages',
 	'MCHAT_MESSAGE_TOP_EXPLAIN'				=> 'New messages will appear at the top or at the bottom in the chat.',
+	'MCHAT_SOUND'							=> 'Play sounds for new, edited and deleted messages',
 	'MCHAT_BOTTOM'							=> 'Bottom',
 	'MCHAT_TOP'								=> 'Top',
 	'MCHAT_PAUSE_ON_INPUT'					=> 'Pause on input',

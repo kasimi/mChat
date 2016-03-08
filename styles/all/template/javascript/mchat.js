@@ -440,9 +440,7 @@ jQuery(function($) {
 			Cookies.set('mchat_no_sound', 'yes');
 		}
 
-		mChat.cached('user-sound').prop('checked', mChat.playSound && !Cookies.get('mchat_no_sound'));
-
-		mChat.cached('user-sound').change(function() {
+		mChat.cached('user-sound').prop('checked', mChat.playSound && !Cookies.get('mchat_no_sound')).change(function() {
 			if (this.checked) {
 				Cookies.remove('mchat_no_sound');
 			} else {

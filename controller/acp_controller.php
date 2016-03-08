@@ -102,6 +102,7 @@ class acp_controller
 			'mchat_message_limit'			=> array('default' => 10,				'validation' => array('num', false, 10, 30)),
 			'mchat_message_num'				=> array('default' => 10,				'validation' => array('num', false, 10, 50)),
 			'mchat_message_top'				=> array('default' => 1,				'validation' => array()),
+			'mchat_sound'					=> array('default' => 1,				'validation' => array()),
 			'mchat_navbar_link'				=> array('default' => 1,				'validation' => array()),
 			'mchat_new_posts_edit'			=> array('default' => 0,				'validation' => array()),
 			'mchat_new_posts_quote'			=> array('default' => 0,				'validation' => array()),

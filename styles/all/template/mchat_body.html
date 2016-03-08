@@ -48,7 +48,7 @@
 				extUrl			: '{EXT_URL}',
 				customPage		: <!-- IF MCHAT_CUSTOM_PAGE -->true<!-- ELSE -->false<!-- ENDIF -->,
 				pause			: <!-- IF MCHAT_PAUSE_ON_INPUT -->true<!-- ELSE -->false<!-- ENDIF -->,
-				playSound		: <!-- IF S_MCHAT_SOUND_YES -->true<!-- ELSE -->false<!-- ENDIF -->,
+				playSound		: <!-- IF MCHAT_SOUND -->true<!-- ELSE -->false<!-- ENDIF -->,
 				archiveMode		: <!-- IF MCHAT_ARCHIVE_PAGE -->true<!-- ELSE -->false<!-- ENDIF -->,
 				messageTop		: <!-- IF MCHAT_MESSAGE_TOP -->true<!-- ELSE -->false<!-- ENDIF -->,
 				allowBBCodes	: <!-- IF S_BBCODE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
@@ -87,10 +87,12 @@
 			// ]]>
 			</script>
 
-			<audio id="mchat-sound-add" class="hidden" src="{EXT_URL}sounds/add.mp3" preload="auto"></audio>
-			<audio id="mchat-sound-edit" class="hidden" src="{EXT_URL}sounds/edit.mp3" preload="auto"></audio>
-			<audio id="mchat-sound-del" class="hidden" src="{EXT_URL}sounds/del.mp3" preload="auto"></audio>
-			<audio id="mchat-sound-error" class="hidden" src="{EXT_URL}sounds/error.mp3" preload="auto"></audio>
+			<!-- IF MCHAT_SOUND_ACP -->
+				<audio id="mchat-sound-add" class="hidden" src="{EXT_URL}sounds/add.mp3" preload="auto"></audio>
+				<audio id="mchat-sound-edit" class="hidden" src="{EXT_URL}sounds/edit.mp3" preload="auto"></audio>
+				<audio id="mchat-sound-del" class="hidden" src="{EXT_URL}sounds/del.mp3" preload="auto"></audio>
+				<audio id="mchat-sound-error" class="hidden" src="{EXT_URL}sounds/error.mp3" preload="auto"></audio>
+			<!-- ENDIF -->
 
 			<div id="mchat-confirm" class="hidden">
 				<h3>{L_CONFIRM}</h3>
@@ -181,7 +183,7 @@
 							<img src="{EXT_URL}styles/all/theme/images/paused.gif" alt="{L_MCHAT_PAUSE}" title="{L_MCHAT_PAUSE}" id="mchat-refresh-paused" />
 							<img src="{EXT_URL}styles/all/theme/images/error.gif" alt="{L_ERROR}" title="{L_ERROR}" id="mchat-refresh-error" />
 							<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
-							<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{L_MCHAT_SESSION_ENDS} {MCHAT_USER_TIMEOUT_TIME}</span><!-- ENDIF --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF S_MCHAT_SOUND_YES --> checked="checked"<!-- ENDIF --> /></label>
+							<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{L_MCHAT_SESSION_ENDS} {MCHAT_USER_TIMEOUT_TIME}</span><!-- ENDIF --><!-- IF MCHAT_SOUND_ACP --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF MCHAT_SOUND --> checked="checked"<!-- ENDIF --> /></label><!-- ENDIF -->
 							{L_MCHAT_COPYRIGHT}
 						</div>
 					<!-- ENDIF -->

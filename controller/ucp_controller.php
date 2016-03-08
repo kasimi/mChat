@@ -103,6 +103,7 @@ class ucp_controller
 			'S_MCHAT_TOPICS'		=> $this->config['mchat_new_posts_edit'] || $this->config['mchat_new_posts_quote'] || $this->config['mchat_new_posts_reply'] || $this->config['mchat_new_posts_topic'],
 			'S_MCHAT_INDEX'			=> $this->config['mchat_on_index'],
 			'S_MCHAT_INDEX_STATS'	=> $this->config['mchat_stats_index'],
+			'S_MCHAT_SOUND'			=> $this->config['mchat_sound'],
 			'S_MCHAT_AVATARS'		=> $this->config['mchat_avatars'],
 		));
 	}
