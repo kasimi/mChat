@@ -20,7 +20,7 @@ class install_mchat extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v31x\v311');
+		return array('\phpbb\db\migration\data\v31x\v317pl1');
 	}
 
 	public function update_data()
