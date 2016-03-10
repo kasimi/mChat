@@ -78,6 +78,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_EDIT_DELETE_LIMIT_EXPLAIN'		=> 'Messages older than the specified number of seconds cannot be edited or deleted by the author any more.<br />Users who have <em>edit/delete permission as well as moderator permission are exempt</em> from this time limit.<br />Set to 0 to allow unlimited editing and deleting.',
 	'MCHAT_MAX_MESSAGE_LENGTH'				=> 'Maximum message length',
 	'MCHAT_MAX_MESSAGE_LENGTH_EXPLAIN'		=> 'Maximum number of characters allowed per message posted.<br /><em>Recommended from 100 to 500, set to 0 to disable.</em>',
+	'MCHAT_CHARACTER_COUNT'					=> 'Display number of characters when typing a message',
 	'MCHAT_CUSTOM_PAGE'						=> 'Enable custom Page',
 	'MCHAT_CUSTOM_PAGE_EXPLAIN'				=> 'Allow the use of the custom page',
 	'MCHAT_CUSTOM_HEIGHT'					=> 'Custom page height',

@@ -99,6 +99,7 @@ class acp_controller
 			'mchat_live_updates'			=> array('default' => 1,				'validation' => array()),
 			'mchat_location'				=> array('default' => 0,				'validation' => array()),
 			'mchat_max_message_lngth'		=> array('default' => 500,				'validation' => array('num', false, 0, 500)),
+			'mchat_character_count'			=> array('default' => 1,				'validation' => array()),
 			'mchat_message_limit'			=> array('default' => 10,				'validation' => array('num', false, 10, 30)),
 			'mchat_message_num'				=> array('default' => 10,				'validation' => array('num', false, 10, 50)),
 			'mchat_message_top'				=> array('default' => 1,				'validation' => array()),

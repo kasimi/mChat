@@ -54,6 +54,7 @@
 				allowBBCodes	: <!-- IF S_BBCODE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
 				liveUpdates		: <!-- IF MCHAT_LIVE_UPDATES -->true<!-- ELSE -->false<!-- ENDIF -->,
 				relativeTime	: <!-- IF MCHAT_RELATIVE_TIME -->true<!-- ELSE -->false<!-- ENDIF -->,
+				showCharCount	: <!-- IF MCHAT_CHARACTER_COUNT -->true<!-- ELSE -->false<!-- ENDIF -->,
 
 				// Limits & timeouts
 				refreshTime		: {MCHAT_REFRESH_JS},
@@ -81,6 +82,7 @@
 				sessEnds		: '{LA_MCHAT_SESSION_ENDS}',
 				refreshYes		: '{MCHAT_REFRESH_YES}',
 				refreshNo		: '{LA_MCHAT_REFRESH_NO}',
+				charCount		: '<!-- IF MCHAT_MESSAGE_LNGTH -->{LA_MCHAT_CHARACTER_COUNT_LIMIT}<!-- ELSE -->{LA_MCHAT_CHARACTER_COUNT}<!-- ENDIF -->',
 				mssgLngthLong	: '{MCHAT_MESS_LONG}',
 				likes			: '{LA_MCHAT_LIKES}'
 			};
@@ -125,6 +127,10 @@
 			<div id="mchat-panel" class="panel cp-mini">
 				<!-- IF not MCHAT_ARCHIVE_PAGE and not MCHAT_CUSTOM_PAGE and MCHAT_WHOIS_REFRESH -->
 					<!-- INCLUDE mchat_whois.html -->
+				<!-- ENDIF -->
+
+				<!-- IF MCHAT_CHARACTER_COUNT -->
+					<div id="mchat-character-count">{MCHAT_CHARACTER_COUNT}</div>
 				<!-- ENDIF -->
 
 				<form id="mchat-form" name="postform" action="{U_MCHAT_CUSTOM_PAGE}" method="POST">

@@ -498,12 +498,14 @@ class mchat
 		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
 		$static_message = $lang_static_message ?: $this->config['mchat_static_message'];
 
+		$u_mchat_use = $this->auth->acl_get('u_mchat_use');
+
 		$this->template->assign_vars(array(
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_controller'),
 			'MCHAT_REFRESH_JS'				=> 1000 * $this->config['mchat_refresh'],
 			'MCHAT_INPUT_TYPE'				=> $this->user->data['user_mchat_input_area'],
 			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || $this->config['mchat_rules'],
-			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
+			'MCHAT_ALLOW_USE'				=> $u_mchat_use,
 			'MCHAT_ALLOW_SMILES'			=> $this->config['allow_smilies'] && $this->auth->acl_get('u_mchat_smilies'),
 			'S_BBCODE_ALLOWED'				=> $this->config['allow_bbcode'] && $this->auth->acl_get('u_mchat_bbcode'),
 			'MCHAT_MESSAGE_TOP'				=> $this->config['mchat_message_top'],
@@ -522,6 +524,7 @@ class mchat
 			'MCHAT_REFRESH_YES'				=> $this->user->lang('MCHAT_REFRESH_YES', $this->config['mchat_refresh']),
 			'MCHAT_LIVE_UPDATES'			=> $this->config['mchat_live_updates'],
 			'S_MCHAT_LOCATION'				=> $this->config['mchat_location'],
+			'MCHAT_CHARACTER_COUNT'			=> $this->config['mchat_character_count'],
 			'MCHAT_SOUND_ACP'				=> $this->config['mchat_sound'],
 			'MCHAT_SOUND'					=> $this->config['mchat_sound'] && $this->user->data['user_mchat_sound'],
 			'U_MORE_SMILIES'				=> generate_board_url() . append_sid("/{$this->root_path}/posting.{$this->php_ext}", 'mode=smilies'),
@@ -552,7 +555,7 @@ class mchat
 			'edit'		=> $this->auth_message('u_mchat_edit', true, time()),
 			'del'		=> $this->auth_message('u_mchat_delete', true, time()),
 			'refresh'	=> $page != 'archive' && $this->auth->acl_get('u_mchat_view'),
-			'add'		=> $page != 'archive' && $this->auth->acl_get('u_mchat_use'),
+			'add'		=> $page != 'archive' && $u_mchat_use,
 			'whois'		=> $page != 'archive' && $this->config['mchat_whois'],
 		)));
 
@@ -589,7 +592,7 @@ class mchat
 			$this->template->assign_var('LEGEND', implode(', ', $legend));
 		}
 
-		if ($this->auth->acl_get('u_mchat_use'))
+		if ($u_mchat_use)
 		{
 			add_form_key('mchat');
 		}
@@ -901,10 +904,9 @@ class mchat
 			throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
 		}
 
-		// Must not exceed character limit, excluding whitespaces
+		// Must not exceed character limit
 		if ($this->config['mchat_max_message_lngth'])
 		{
-			$message_chars = preg_replace('#\s#m', '', $message);
 			if (utf8_strlen($message_chars) > $this->config['mchat_max_message_lngth'])
 			{
 				throw new \phpbb\exception\http_exception(413, 'MCHAT_MESS_LONG', array($this->config['mchat_max_message_lngth']));
