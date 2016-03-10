@@ -55,7 +55,7 @@ jQuery(function($) {
 		}
 		$.ajax({
 			url: mChat.actionUrls[mode],
-			timeout: 5000,
+			timeout: Math.min(mChat.refreshTime, 10000),
 			type: 'POST',
 			dataType: 'json',
 			data: data
