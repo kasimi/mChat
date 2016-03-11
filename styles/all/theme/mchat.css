@@ -239,11 +239,11 @@
 
 /* Compatibility with Advanced BBCode Box extension */
 
-#abbc3_buttons {
+#mchat-panel #abbc3_buttons {
 	margin: 0 !important;
 	padding-bottom: 5px;
 }
 
-#abbc3_buttons .abbc3_buttons_row {
+#mchat-panel #abbc3_buttons .abbc3_buttons_row {
 	margin: 0 auto !important;
 }
