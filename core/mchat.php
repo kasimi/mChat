@@ -250,7 +250,7 @@ class mchat
 
 		$message = $this->request->variable('message', '', true);
 
-		if ($this->settings->cfg('capital_letter'))
+		if ($this->settings->cfg('mchat_capital_letter'))
 		{
 			$message = utf8_ucfirst($message);
 		}
