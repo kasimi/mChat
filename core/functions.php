@@ -270,6 +270,16 @@ class functions
 	 */
 	public function mchat_get_messages($sql_where, $total = 0, $offset = 0)
 	{
+		// Exclude post notifications
+		if (!$this->settings->cfg('mchat_posts'))
+		{
+			if (!empty($sql_where))
+			{
+				$sql_where = '(' . $sql_where . ') AND ';
+			}
+			$sql_where .= 'm.forum_id = 0';
+		}
+
 		$sql_array = array(
 			'SELECT'	=> 'm.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_allow_pm',
 			'FROM'		=> array($this->mchat_table	=> 'm'),

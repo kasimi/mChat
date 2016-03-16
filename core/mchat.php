@@ -399,12 +399,6 @@ class mchat
 			}
 		}
 
-		// Exclude post notifications
-		if (!$this->settings->cfg('mchat_posts'))
-		{
-			$sql_where = '(' . $sql_where . ') AND m.forum_id = 0';
-		}
-
 		$rows = $this->functions->mchat_get_messages($sql_where);
 		$rows_refresh = array();
 		$rows_edit = array();
@@ -565,10 +559,9 @@ class mchat
 			));
 		}
 
-		$sql_where = $this->settings->cfg('mchat_topics') ? '' : 'm.forum_id = 0';
 		$limit = $this->settings->cfg('mchat_message_num_' . $page);
 		$start = $page == 'archive' ? $this->request->variable('start', 0) : 0;
-		$rows = $this->functions->mchat_get_messages($sql_where, $limit, $start);
+		$rows = $this->functions->mchat_get_messages('', $limit, $start);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows, $page);
