@@ -682,8 +682,7 @@ class mchat
 				continue;
 			}
 
-			$message_edit = $row['message'];
-			decode_message($message_edit, $row['bbcode_uid']);
+			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
 
 			if (in_array($row['user_id'], $foes))
 			{
@@ -710,7 +709,7 @@ class mchat
 				'U_VIEWPROFILE'			=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'		=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'],
 				'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
-				'MCHAT_MESSAGE_EDIT'	=> $message_edit,
+				'MCHAT_MESSAGE_EDIT'	=> $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'		=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'	=> $username_full,
 				'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
