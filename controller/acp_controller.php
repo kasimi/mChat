@@ -108,7 +108,8 @@ class acp_controller
 			$validation = array();
 			foreach ($this->settings->global as $config_name => $config_data)
 			{
-				$default = $config_data['default'];
+				$default = $this->settings->cfg($config_name);
+				settype($default, gettype($config_data['default']));
 				$mchat_new_config[$config_name] = $this->request->variable($config_name, $default, is_string($default));
 				if (isset($config_data['validation']))
 				{

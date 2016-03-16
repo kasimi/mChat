@@ -1,5 +1,7 @@
 parameters:
     # Global settings that only the administrator is allowed to modify.
+    # The values are stored in the phpbb_config table and can be
+    # accessed using the \phpbb\config\config $config class.
     dmzx.mchat.config_global:
         mchat_bbcode_disallowed:
             default: ''
@@ -69,6 +71,14 @@ parameters:
             default: 0
         mchat_override_smilie_limit:
             default: 0
+        mchat_posts_edit:
+            default: 0
+        mchat_posts_quote:
+            default: 0
+        mchat_posts_reply:
+            default: 0
+        mchat_posts_topic:
+            default: 0
         mchat_prune:
             default: 0
         mchat_prune_num:
@@ -113,6 +123,7 @@ parameters:
 
     # User-specific settings for which the administrator can set default
     # values as well as adjust permissions to allow users to customize them.
+    # For each setting a new column is added to the phpbb_users table.
     dmzx.mchat.config_ucp:
         mchat_avatars:
             default: 1
@@ -146,20 +157,11 @@ parameters:
         mchat_pause_on_input:
             default: 0
             type: 'BOOL'
-        mchat_relative_time:
+        mchat_posts:
             default: 1
             type: 'BOOL'
-        mchat_posts_edit:
-            default: 0
-            type: 'BOOL'
-        mchat_posts_quote:
-            default: 0
-            type: 'BOOL'
-        mchat_posts_reply:
-            default: 0
-            type: 'BOOL'
-        mchat_posts_topic:
-            default: 0
+        mchat_relative_time:
+            default: 1
             type: 'BOOL'
         mchat_sound:
             default: 1

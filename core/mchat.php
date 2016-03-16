@@ -400,7 +400,7 @@ class mchat
 		}
 
 		// Exclude post notifications
-		if (!$this->settings->cfg('mchat_topics'))
+		if (!$this->settings->cfg('mchat_posts'))
 		{
 			$sql_where = '(' . $sql_where . ') AND m.forum_id = 0';
 		}
@@ -677,7 +677,7 @@ class mchat
 		foreach ($rows as $i => $row)
 		{
 			// Auth checks
-			if ($row['forum_id'] && !$this->auth->acl_get('f_read', 0, $row['forum_id']))
+			if ($row['forum_id'] && !$this->auth->acl_get('f_read', $row['forum_id']))
 			{
 				continue;
 			}

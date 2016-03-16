@@ -102,6 +102,7 @@ class mchat_1_0_0 extends \phpbb\db\migration\migration
 			array('permission.permission_set', array('REGISTERED', 'u_mchat_input_area', 'group')),
 			array('permission.permission_set', array('REGISTERED', 'u_mchat_location', 'group')),
 			array('permission.permission_set', array('REGISTERED', 'u_mchat_message_top', 'group')),
+			array('permission.permission_set', array('REGISTERED', 'u_mchat_posts', 'group')),
 			array('permission.permission_set', array('REGISTERED', 'u_mchat_relative_time', 'group')),
 			array('permission.permission_set', array('REGISTERED', 'u_mchat_sound', 'group')),
 
