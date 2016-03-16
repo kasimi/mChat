@@ -167,7 +167,7 @@ jQuery(function($) {
 				ajaxRequest('edit', true, {
 					message_id: $container.data('mchat-id'),
 					message: $message.val(),
-					archive: mChat.archiveMode ? 1 : 0
+					archive: mChat.archivePage ? 1 : 0
 				}).done(function(json) {
 					mChat.updateMessages($(json.edit));
 					mChat.resetSession();
@@ -355,7 +355,7 @@ jQuery(function($) {
 			}
 		},
 		resetSession: function() {
-			if (!mChat.archiveMode) {
+			if (!mChat.archivePage) {
 				clearInterval(mChat.refreshInterval);
 				mChat.refreshInterval = setInterval(mChat.refresh, mChat.refreshTime);
 				if (mChat.userTimeout) {
@@ -453,7 +453,7 @@ jQuery(function($) {
 		mChat.hiddenFields[this.name] = this.value;
 	});
 
-	if (!mChat.archiveMode) {
+	if (!mChat.archivePage) {
 		mChat.resetSession();
 
 		if (!mChat.messageTop) {

@@ -20,6 +20,10 @@
 	background-image: url("./images/icon_mchat.png");
 }
 
+.mchat-ucp fieldset hr:first-child, .mchat-ucp fieldset hr:last-child, .mchat-ucp fieldset hr + hr {
+	display: none;
+}
+
 #mchat-body {
 	width: 100% !important;
 }

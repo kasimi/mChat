@@ -13,14 +13,14 @@ namespace dmzx\mchat\controller;
 
 class ucp_controller
 {
-	/** @var \phpbb\config\config */
-	protected $config;
-
 	/** @var \phpbb\template\template */
 	protected $template;
 
 	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -28,27 +28,27 @@ class ucp_controller
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var array */
-	protected $user_config_keys;
+	/** @var \dmzx\mchat\core\settings */
+	protected $settings;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\config\config				$config
 	 * @param \phpbb\template\template			$template
 	 * @param \phpbb\user						$user
+	 * @param \phpbb\auth\auth					$auth
 	 * @param \phpbb\db\driver\driver_interface	$db
 	 * @param \phpbb\request\request			$request
-	 * @param array								$user_config_keys
+	 * @param \dmzx\mchat\core\settings			$settings
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, $user_config_keys)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \dmzx\mchat\core\settings $settings)
 	{
-		$this->config			= $config;
-		$this->template			= $template;
-		$this->user				= $user;
-		$this->db				= $db;
-		$this->request			= $request;
-		$this->user_config_keys	= $user_config_keys;
+		$this->template	= $template;
+		$this->user		= $user;
+		$this->auth		= $auth;
+		$this->db		= $db;
+		$this->request	= $request;
+		$this->settings	= $settings;
 	}
 
 	/**
@@ -56,7 +56,7 @@ class ucp_controller
 	 *
 	 * @param $u_action
 	 */
-	public function display_options($u_action)
+	public function configuration($u_action)
 	{
 		add_form_key('ucp_mchat');
 
@@ -64,21 +64,34 @@ class ucp_controller
 
 		if ($this->request->is_set_post('submit'))
 		{
+			$mchat_new_config = array();
+			$validation = array();
+			foreach ($this->settings->ucp as $config_name => $config_data)
+			{
+				if ($this->auth->acl_get('u_' . $config_name))
+				{
+					$default = $this->user->data['user_' . $config_name];
+					settype($default, gettype($config_data['default']));
+					$mchat_new_config['user_' . $config_name] = $this->request->variable('user_' . $config_name, $default, is_string($default));
+
+					if (isset($config_data['validation']))
+					{
+						$validation['user_' . $config_name] = $config_data['validation'];
+					}
+				}
+			}
+
+			$error = array_merge($error, validate_data($mchat_new_config, $validation));
+
 			if (!check_form_key('ucp_mchat'))
 			{
 				$error[] = 'FORM_INVALID';
 			}
 
-			if (empty($error))
+			if (!$error)
 			{
-				$data = array();
-				foreach ($this->user_config_keys as $config_key)
-				{
-					$data[$config_key] = $this->request->variable($config_key, (int) $this->user->data[$config_key]);
-				}
-
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+					SET ' . $this->db->sql_build_array('UPDATE', $mchat_new_config) . '
 					WHERE user_id = ' . (int) $this->user->data['user_id'];
 				$this->db->sql_query($sql);
 
@@ -91,20 +104,31 @@ class ucp_controller
 			$error = array_map(array($this->user, 'lang'), $error);
 		}
 
-		foreach ($this->user_config_keys as $config_key)
+		$auth_count = 0;
+
+		foreach (array_keys($this->settings->ucp) as $config_name)
 		{
-			$this->template->assign_var(strtoupper($config_key), $this->user->data[$config_key]);
+			$upper = strtoupper($config_name);
+			$auth = $this->auth->acl_get('u_' . $config_name);
+
+			$this->template->assign_vars(array(
+				$upper				=> $this->settings->cfg($config_name),
+				$upper . '_AUTH'	=> $auth,
+			));
+
+			if ($auth)
+			{
+				$auth_count++;
+			}
 		}
 
-		$this->template->assign_vars(array(
-			'ERROR'					=> sizeof($error) ? implode('<br />', $error) : '',
-			'S_UCP_ACTION'			=> $u_action,
+		$selected = $this->settings->cfg('mchat_date');
+		$this->template->assign_vars($this->settings->get_date_template_data($selected));
 
-			'S_MCHAT_TOPICS'		=> $this->config['mchat_new_posts_edit'] || $this->config['mchat_new_posts_quote'] || $this->config['mchat_new_posts_reply'] || $this->config['mchat_new_posts_topic'],
-			'S_MCHAT_INDEX'			=> $this->config['mchat_on_index'],
-			'S_MCHAT_INDEX_STATS'	=> $this->config['mchat_stats_index'],
-			'S_MCHAT_SOUND'			=> $this->config['mchat_sound'],
-			'S_MCHAT_AVATARS'		=> $this->config['mchat_avatars'],
+		$this->template->assign_vars(array(
+			'ERROR'							=> sizeof($error) ? implode('<br />', $error) : '',
+			'MCHAT_AUTH_COUNT'				=> $auth_count,
+			'S_UCP_ACTION'					=> $u_action,
 		));
 	}
 }

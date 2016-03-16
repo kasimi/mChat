@@ -13,8 +13,8 @@ namespace dmzx\mchat\core;
 
 class functions
 {
-	/** @var \phpbb\config\config */
-	protected $config;
+	/** @var \dmzx\mchat\core\settings */
+	protected $settings;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -52,7 +52,7 @@ class functions
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config					$config
+	* @param \dmzx\mchat\core\settings				$settings
 	* @param \phpbb\user							$user
 	* @param \phpbb\auth\auth						$auth
 	* @param \phpbb\log\log_interface				$log
@@ -64,9 +64,9 @@ class functions
 	* @param string									$mchat_deleted_messages_table
 	* @param string									$mchat_sessions_table
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $root_path, $php_ext, $mchat_table, $mchat_deleted_messages_table, $mchat_sessions_table)
+	function __construct(\dmzx\mchat\core\settings $settings, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $root_path, $php_ext, $mchat_table, $mchat_deleted_messages_table, $mchat_sessions_table)
 	{
-		$this->config						= $config;
+		$this->settings						= $settings;
 		$this->user							= $user;
 		$this->auth							= $auth;
 		$this->log							= $log;
@@ -119,7 +119,19 @@ class functions
 	 */
 	protected function mchat_session_time()
 	{
-		return !empty($this->config['mchat_timeout']) ? $this->config['mchat_timeout'] : (!empty($this->config['load_online_time']) ? $this->config['load_online_time'] * 60 : $this->config['session_length']);
+		$mchat_timeout = $this->settings->cfg('mchat_timeout');
+		if ($mchat_timeout)
+		{
+			return $mchat_timeout;
+		}
+
+		$load_online_time = $this->settings->cfg('load_online_time');
+		if ($load_online_time)
+		{
+			return $load_online_time * 60;
+		}
+
+		return $this->settings->cfg('session_length');
 	}
 
 	/**
@@ -216,11 +228,11 @@ class functions
 	 */
 	public function mchat_prune()
 	{
-		if ($this->config['mchat_prune'])
+		if ($this->settings->cfg('mchat_prune'))
 		{
 			$mchat_total_messages = $this->mchat_total_message_count();
 
-			if ($mchat_total_messages > $this->config['mchat_prune_num'])
+			if ($mchat_total_messages > $this->settings->cfg('mchat_prune_num'))
 			{
 				$sql = 'SELECT message_id
 					FROM '. $this->mchat_table . '
@@ -230,7 +242,7 @@ class functions
 				$this->db->sql_freeresult($result);
 
 				// Compute new oldest message id
-				$delete_id = $mchat_total_messages - $this->config['mchat_prune_num'] + $first_id;
+				$delete_id = $mchat_total_messages - $this->settings->cfg('mchat_prune_num') + $first_id;
 
 				// Delete older messages
 				$this->mchat_action('prune', null, $delete_id, $this->user->data['username']);
@@ -287,7 +299,7 @@ class functions
 	public function mchat_legend()
 	{
 		// Grab group details for legend display for who is online on the custom page
-		$order_legend = $this->config['legend_sort_groupname'] ? 'group_name' : 'group_legend';
+		$order_legend = $this->settings->cfg('legend_sort_groupname') ? 'group_name' : 'group_legend';
 		if ($this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 		{
 			$sql = 'SELECT group_id, group_name, group_colour, group_type
@@ -361,7 +373,7 @@ class functions
 	 */
 	public function mchat_sql_append_forbidden_bbcodes($sql_where)
 	{
-		$disallowed_bbcodes = explode('|', $this->config['mchat_bbcode_disallowed']);
+		$disallowed_bbcodes = explode('|', $this->settings->cfg('mchat_bbcode_disallowed'));
 
 		if (!empty($disallowed_bbcodes))
 		{
@@ -380,13 +392,13 @@ class functions
 	public function mchat_insert_posting($mode, $data)
 	{
 		$mode_config = array(
-			'post'	=> $this->config['mchat_new_posts_topic'],
-			'quote'	=> $this->config['mchat_new_posts_quote'],
-			'edit'	=> $this->config['mchat_new_posts_edit'],
-			'reply'	=> $this->config['mchat_new_posts_reply'],
+			'post'	=> 'mchat_new_posts_topic',
+			'quote'	=> 'mchat_new_posts_quote',
+			'edit'	=> 'mchat_new_posts_edit',
+			'reply'	=> 'mchat_new_posts_reply',
 		);
 
-		if (empty($mode_config[$mode]))
+		if (empty($mode_config[$mode]) || !$this->settings->cfg($mode_config[$mode]))
 		{
 			return;
 		}
@@ -420,7 +432,7 @@ class functions
 	 */
 	public function mchat_is_user_flooding()
 	{
-		if (!$this->config['mchat_flood_time'] || $this->auth->acl_get('u_mchat_flood_ignore'))
+		if (!$this->settings->cfg('mchat_flood_time') || $this->auth->acl_get('u_mchat_flood_ignore'))
 		{
 			return false;
 		}
@@ -433,7 +445,7 @@ class functions
 		$message_time = (int) $this->db->sql_fetchfield('message_time');
 		$this->db->sql_freeresult($result);
 
-		return $message_time && time() - $message_time < $this->config['mchat_flood_time'];
+		return $message_time && time() - $message_time < $this->settings->cfg('mchat_flood_time');
 	}
 
 	/**
