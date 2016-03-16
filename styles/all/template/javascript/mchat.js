@@ -216,6 +216,9 @@ jQuery(function($) {
 					$('#mchat-no-messages').remove();
 					$html.reverse(mChat.messageTop).hide().each(function(i) {
 						var $message = $(this);
+						if ($.inArray($message.data('mchat-id'), mChat.messageIds) !== -1) {
+							return;
+						}
 						mChat.messageIds.push($message.data('mchat-id'));
 						setTimeout(function() {
 							if (mChat.messageTop) {
