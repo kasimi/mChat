@@ -116,7 +116,11 @@ class acp_controller
 				}
 			}
 
-			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
+			if (!function_exists('validate_data'))
+			{
+				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
+			}
+
 			$error = array_merge($error, validate_data($mchat_new_config, $validation));
 
 			if (!check_form_key('acp_mchat'))
@@ -174,7 +178,8 @@ class acp_controller
 			$validation = array();
 			foreach ($this->settings->ucp as $config_name => $config_data)
 			{
-				$default = $config_data['default'];
+				$default = $this->settings->cfg($config_name, true);
+				settype($default, gettype($config_data['default']));
 				$mchat_new_config[$config_name] = $this->request->variable('user_' . $config_name, $default, is_string($default));
 
 				if (isset($config_data['validation']))
@@ -183,7 +188,12 @@ class acp_controller
 				}
 			}
 
-			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
+
+			if (!function_exists('validate_data'))
+			{
+				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
+			}
+
 			$error = array_merge($error, validate_data($mchat_new_config, $validation));
 
 			if (!check_form_key('acp_mchat'))
@@ -211,7 +221,7 @@ class acp_controller
 
 		foreach (array_keys($this->settings->ucp) as $key)
 		{
-			$this->template->assign_var(strtoupper($key), $this->settings->cfg($key));
+			$this->template->assign_var(strtoupper($key), $this->settings->cfg($key, true));
 		}
 
 		// Force global date format for $selected value, not user-specific

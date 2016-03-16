@@ -37,7 +37,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	// Module titles
 	'ACP_CAT_MCHAT'							=> 'mChat',
-	'ACP_CAT_MCHAT_USER_CONFIG'				=> 'mChat UCP',
+	'ACP_CAT_MCHAT_USER_CONFIG'				=> 'mChat in UCP',
 	'ACP_MCHAT_GLOBALSETTINGS'				=> 'Global settings',
 	'ACP_MCHAT_GLOBALUSERSETTINGS'			=> 'Global user settings',
 

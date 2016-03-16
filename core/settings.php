@@ -64,29 +64,24 @@ class settings
 
 	/**
 	 * @param string $config
-	 * @param int $user_id
 	 * @param bool $force_global
 	 * @return string
 	 */
 	public function cfg($config, $force_global = false)
 	{
-		if (!$force_global && isset($this->ucp[$config]) && $this->auth->acl_get('u_' . $config))
-		{
-			return $this->user->data['user_' . $config];
-		}
-
-		return $this->config[$config];
+		return $this->cfg_user($config, $this->user->data, $this->auth, $force_global);
 	}
 
 	/**
 	 * @param string $config
 	 * @param array $user_data
 	 * @param \phpbb\auth\auth $auth
+	 * @param bool $force_global
 	 * @return string
 	 */
-	public function cfg_user($config, $user_data, $auth)
+	public function cfg_user($config, $user_data, $auth, $force_global = false)
 	{
-		if (isset($this->ucp[$config]) && $auth->acl_get('u_' . $config))
+		if (!$force_global && isset($this->ucp[$config]) && $auth->acl_get('u_' . $config))
 		{
 			return $user_data['user_' . $config];
 		}
