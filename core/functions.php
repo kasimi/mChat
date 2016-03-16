@@ -392,10 +392,10 @@ class functions
 	public function mchat_insert_posting($mode, $data)
 	{
 		$mode_config = array(
-			'post'	=> 'mchat_new_posts_topic',
-			'quote'	=> 'mchat_new_posts_quote',
-			'edit'	=> 'mchat_new_posts_edit',
-			'reply'	=> 'mchat_new_posts_reply',
+			'post'	=> 'mchat_posts_topic',
+			'quote'	=> 'mchat_posts_quote',
+			'edit'	=> 'mchat_posts_edit',
+			'reply'	=> 'mchat_posts_reply',
 		);
 
 		if (empty($mode_config[$mode]) || !$this->settings->cfg($mode_config[$mode]))
