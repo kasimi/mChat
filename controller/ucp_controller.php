@@ -31,6 +31,12 @@ class ucp_controller
 	/** @var \dmzx\mchat\core\settings */
 	protected $settings;
 
+	/** @var string */
+	protected $root_path;
+
+	/** @var string */
+	protected $php_ext;
+
 	/**
 	 * Constructor
 	 *
@@ -40,15 +46,19 @@ class ucp_controller
 	 * @param \phpbb\db\driver\driver_interface	$db
 	 * @param \phpbb\request\request			$request
 	 * @param \dmzx\mchat\core\settings			$settings
+	 * @param string							$root_path
+	 * @param string							$php_ext
 	 */
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \dmzx\mchat\core\settings $settings)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \dmzx\mchat\core\settings $settings, $root_path, $php_ext)
 	{
-		$this->template	= $template;
-		$this->user		= $user;
-		$this->auth		= $auth;
-		$this->db		= $db;
-		$this->request	= $request;
-		$this->settings	= $settings;
+		$this->template		= $template;
+		$this->user			= $user;
+		$this->auth			= $auth;
+		$this->db			= $db;
+		$this->request		= $request;
+		$this->settings		= $settings;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
 	}
 
 	/**
@@ -79,6 +89,11 @@ class ucp_controller
 						$validation['user_' . $config_name] = $config_data['validation'];
 					}
 				}
+			}
+
+			if (!function_exists('validate_data'))
+			{
+				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 			}
 
 			$error = array_merge($error, validate_data($mchat_new_config, $validation));

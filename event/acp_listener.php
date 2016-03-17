@@ -27,20 +27,30 @@ class acp_listener implements EventSubscriberInterface
 	/** @var \dmzx\mchat\core\settings */
 	protected $settings;
 
+	/** @var string */
+	protected $root_path;
+
+	/** @var string */
+	protected $php_ext;
+
 	/**
 	* Constructor
 	*
-	* @param \phpbb\template\template			$template
-	* @param \phpbb\request\request				$request
-	* @param \phpbb\user						$user
-	* @param \dmzx\mchat\core\settings			$settings
+	* @param \phpbb\template\template	$template
+	* @param \phpbb\request\request		$request
+	* @param \phpbb\user				$user
+	* @param \dmzx\mchat\core\settings	$settings
+	* @param string						$root_path
+	* @param string						$php_ext
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user $user, \dmzx\mchat\core\settings $settings)
+	public function __construct(\phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user $user, \dmzx\mchat\core\settings $settings, $root_path, $php_ext)
 	{
-		$this->template	= $template;
-		$this->request	= $request;
-		$this->user		= $user;
-		$this->settings	= $settings;
+		$this->template		= $template;
+		$this->request		= $request;
+		$this->user			= $user;
+		$this->settings		= $settings;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
 	}
 
 	/**
@@ -128,6 +138,11 @@ class acp_listener implements EventSubscriberInterface
 					$validation['user_' . $config_name] = $config_data['validation'];
 				}
 			}
+		}
+
+		if (!function_exists('validate_data'))
+		{
+			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
 		$event['error'] = array_merge($event['error'], validate_data($sql_ary, $validation));

@@ -26,6 +26,8 @@ services:
             - '@dbal.conn'
             - '@request'
             - '@dmzx.mchat.settings'
+            - '%core.root_path%'
+            - '%core.php_ext%'
     dmzx.mchat.main.controller:
         class: dmzx\mchat\controller\main_controller
         arguments:
@@ -76,6 +78,8 @@ services:
             - '@request'
             - '@user'
             - '@dmzx.mchat.settings'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: event.listener }
     dmzx.mchat.main.listener:
