@@ -17,7 +17,7 @@ class mchat_1_0_0 extends \phpbb\db\migration\migration
 
 	public function effectively_installed()
 	{
-		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], '1.0.0-RC2', '>=');
+		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], '1.0.0-RC3', '>=');
 	}
 
 	static public function depends_on()
@@ -58,7 +58,7 @@ class mchat_1_0_0 extends \phpbb\db\migration\migration
 		}
 
 		return array_merge($update_data, array(
-			array('config.add', array('mchat_version', '1.0.0-RC2')),
+			array('config.add', array('mchat_version', '1.0.0-RC3')),
 
 			// Add user permissions
 			array('permission.add', array('u_mchat_use', true)),
