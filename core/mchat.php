@@ -489,6 +489,15 @@ class mchat
 		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
 		$static_message = $lang_static_message ?: $this->settings->cfg('mchat_static_message');
 
+		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/mchat', $this->template);
+		$meta = $md_manager->get_metadata('all');
+		$authors = array();
+		foreach ($meta['authors'] as $author)
+		{
+			$authors[] = $author['name'];
+		}
+		$md_manager->output_template_data();
+
 		$u_mchat_use = $this->auth->acl_get('u_mchat_use');
 
 		$this->template->assign_vars(array(
@@ -517,15 +526,11 @@ class mchat
 			'MCHAT_REFRESH_YES'				=> $this->user->lang('MCHAT_REFRESH_YES', $this->settings->cfg('mchat_refresh')),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', (int) $this->settings->cfg('mchat_timeout')),
-			'L_MCHAT_' . 'COPY' . 'RIGHT'	=> base64_decode('PHNwYW4gY2xhc3M9Im1jaGF0LWNvcHlyaWdodCIgdGl0bGU9ImRtenggJmJ1bGw7IGthc2ltaSAmYnVsbDsgUk1jR2lycjgzIj4mY29weTs8L3NwYW4+'),
+			'MCHAT_COPYRIGHT'				=> implode(' &bull; ', $authors),
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_controller'),
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'rules')),
 			'U_MCHAT_ARCHIVE_URL'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive')),
 		));
-
-		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/mchat', $this->template);
-		$md_manager->get_metadata('all');
-		$md_manager->output_template_data();
 
 		// The template needs some language variables if we display relative time for messages
 		if ($this->settings->cfg('mchat_relative_time') && $page != 'archive')
