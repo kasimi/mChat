@@ -183,10 +183,12 @@
 						<!-- ENDIF -->
 						<!-- EVENT dmzx_mchat_body_smiley_after -->
 						<div id="mchat-status">
-							<img src="{EXT_URL}styles/all/theme/images/load.gif" alt="{L_LOADING}" title="{L_LOADING}" id="mchat-refresh-load" />
-							<img src="{EXT_URL}styles/all/theme/images/ok.gif" alt="{L_MCHAT_OK}" title="{L_MCHAT_OK}" id="mchat-refresh-ok" />
-							<img src="{EXT_URL}styles/all/theme/images/paused.gif" alt="{L_MCHAT_PAUSE}" title="{L_MCHAT_PAUSE}" id="mchat-refresh-paused" />
-							<img src="{EXT_URL}styles/all/theme/images/error.gif" alt="{L_ERROR}" title="{L_ERROR}" id="mchat-refresh-error" />
+							<div id="mchat-status-icons">
+								<div id="mchat-refresh-load" title="{L_LOADING}"></div>
+								<div id="mchat-refresh-ok" title="{L_MCHAT_OK}"></div>
+								<div id="mchat-refresh-paused" title="{L_MCHAT_PAUSE}"></div>
+								<div id="mchat-refresh-error" title="{L_ERROR}"></div>
+							</div>
 							<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
 							<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{L_MCHAT_SESSION_ENDS} {MCHAT_USER_TIMEOUT_TIME}</span><!-- ENDIF --><!-- IF not MCHAT_SOUND_DISABLED --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF MCHAT_SOUND --> checked="checked"<!-- ENDIF --> /></label><!-- ENDIF -->
 							<span class="mchat-copyright" title="{MCHAT_AUTHOR_NAMES}">&copy;</span>

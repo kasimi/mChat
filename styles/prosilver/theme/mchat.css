@@ -179,20 +179,41 @@
 	padding: 0;
 }
 
-#mchat-refresh-ok, #mchat-refresh-load, #mchat-refresh-error, #mchat-refresh-paused {
-	vertical-align: middle;
+#mchat-status-icons {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
 }
 
-#mchat-refresh-ok, #mchat-refresh-load, #mchat-refresh-error {
+#mchat-status-icons > div {
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    float: left;
+}
+
+#mchat-refresh-error {
 	display: none;
+    cursor: help;
+    background-image: url("./images/error.gif");
+}
+
+#mchat-refresh-ok {
+    display: none;
+    cursor: help;
+    background-image: url("./images/ok.gif");
 }
 
 #mchat-refresh-load {
+    display: none;
 	cursor: wait;
+    background-image: url("./images/load.gif");
 }
 
-#mchat-refresh-ok, #mchat-refresh-error, #mchat-refresh-paused {
+#mchat-refresh-paused {
 	cursor: help;
+    background-image: url("./images/paused.gif");
 }
 
 #mchat-legend {
