@@ -489,15 +489,6 @@ class mchat
 		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
 		$static_message = $lang_static_message ?: $this->settings->cfg('mchat_static_message');
 
-		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/mchat', $this->template);
-		$meta = $md_manager->get_metadata('all');
-		$authors = array();
-		foreach ($meta['authors'] as $author)
-		{
-			$authors[] = $author['name'];
-		}
-		$md_manager->output_template_data();
-
 		$u_mchat_use = $this->auth->acl_get('u_mchat_use');
 
 		$this->template->assign_vars(array(
@@ -526,7 +517,6 @@ class mchat
 			'MCHAT_REFRESH_YES'				=> $this->user->lang('MCHAT_REFRESH_YES', $this->settings->cfg('mchat_refresh')),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'MCHAT_USER_TIMEOUT_TIME'		=> gmdate('H:i:s', (int) $this->settings->cfg('mchat_timeout')),
-			'MCHAT_COPYRIGHT'				=> implode(' &bull; ', $authors),
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_controller'),
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'rules')),
 			'U_MCHAT_ARCHIVE_URL'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive')),
@@ -587,6 +577,8 @@ class mchat
 			$this->template->assign_var('LEGEND', implode(', ', $legend));
 		}
 
+		$this->assign_authors();
+
 		if ($u_mchat_use)
 		{
 			add_form_key('mchat');
@@ -599,6 +591,30 @@ class mchat
 		* @since 0.1.2
 		*/
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_aft');
+	}
+
+	/**
+	 * Assigns author names and homepages for copyright
+	 */
+	protected function assign_authors()
+	{
+		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/mchat', $this->template);
+		$meta = $md_manager->get_metadata();
+
+		$author_names = array();
+		$author_homepages = array();
+
+		foreach ($meta['authors'] as $author)
+		{
+			$author_names[] = $author['name'];
+			$author_homepages[] = sprintf('<a href="%1$s" title="%2$s">%2$s</a>', $author['homepage'], $author['name']);
+		}
+
+		$this->template->assign_vars(array(
+			'MCHAT_DISPLAY_NAME'		=> $meta['extra']['display-name'],
+			'MCHAT_AUTHOR_NAMES'		=> implode(' &bull; ', $author_names),
+			'MCHAT_AUTHOR_HOMEPAGES'	=> implode(' &bull; ', $author_homepages),
+		));
 	}
 
 	/**
