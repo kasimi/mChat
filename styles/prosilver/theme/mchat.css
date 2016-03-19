@@ -50,6 +50,44 @@
 	float: right;
 }
 
+.mchat-message-icons > div {
+	display: inline-block;
+}
+
+.mchat-message-icons > div a {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+.mchat-message-icon-quote {
+	 background-image: url("./images/quota.png");
+}
+
+.mchat-message-icon-like {
+	 background-image: url("./images/like.png");
+}
+
+.mchat-message-icon-pm {
+	 background-image: url("./images/message.gif");
+}
+
+.mchat-message-icon-ip {
+	 background-image: url("./images/ip.gif");
+}
+
+.mchat-message-icon-ban {
+	 background-image: url("./images/ban.gif");
+}
+
+.mchat-message-icon-edit {
+	 background-image: url("./images/edit.gif");
+}
+
+.mchat-message-icon-del {
+	 background-image: url("./images/del.gif");
+}
+
 .mchat-message {
 	padding: 5px;
 	overflow: hidden;
@@ -115,8 +153,10 @@
 	color: inherit !important;
 }
 
-.mchat-mention, .mchat-message-icons > * {
+.mchat-mention, .mchat-message-icons > div {
 	cursor: pointer;
+	width: 16px;
+	height: 16px;
 }
 
 #mchat-no-message {
@@ -124,9 +164,9 @@
 }
 
 #mchat-character-count {
-    float: right;
-    visibility: hidden;
-    padding: 5px 0 0;
+	float: right;
+	visibility: hidden;
+	padding: 5px 0 0;
 }
 
 #mchat-panel {
@@ -180,40 +220,40 @@
 }
 
 #mchat-status-icons {
-    position: relative;
-    display: inline-block;
-    vertical-align: top;
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
 }
 
 #mchat-status-icons > div {
-    top: 0;
-    left: 0;
-    width: 16px;
-    height: 16px;
-    float: left;
+	top: 0;
+	left: 0;
+	width: 16px;
+	height: 16px;
+	float: left;
 }
 
 #mchat-refresh-error {
 	display: none;
-    cursor: help;
-    background-image: url("./images/error.gif");
+	cursor: help;
+	background-image: url("./images/error.gif");
 }
 
 #mchat-refresh-ok {
-    display: none;
-    cursor: help;
-    background-image: url("./images/ok.gif");
+	display: none;
+	cursor: help;
+	background-image: url("./images/ok.gif");
 }
 
 #mchat-refresh-load {
-    display: none;
+	display: none;
 	cursor: wait;
-    background-image: url("./images/load.gif");
+	background-image: url("./images/load.gif");
 }
 
 #mchat-refresh-paused {
 	cursor: help;
-    background-image: url("./images/paused.gif");
+	background-image: url("./images/paused.gif");
 }
 
 #mchat-legend {
@@ -227,7 +267,7 @@
 }
 
 #mchat-panel > #mchat-whois {
-    float: left;
+	float: left;
 }
 
 .mchat-copyright {

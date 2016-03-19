@@ -13,13 +13,13 @@
 			{mchatrow.MCHAT_USERNAME_FULL} &bull; <span class="mchat-time" title="{mchatrow.MCHAT_DATETIME}"<!-- IF mchatrow.MCHAT_MINUTES_AGO != -1 --> data-mchat-minutes-ago="{mchatrow.MCHAT_MINUTES_AGO}" data-mchat-relative-update="{mchatrow.MCHAT_RELATIVE_UPDATE}"<!-- ENDIF -->>{mchatrow.MCHAT_TIME}</span>
 		</div>
 		<div class="mchat-message-icons">
-			<!-- IF MCHAT_ALLOW_QUOTE and not MCHAT_IS_ARCHIVE_PAGE and not mchatrow.MCHAT_IS_POSTER --><img src="{EXT_URL}styles/prosilver/theme/images/quota.png" alt="{L_REPLY_WITH_QUOTE}" title="{L_REPLY_WITH_QUOTE}" data-mchat-action="quote" /><!-- ENDIF -->
-			<!-- IF MCHAT_ALLOW_LIKE and not MCHAT_IS_ARCHIVE_PAGE and not mchatrow.MCHAT_IS_POSTER --><img src="{EXT_URL}styles/prosilver/theme/images/like.png" alt="{L_MCHAT_LIKE}" title="{L_MCHAT_LIKE}" data-mchat-action="like" /><!-- ENDIF -->
-			<!-- IF MCHAT_ALLOW_PM and mchatrow.MCHAT_PM and mchatrow.U_VIEWPROFILE --><a href="{mchatrow.MCHAT_PM}" title="{L_MCHAT_SEND_PM}"><img src="{EXT_URL}styles/prosilver/theme/images/message.gif" alt="{L_MCHAT_SEND_PM}" title="{L_MCHAT_SEND_PM}" /></a><!-- ENDIF -->
-			<!-- IF MCHAT_ALLOW_IP --><a href="{mchatrow.MCHAT_U_IP}" onclick="popup(this.href, 750, 500); return false;"><img src="{EXT_URL}styles/prosilver/theme/images/ip.gif" alt="{mchatrow.MCHAT_WHOIS_USER}" title="{mchatrow.MCHAT_WHOIS_USER}" /></a><!-- ENDIF -->
-			<!-- IF mchatrow.MCHAT_ALLOW_BAN --><a href="{mchatrow.MCHAT_U_BAN}"><img src="{EXT_URL}styles/prosilver/theme/images/ban.gif" alt="{L_MCHAT_PERMISSIONS}" title="{L_MCHAT_PERMISSIONS}" /></a><!-- ENDIF -->
-			<!-- IF mchatrow.MCHAT_ALLOW_EDIT --><img src="{EXT_URL}styles/prosilver/theme/images/edit.gif" alt="{L_MCHAT_EDIT}" title="{L_MCHAT_EDIT}" data-mchat-action="edit" /><!-- ENDIF -->
-			<!-- IF mchatrow.MCHAT_ALLOW_DEL --><img src="{EXT_URL}styles/prosilver/theme/images/del.gif" alt="{L_DELETE}" title="{L_DELETE}" data-mchat-action="del" /><!-- ENDIF -->
+			<!-- IF MCHAT_ALLOW_QUOTE and not MCHAT_IS_ARCHIVE_PAGE and not mchatrow.MCHAT_IS_POSTER --><div class="mchat-message-icon-quote" title="{L_REPLY_WITH_QUOTE}" data-mchat-action="quote"></div><!-- ENDIF -->
+			<!-- IF MCHAT_ALLOW_LIKE and not MCHAT_IS_ARCHIVE_PAGE and not mchatrow.MCHAT_IS_POSTER --><div class="mchat-message-icon-like" title="{L_MCHAT_LIKE}" data-mchat-action="like"></div><!-- ENDIF -->
+			<!-- IF MCHAT_ALLOW_PM and mchatrow.MCHAT_PM and mchatrow.U_VIEWPROFILE --><div class="mchat-message-icon-pm" title="{L_MCHAT_SEND_PM}"><a href="{mchatrow.MCHAT_PM}" title="{L_MCHAT_SEND_PM}"></a></div><!-- ENDIF -->
+			<!-- IF MCHAT_ALLOW_IP --><div class="mchat-message-icon-ip" title="{mchatrow.MCHAT_WHOIS_USER}"><a href="{mchatrow.MCHAT_U_IP}" onclick="popup(this.href, 750, 500); return false;"></a></div><!-- ENDIF -->
+			<!-- IF mchatrow.MCHAT_ALLOW_BAN --><div class="mchat-message-icon-ban" title="{L_MCHAT_PERMISSIONS}"><a href="{mchatrow.MCHAT_U_BAN}"></a></div><!-- ENDIF -->
+			<!-- IF mchatrow.MCHAT_ALLOW_EDIT --><div class="mchat-message-icon-edit" title="{L_MCHAT_EDIT}" data-mchat-action="edit"></div><!-- ENDIF -->
+			<!-- IF mchatrow.MCHAT_ALLOW_DEL --><div class="mchat-message-icon-del" title="{L_DELETE}" data-mchat-action="del"></div><!-- ENDIF -->
 		</div>
 		<div class="mchat-text">{mchatrow.MCHAT_MESSAGE}</div>
 	</div>
