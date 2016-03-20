@@ -233,7 +233,7 @@ jQuery(function($) {
 							var id = $message.prop('id');
 							setTimeout(function() {
 								$('#' + id).find('[data-mchat-action="edit"], [data-mchat-action="del"]').fadeOut(function() {
-									$(this).remove();
+									$(this).closest('li').remove();
 								});
 							}, mChat.editDeleteLimit);
 						}
