@@ -65,7 +65,8 @@
 					<div id="mchat-refresh-error" title="{L_ERROR}"></div>
 				</div>
 				<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
-				<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{L_MCHAT_SESSION_ENDS} {MCHAT_USER_TIMEOUT_TIME}</span><!-- ENDIF --><!-- IF not MCHAT_SOUND_DISABLED --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF MCHAT_SOUND --> checked="checked"<!-- ENDIF --> /></label><!-- ENDIF -->
+				<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{MCHAT_SESSION_TIMELEFT}</span><!-- ENDIF -->
+				<!-- IF not MCHAT_SOUND_DISABLED --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF MCHAT_SOUND --> checked="checked"<!-- ENDIF --> /></label><!-- ENDIF -->
 				<span class="mchat-copyright" title="{MCHAT_AUTHOR_NAMES}">&copy;</span>
 			</div>
 		<!-- ENDIF -->

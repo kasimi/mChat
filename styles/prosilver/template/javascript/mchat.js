@@ -343,7 +343,7 @@ jQuery(function($) {
 		},
 		countDown: function() {
 			mChat.sessionTime -= 1;
-			mChat.cached('session').html(mChat.sessEnds + ' ' + mChat.timeLeft(mChat.sessionTime));
+			mChat.cached('session').html(mChat.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
 			if (mChat.sessionTime < 1) {
 				mChat.endSession();
 			}
@@ -364,7 +364,7 @@ jQuery(function($) {
 				if (mChat.userTimeout) {
 					mChat.sessionTime = mChat.userTimeout / 1000;
 					clearInterval(mChat.sessionCountdown);
-					mChat.cached('session').html(mChat.sessEnds + ' ' + mChat.timeLeft(mChat.sessionTime));
+					mChat.cached('session').html(mChat.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
 					mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
 				}
 				if (mChat.whoisRefresh) {
