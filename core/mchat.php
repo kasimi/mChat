@@ -627,6 +627,7 @@ class mchat
 			'MCHAT_ALLOW_PM'				=> $this->auth->acl_get('u_mchat_pm'),
 			'MCHAT_ALLOW_LIKE'				=> $this->auth->acl_get('u_mchat_like'),
 			'MCHAT_ALLOW_QUOTE'				=> $this->auth->acl_get('u_mchat_quote'),
+			'MCHAT_ALLOW_PERMISSIONS'		=> $this->auth->acl_get('a_authusers'),
 			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->settings->cfg('mchat_edit_delete_limit'),
 			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->settings->cfg('mchat_edit_delete_limit') && $this->auth->acl_get('m_'),
 			'MCHAT_RELATIVE_TIME'			=> $this->settings->cfg('mchat_relative_time'),
@@ -715,29 +716,31 @@ class mchat
 			$minutes_ago = $this->get_minutes_ago($message_age, $page);
 			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'));
 
+			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
+
 			$this->template->assign_block_vars('mchatrow', array(
-				'MCHAT_ALLOW_BAN'		=> $this->auth->acl_get('a_authusers'),
-				'MCHAT_ALLOW_EDIT'		=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
-				'MCHAT_ALLOW_DEL'		=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
-				'MCHAT_USER_AVATAR'		=> $user_avatars[$row['user_id']],
-				'U_VIEWPROFILE'			=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
-				'MCHAT_IS_POSTER'		=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'],
-				'MCHAT_PM'				=> $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] != $row['user_id'] && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
-				'MCHAT_MESSAGE_EDIT'	=> $message_for_edit['text'],
-				'MCHAT_MESSAGE_ID'		=> $row['message_id'],
-				'MCHAT_USERNAME_FULL'	=> $username_full,
-				'MCHAT_USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
-				'MCHAT_USERNAME_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
-				'MCHAT_WHOIS_USER'		=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
-				'MCHAT_U_IP'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'whois', 'ip' => $row['user_ip'])),
-				'MCHAT_U_BAN'			=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
-				'MCHAT_MESSAGE'			=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
-				'MCHAT_TIME'			=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
-				'MCHAT_DATETIME'		=> $datetime,
-				'MCHAT_MINUTES_AGO'		=> $minutes_ago,
-				'MCHAT_RELATIVE_UPDATE'	=> 60 - $message_age % 60,
-				'MCHAT_MESSAGE_TIME'	=> $row['message_time'],
-				'MCHAT_EDIT_TIME'		=> $row['edit_time'],
+
+				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
+				'MCHAT_ALLOW_DEL'			=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
+				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
+				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
+				'MCHAT_IS_POSTER'			=> $is_poster,
+				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
+				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
+				'MCHAT_USERNAME_FULL'		=> $username_full,
+				'MCHAT_USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+				'MCHAT_USERNAME_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
+				'MCHAT_WHOIS_USER'			=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
+				'MCHAT_U_IP'				=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'whois', 'ip' => $row['user_ip'])),
+				'MCHAT_U_PERMISSIONS'		=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
+				'MCHAT_MESSAGE'				=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
+				'MCHAT_TIME'				=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
+				'MCHAT_DATETIME'			=> $datetime,
+				'MCHAT_MINUTES_AGO'			=> $minutes_ago,
+				'MCHAT_RELATIVE_UPDATE'		=> 60 - $message_age % 60,
+				'MCHAT_MESSAGE_TIME'		=> $row['message_time'],
+				'MCHAT_EDIT_TIME'			=> $row['edit_time'],
 			));
 		}
 	}

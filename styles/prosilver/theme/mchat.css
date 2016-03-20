@@ -46,48 +46,6 @@
 	float: left;
 }
 
-.mchat-message-icons {
-	float: right;
-}
-
-.mchat-message-icons > div {
-	display: inline-block;
-}
-
-.mchat-message-icons > div a {
-	display: block;
-	height: 100%;
-	width: 100%;
-}
-
-.mchat-message-icon-quote {
-	 background-image: url("./images/quota.png");
-}
-
-.mchat-message-icon-like {
-	 background-image: url("./images/like.png");
-}
-
-.mchat-message-icon-pm {
-	 background-image: url("./images/message.gif");
-}
-
-.mchat-message-icon-ip {
-	 background-image: url("./images/ip.gif");
-}
-
-.mchat-message-icon-ban {
-	 background-image: url("./images/ban.gif");
-}
-
-.mchat-message-icon-edit {
-	 background-image: url("./images/edit.gif");
-}
-
-.mchat-message-icon-del {
-	 background-image: url("./images/del.gif");
-}
-
 .mchat-message {
 	padding: 5px;
 	overflow: hidden;
@@ -100,9 +58,15 @@
 }
 
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
+
 	.mchat-avatar {
 		display: none;
 	}
+
+	.mchat-buttons > li {
+		padding: 0 8px !important;
+	}
+
 }
 
 .mchat-avatar a {
@@ -113,8 +77,83 @@
 	display: block;
 }
 
+.mchat-message .mchat-buttons a {
+	opacity: .5;
+}
+
+.mchat-message:hover .mchat-buttons a {
+	opacity: .75;
+}
+
+.mchat-message .mchat-buttons a:hover {
+	opacity: 1;
+}
+
+.mchat-buttons {
+	float: right;
+	list-style: none;
+	margin-top: 2px;
+}
+
+.mchat-buttons > li {
+	float: left;
+	padding: 0 3px;
+}
+
+.mchat-buttons .mchat-button span {
+	display: block;
+	height: 0;
+	overflow: hidden;
+	position: absolute;
+	width: 1px;
+}
+
+.mchat-button:before {
+	content: '';
+	background-image: url("./images/message_icons.png");
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	float: right;
+	margin-left: 3px;
+}
+
+.mchat-icon-mention:before {
+	background-position: -2px -4px;
+}
+
+.mchat-icon-pm:before {
+	background-position: -22px -4px;
+}
+
+.mchat-icon-edit:before {
+	background-position: -45px -4px;
+}
+
+.mchat-icon-quote:before {
+	background-position: -68px -4px;
+}
+
+.mchat-icon-delete:before {
+	background-position: -91px -4px;
+}
+
+.mchat-icon-ip:before {
+	background-position: -117px -4px;
+}
+
+.mchat-icon-like:before {
+	background-position: -140px -4px;
+}
+
+.mchat-icon-permissions:before {
+	background-position: -163px -4px;
+}
+
 .mchat-text {
 	clear: both;
+	overflow: hidden;
 	padding: 0 5px 2px;
 	font-size: 1.1em;
 }
@@ -146,6 +185,7 @@
 }
 
 .mchat-text blockquote, .mchat-text .codebox, .mchat-text ul, .mchat-text ol {
+	margin-top: 5px;
 	margin-left: 1em;
 }
 
@@ -153,7 +193,7 @@
 	color: inherit !important;
 }
 
-.mchat-mention, .mchat-message-icons > div {
+.mchat-mention {
 	cursor: pointer;
 	width: 16px;
 	height: 16px;

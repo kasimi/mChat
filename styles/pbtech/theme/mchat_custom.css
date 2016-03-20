@@ -8,8 +8,8 @@
  */
 
 .icon-mchat > a:before {
-    content: '\f086';
-    font-family: 'FontAwesome';
+	content: '\f086';
+	font-family: 'FontAwesome';
 }
 
 .cp-mini {
