@@ -419,6 +419,9 @@ jQuery(function($) {
 			var quote = mChat.entityDecode($container.data('mchat-message'));
 			insert_text(mChat.likes + '[quote="' + username + '"] ' + quote + '[/quote]');
 		},
+		ip: function() {
+			popup(this.href, 750, 500);
+		},
 		entityDecode: function(text) {
 			var s = decodeURIComponent(text.toString().replace(/\+/g, ' '));
 			s = s.replace(/&lt;/g, '<');
