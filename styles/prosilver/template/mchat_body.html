@@ -34,59 +34,7 @@
 		</ul>
 
 		<div id="mchat-body" class="postbody">
-			<script type="text/javascript">
-			// <![CDATA[
-			var form_name = 'postform';
-			var text_name = 'message';
-			var mChat = {
-				// General settings
-				actionUrls		: {
-					<!-- BEGIN mchaturl -->
-					{mchaturl.ACTION}: '{mchaturl.URL}'<!-- IF not mchaturl.IS_LAST -->,<!-- ENDIF -->
-					<!-- END mchaturl -->
-				},
-				customPage		: <!-- IF MCHAT_IS_CUSTOM_PAGE -->true<!-- ELSE -->false<!-- ENDIF -->,
-				archivePage		: <!-- IF MCHAT_IS_ARCHIVE_PAGE -->true<!-- ELSE -->false<!-- ENDIF -->,
-				pause			: <!-- IF MCHAT_PAUSE_ON_INPUT -->true<!-- ELSE -->false<!-- ENDIF -->,
-				playSound		: <!-- IF MCHAT_SOUND -->true<!-- ELSE -->false<!-- ENDIF -->,
-				messageTop		: <!-- IF MCHAT_MESSAGE_TOP -->true<!-- ELSE -->false<!-- ENDIF -->,
-				allowBBCodes	: <!-- IF S_BBCODE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
-				liveUpdates		: <!-- IF MCHAT_LIVE_UPDATES -->true<!-- ELSE -->false<!-- ENDIF -->,
-				relativeTime	: <!-- IF MCHAT_RELATIVE_TIME -->true<!-- ELSE -->false<!-- ENDIF -->,
-				showCharCount	: <!-- IF MCHAT_CHARACTER_COUNT -->true<!-- ELSE -->false<!-- ENDIF -->,
-
-				// Limits & timeouts
-				refreshTime		: {MCHAT_REFRESH_JS},
-				whoisRefresh	: {MCHAT_WHOIS_REFRESH},
-				userTimeout		: {MCHAT_USER_TIMEOUT},
-				mssgLngth		: {MCHAT_MESSAGE_LNGTH},
-				editDeleteLimit	: {MCHAT_EDIT_DELETE_LIMIT},
-				removeBBCodes	: '{MCHAT_DISALLOWED_BBCODES}',
-
-				// Language
-				minutesAgo		: {
-					<!-- BEGIN mchattime -->
-					{mchattime.KEY}: '{mchattime.LANG}'<!-- IF not mchattime.IS_LAST -->,<!-- ENDIF -->
-					<!-- END mchattime -->
-				},
-				newMessageAlert	: '{LA_MCHAT_NEW_CHAT}',
-				noMessageInput	: '{LA_MCHAT_NOMESSAGEINPUT}',
-				noMessages		: '{LA_MCHAT_NOMESSAGE}',
-				editInfo		: '{LA_MCHAT_EDITINFO}',
-				noAccess		: '{LA_NO_AUTH_OPERATION}',
-				flood			: '{LA_MCHAT_FLOOD}',
-				delConfirm		: '{LA_MCHAT_DELCONFIRM}',
-				clearConfirm	: '{LA_MCHAT_RESET_QUESTION}',
-				sessOut			: '{LA_MCHAT_SESSION_OUT}',
-				sessEnds		: '{LA_MCHAT_SESSION_ENDS}',
-				refreshYes		: '{MCHAT_REFRESH_YES}',
-				refreshNo		: '{LA_MCHAT_REFRESH_NO}',
-				charCount		: '<!-- IF MCHAT_MESSAGE_LNGTH -->{LA_MCHAT_CHARACTER_COUNT_LIMIT}<!-- ELSE -->{LA_MCHAT_CHARACTER_COUNT}<!-- ENDIF -->',
-				mssgLngthLong	: '{MCHAT_MESS_LONG}',
-				likes			: '{LA_MCHAT_LIKES}'
-			};
-			// ]]>
-			</script>
+			<!-- INCLUDE mchat_script_data.html -->
 
 			<!-- IF not MCHAT_SOUND_DISABLED -->
 				<audio id="mchat-sound-add" class="hidden" src="{EXT_URL}sounds/add.mp3" preload="auto"></audio>
@@ -123,79 +71,8 @@
 				</ul>
 			</div>
 
-			<div id="mchat-panel" class="panel cp-mini">
-				<!-- IF MCHAT_IS_INDEX and MCHAT_WHOIS_REFRESH and MCHAT_WHOIS_INDEX -->
-					<!-- INCLUDE mchat_whois.html -->
-				<!-- ENDIF -->
+			<!-- INCLUDE mchat_panel.html -->
 
-				<!-- IF MCHAT_CHARACTER_COUNT -->
-					<div id="mchat-character-count">{MCHAT_CHARACTER_COUNT}</div>
-				<!-- ENDIF -->
-
-				<form id="mchat-form" name="postform" action="{U_MCHAT_CUSTOM_PAGE}" method="POST">
-					{S_FORM_TOKEN}
-					<!-- IF not MCHAT_IS_ARCHIVE_PAGE -->
-						<noscript><div class="error">{L_MCHAT_NOJAVASCRIPT}</div></noscript>
-						<!-- IF MCHAT_ALLOW_USE -->
-							<!-- IF MCHAT_INPUT_AREA -->
-								<input id="mchat-input" type="text" name="message" class="inputbox medium" />
-							<!-- ELSE -->
-								<textarea id="mchat-input" name="message" class="inputbox no-auto-resize" cols="32" rows="5"></textarea>
-							<!-- ENDIF -->
-						<!-- ENDIF -->
-						<!-- EVENT dmzx_mchat_buttons_before -->
-						<div id="mchat-buttons">
-							<!-- IF MCHAT_ALLOW_USE -->
-								<input id="mchat-add" type="button" class="button2" data-mchat-action="add" value="{L_MCHAT_ADD}" />
-								<!-- IF MCHAT_USER_TIMEOUT or MCHAT_PAUSE_ON_INPUT -->
-									<input id="mchat-clear" type="button" class="button2" data-mchat-action="clear" value="{L_RESET}" />
-								<!-- ENDIF -->
-								<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
-									<input type="button" class="button2" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
-								<!-- ENDIF -->
-								<!-- IF S_BBCODE_ALLOWED -->
-									<input type="button" class="button2" data-mchat-toggle="bbcodes" value="{L_MCHAT_BBCODES}" />
-								<!-- ENDIF -->
-								<!-- IF MCHAT_RULES -->
-									<input type="button" class="button2" onclick="popup('{U_MCHAT_RULES}', 450, 275); return false;" value="{L_MCHAT_RULES}" />
-								<!-- ENDIF -->
-							<!-- ENDIF -->
-							<!-- EVENT dmzx_mchat_buttons_mid -->
-							<!-- IF MCHAT_ARCHIVE -->
-								<input type="button" class="button2" onclick="window.location.href = '{U_MCHAT_ARCHIVE_URL}';" value="{L_MCHAT_ARCHIVE}" />
-							<!-- ENDIF -->
-							<!-- EVENT dmzx_mchat_buttons_after -->
-						</div>
-						<!-- IF MCHAT_ALLOW_USE and S_BBCODE_ALLOWED -->
-							<div id="mchat-bbcodes">
-								<!-- INCLUDE posting_buttons.html -->
-							</div>
-						<!-- ENDIF -->
-						<!-- IF MCHAT_ALLOW_USE and MCHAT_ALLOW_SMILES and .smiley -->
-							<div id="mchat-smilies" class="hidden">
-								<!-- BEGIN smiley -->
-								<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
-								<!-- END smiley -->
-								<!-- IF S_SHOW_SMILEY_LINK -->
-									<a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
-								<!-- ENDIF -->
-							</div>
-						<!-- ENDIF -->
-						<!-- EVENT dmzx_mchat_body_smiley_after -->
-						<div id="mchat-status">
-							<div id="mchat-status-icons">
-								<div id="mchat-refresh-load" title="{L_LOADING}"></div>
-								<div id="mchat-refresh-ok" title="{L_MCHAT_OK}"></div>
-								<div id="mchat-refresh-paused" title="{L_MCHAT_PAUSE}"></div>
-								<div id="mchat-refresh-error" title="{L_ERROR}"></div>
-							</div>
-							<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
-							<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{L_MCHAT_SESSION_ENDS} {MCHAT_USER_TIMEOUT_TIME}</span><!-- ENDIF --><!-- IF not MCHAT_SOUND_DISABLED --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF MCHAT_SOUND --> checked="checked"<!-- ENDIF --> /></label><!-- ENDIF -->
-							<span class="mchat-copyright" title="{MCHAT_AUTHOR_NAMES}">&copy;</span>
-						</div>
-					<!-- ENDIF -->
-				</form>
-			</div>
 		</div>
 	</div>
 </div>
