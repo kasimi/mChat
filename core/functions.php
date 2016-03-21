@@ -298,6 +298,15 @@ class functions
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
+		// Set deleted users to ANONYMOUS
+		foreach ($rows as $i => $row)
+		{
+			if (!isset($row['username']))
+			{
+				$rows[$i]['user_id'] = ANONYMOUS;
+			}
+		}
+
 		return $rows;
 	}
 
