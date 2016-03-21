@@ -1,10 +1,10 @@
-<div id="mchat-panel" class="panel bg2">
+<div id="mchat-panel" class="panel bg2<!-- IF MCHAT_IS_ARCHIVE_PAGE --> hidden<!-- ENDIF -->">
 	<!-- IF not MCHAT_MESSAGE_TOP -->
 		<!-- IF MCHAT_IS_INDEX and MCHAT_WHOIS_REFRESH and MCHAT_WHOIS_INDEX -->
 			<!-- INCLUDE mchat_whois.html -->
 		<!-- ENDIF -->
 
-		<!-- IF MCHAT_CHARACTER_COUNT -->
+		<!-- IF MCHAT_CHARACTER_COUNT and not MCHAT_IS_ARCHIVE_PAGE -->
 			<div id="mchat-character-count">{MCHAT_CHARACTER_COUNT}</div>
 		<!-- ENDIF -->
 	<!-- ENDIF -->
@@ -79,7 +79,7 @@
 			<!-- INCLUDE mchat_whois.html -->
 		<!-- ENDIF -->
 
-		<!-- IF MCHAT_CHARACTER_COUNT -->
+		<!-- IF MCHAT_CHARACTER_COUNT and not MCHAT_IS_ARCHIVE_PAGE -->
 			<div id="mchat-character-count">{MCHAT_CHARACTER_COUNT}</div>
 		<!-- ENDIF -->
 	<!-- ENDIF -->
