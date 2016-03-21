@@ -1,12 +1,10 @@
 <div id="mchat-panel" class="panel bg2<!-- IF MCHAT_IS_ARCHIVE_PAGE --> hidden<!-- ENDIF -->">
-	<!-- IF not MCHAT_MESSAGE_TOP -->
-		<!-- IF MCHAT_IS_INDEX and MCHAT_WHOIS_REFRESH and MCHAT_WHOIS_INDEX -->
-			<!-- INCLUDE mchat_whois.html -->
-		<!-- ENDIF -->
+	<!-- IF MCHAT_IS_INDEX and MCHAT_WHOIS_REFRESH and MCHAT_WHOIS_INDEX -->
+		<!-- INCLUDE mchat_whois.html -->
+	<!-- ENDIF -->
 
-		<!-- IF MCHAT_CHARACTER_COUNT and not MCHAT_IS_ARCHIVE_PAGE -->
-			<div id="mchat-character-count">{MCHAT_CHARACTER_COUNT}</div>
-		<!-- ENDIF -->
+	<!-- IF MCHAT_CHARACTER_COUNT and not MCHAT_IS_ARCHIVE_PAGE -->
+		<div id="mchat-character-count">{MCHAT_CHARACTER_COUNT}</div>
 	<!-- ENDIF -->
 
 	<form id="mchat-form" name="postform" action="{U_MCHAT_CUSTOM_PAGE}" method="POST">
@@ -73,14 +71,4 @@
 			</div>
 		<!-- ENDIF -->
 	</form>
-
-	<!-- IF MCHAT_MESSAGE_TOP -->
-		<!-- IF MCHAT_IS_INDEX and MCHAT_WHOIS_REFRESH and MCHAT_WHOIS_INDEX -->
-			<!-- INCLUDE mchat_whois.html -->
-		<!-- ENDIF -->
-
-		<!-- IF MCHAT_CHARACTER_COUNT and not MCHAT_IS_ARCHIVE_PAGE -->
-			<div id="mchat-character-count">{MCHAT_CHARACTER_COUNT}</div>
-		<!-- ENDIF -->
-	<!-- ENDIF -->
 </div>
