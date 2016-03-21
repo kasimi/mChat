@@ -33,7 +33,7 @@
 	height: 100px;
 }
 
-.mchat-row-limit {
+#mchat-messages {
 	overflow: auto;
 	width: 100%;
 }
@@ -212,6 +212,7 @@
 #mchat-panel {
 	text-align: center;
 	max-height: initial;
+    overflow-y: auto;
 	padding: 0 5px 5px 5px;
 	margin: 0;
 	border-radius: 0;

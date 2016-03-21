@@ -53,6 +53,10 @@
 				</fieldset>
 			</div>
 
+			<!-- IF MCHAT_MESSAGE_TOP -->
+				<!-- INCLUDE mchat_panel.html -->
+			<!-- ENDIF -->
+
 			<div id="mchat-main">
 				<!-- IF MCHAT_STATIC_MESS and not MCHAT_IS_ARCHIVE_PAGE -->
 					<ul class="topiclist forums">
@@ -61,17 +65,19 @@
 				<!-- ENDIF -->
 
 				<!-- IF not .mchatrow -->
-					<ul id="mchat-no-messages" class="topiclist forums">
+					<ul id="mchat-no-messages" class="topiclist bg2">
 						<li class="row mchat-static">{L_MCHAT_NOMESSAGE}</li>
 					</ul>
 				<!-- ENDIF -->
 
-				<ul id="mchat-messages" class="topiclist forums mchat-row-limit"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
+				<ul id="mchat-messages" class="topiclist bg2"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
 					<!-- INCLUDE mchat_messages.html -->
 				</ul>
 			</div>
 
-			<!-- INCLUDE mchat_panel.html -->
+			<!-- IF not MCHAT_MESSAGE_TOP -->
+				<!-- INCLUDE mchat_panel.html -->
+			<!-- ENDIF -->
 		</div>
 	</div>
 </div>
