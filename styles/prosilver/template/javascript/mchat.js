@@ -213,7 +213,7 @@ jQuery(function($) {
 			return ajaxRequest(message ? 'add' : 'refresh', !!message, data).done(function(json) {
 				if (json.add) {
 					var $html = $(json.add);
-					$('#mchat-no-messages').remove();
+					$('.mchat-no-messages').remove();
 					$html.reverse(mChat.messageTop).hide().each(function(i) {
 						var $message = $(this);
 						if ($.inArray($message.data('mchat-id'), mChat.messageIds) !== -1) {
