@@ -65,17 +65,3 @@
 	left: auto;
 	right: 8px;
 }
-
-li.mchat-message {
-	padding: 5px !important;
-}
-
-li.mchat-message:first-child {
-	border-top-width: 1px !important;
-	padding-top: 5px !important;
-}
-
-li.mchat-message:last-child {
-	border-bottom-width: 1px !important;
-	padding-bottom: 5px !important;
-}
