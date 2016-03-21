@@ -61,12 +61,12 @@
 				<!-- ENDIF -->
 
 				<!-- IF not .mchatrow -->
-					<ul id="mchat-no-messages" class="topiclist bg2">
+					<ul id="mchat-no-messages" class="topiclist forums">
 						<li class="row mchat-static">{L_MCHAT_NOMESSAGE}</li>
 					</ul>
 				<!-- ENDIF -->
 
-				<ul id="mchat-messages" class="topiclist bg2"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
+				<ul id="mchat-messages" class="topiclist forums"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
 					<!-- INCLUDE mchat_messages.html -->
 				</ul>
 			</div>

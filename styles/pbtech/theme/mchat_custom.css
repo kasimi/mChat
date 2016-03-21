@@ -12,6 +12,10 @@
 	font-family: 'FontAwesome';
 }
 
+#mchat-panel.cp-mini {
+	background-color: #E5E4E3;
+}
+
 #mChat + .forabg .collapse-box a:before {
   content: '';
 }
