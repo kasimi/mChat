@@ -574,7 +574,7 @@ class mchat
 		if ($page != 'index' && $this->settings->cfg('mchat_whois'))
 		{
 			$legend = $this->functions->mchat_legend();
-			$this->template->assign_var('LEGEND', implode(', ', $legend));
+			$this->template->assign_var('LEGEND', implode($this->user->lang('COMMA_SEPARATOR'), $legend));
 		}
 
 		$this->assign_authors();

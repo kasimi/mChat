@@ -163,7 +163,11 @@ class acp_listener implements EventSubscriberInterface
 		$auth->acl($userdata);
 
 		$selected = $this->settings->cfg_user('mchat_date', $event['user_row'], $auth);
-		$this->template->assign_vars($this->settings->get_date_template_data($selected));
+		$date_template_data = $this->settings->get_date_template_data($selected);
+		$this->template->assign_vars($date_template_data);
+
+		$notifications_template_data = $this->settings->get_enabled_post_notifications_lang();
+		$this->template->assign_var('MCHAT_POSTS_ENABLED_LANG', $notifications_template_data);
 
 		foreach (array_keys($this->settings->ucp) as $config_name)
 		{

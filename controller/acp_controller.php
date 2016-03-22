@@ -227,7 +227,11 @@ class acp_controller
 
 		// Force global date format for $selected value, not user-specific
 		$selected = $this->settings->cfg('mchat_date', true);
-		$this->template->assign_vars($this->settings->get_date_template_data($selected));
+		$date_template_data = $this->settings->get_date_template_data($selected);
+		$this->template->assign_vars($date_template_data);
+
+		$notifications_template_data = $this->settings->get_enabled_post_notifications_lang();
+		$this->template->assign_var('MCHAT_POSTS_ENABLED_LANG', $notifications_template_data);
 
 		$this->template->assign_vars(array(
 			'MCHAT_ERROR'							=> $error ? implode('<br />', $error) : '',

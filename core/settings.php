@@ -129,4 +129,22 @@ class settings
 			'S_MCHAT_CUSTOM_DATEFORMAT'		=> $s_custom,
 		);
 	}
+
+	/**
+	 * @return string
+	 */
+	public function get_enabled_post_notifications_lang()
+	{
+		$enabled_notifications_lang = array();
+
+		foreach (array('topic', 'reply', 'quote', 'edit') as $notification)
+		{
+			if ($this->cfg('mchat_posts_' . $notification))
+			{
+				$enabled_notifications_lang[] = $this->user->lang('MCHAT_POSTS_' . strtoupper($notification));
+			}
+		}
+
+		return implode($this->user->lang('COMMA_SEPARATOR'), $enabled_notifications_lang);
+	}
 }

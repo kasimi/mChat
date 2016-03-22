@@ -136,9 +136,9 @@
 				</dl>
 				<!-- ENDIF -->
 				<hr />
-				<!-- IF MCHAT_POSTS_AUTH -->
+				<!-- IF MCHAT_POSTS_AUTH and MCHAT_POSTS_ENABLED_LANG -->
 				<dl>
-					<dt><label for="user_mchat_posts">{L_MCHAT_POSTS}{L_COLON}</label></dt>
+					<dt><label for="user_mchat_posts">{MCHAT_POSTS_ENABLED_LANG}{L_COLON}</label></dt>
 					<dd>
 						<label><input type="radio" name="user_mchat_posts" value="1"<!-- IF MCHAT_POSTS --> id="user_mchat_posts" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 						<label><input type="radio" name="user_mchat_posts" value="0"<!-- IF not MCHAT_POSTS --> id="user_mchat_posts" checked="checked"<!-- ENDIF --> /> {L_NO}</label>
