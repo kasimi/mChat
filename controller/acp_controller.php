@@ -189,7 +189,6 @@ class acp_controller
 				}
 			}
 
-
 			if (!function_exists('validate_data'))
 			{
 				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
