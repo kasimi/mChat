@@ -216,11 +216,7 @@
 }
 
 #mchat-bbcodes #format-buttons {
-	margin: 0;
-}
-
-#mchat-bbcodes #format-buttons input, #mchat-bbcodes #format-buttons select {
-	margin-bottom: 5px;
+	margin: 0 0 5px;
 }
 
 #mchat-bbcodes #colour_palette label {
