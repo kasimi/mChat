@@ -59,10 +59,6 @@
 
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
 
-	.mchat-avatar {
-		display: none;
-	}
-
 	.mchat-buttons > li {
 		padding: 0 8px !important;
 	}
