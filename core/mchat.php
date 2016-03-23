@@ -311,7 +311,7 @@ class mchat
 			'edit_time' => time(),
 		));
 
-		$this->functions->mchat_action('edit', $sql_ary, $message_id, $author['username']);
+		$this->functions->mchat_action('edit', $sql_ary, $message_id);
 
 		/**
 		 * Event render_helper_edit
@@ -359,7 +359,7 @@ class mchat
 		 */
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_delete');
 
-		$this->functions->mchat_action('del', null, $message_id, $author['username']);
+		$this->functions->mchat_action('del', null, $message_id);
 
 		return array('del' => true);
 	}

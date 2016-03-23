@@ -245,7 +245,7 @@ class functions
 				$delete_id = $mchat_total_messages - $this->settings->cfg('mchat_prune_num') + $first_id;
 
 				// Delete older messages
-				$this->mchat_action('prune', null, $delete_id, $this->user->data['username']);
+				$this->mchat_action('prune', null, $delete_id);
 			}
 		}
 	}
@@ -517,10 +517,9 @@ class functions
 	 * @param string $action One of add|edit|del|prune
 	 * @param array $sql_ary
 	 * @param int $message_id
-	 * @param string $log_username
 	 * @return bool
 	 */
-	public function mchat_action($action, $sql_ary = null, $message_id = 0, $log_username = '')
+	public function mchat_action($action, $sql_ary = null, $message_id = 0)
 	{
 		$is_new_session = false;
 
@@ -538,7 +537,7 @@ class functions
 				$this->user->update_session_infos();
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('UPDATE ' . $this->mchat_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE message_id = ' . (int) $message_id);
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EDITED_MCHAT', false, array($log_username));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EDITED_MCHAT', false, array($this->user->data['username']));
 				break;
 
 			// User deletes a message
@@ -548,7 +547,7 @@ class functions
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE message_id = ' . (int) $message_id);
 				$this->db->sql_query('INSERT INTO ' . $this->mchat_deleted_messages_table . ' ' . $this->db->sql_build_array('INSERT', array('message_id' => (int) $message_id)));
 				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, array($log_username));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, array($this->user->data['username']));
 				break;
 
 			// User triggers messages to be pruned
