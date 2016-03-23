@@ -74,11 +74,11 @@
 }
 
 .mchat-message .mchat-buttons a {
-	opacity: .5;
+	opacity: .3;
 }
 
 .mchat-message:hover .mchat-buttons a {
-	opacity: .75;
+	opacity: .6;
 }
 
 .mchat-message .mchat-buttons a:hover {
