@@ -1,6 +1,6 @@
 imports:
     - { resource: tables.yml }
-    - { resource: config_1_0_0.yml }
+    - { resource: config_2_0_0.yml }
 
 services:
     dmzx.mchat.acp.controller:

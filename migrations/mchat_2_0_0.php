@@ -11,25 +11,29 @@
 
 namespace dmzx\mchat\migrations;
 
-class mchat_1_0_0 extends \phpbb\db\migration\migration
+class mchat_2_0_0 extends \phpbb\db\migration\migration
 {
-	protected $mchat_config = null;
+	/** @const string */
+	const MCHAT_VERSION = '2.0.0-RC3';
 
-	public function effectively_installed()
-	{
-		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], '1.0.0-RC3', '>=');
-	}
+	/** @var array */
+	protected $mchat_config = null;
 
 	static public function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v31x\v317pl1');
 	}
 
+	public function effectively_installed()
+	{
+		return isset($this->config['mchat_version']) && version_compare($this->config['mchat_version'], self::MCHAT_VERSION, '>=');
+	}
+
 	protected function get_config()
 	{
 		if ($this->mchat_config == null)
 		{
-			$yml_config_file = $this->phpbb_root_path . '/ext/dmzx/mchat/config/config_1_0_0.yml';
+			$yml_config_file = $this->phpbb_root_path . '/ext/dmzx/mchat/config/config_2_0_0.yml';
 			$yml_data = \Symfony\Component\Yaml\Yaml::parse($yml_config_file);
 			$this->mchat_config = $yml_data['parameters'];
 		}
@@ -58,7 +62,7 @@ class mchat_1_0_0 extends \phpbb\db\migration\migration
 		}
 
 		return array_merge($update_data, array(
-			array('config.add', array('mchat_version', '1.0.0-RC3')),
+			array('config.add', array('mchat_version', self::MCHAT_VERSION)),
 
 			// Add user permissions
 			array('permission.add', array('u_mchat_use', true)),
