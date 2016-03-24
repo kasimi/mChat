@@ -11,7 +11,7 @@
 
 namespace dmzx\mchat\migrations;
 
-class mchat_2_0_0 extends \phpbb\db\migration\migration
+class mchat_2_0_0_rc3 extends \phpbb\db\migration\migration
 {
 	/** @const string */
 	const MCHAT_VERSION = '2.0.0-RC3';
