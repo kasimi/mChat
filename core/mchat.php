@@ -82,6 +82,11 @@ class mchat
 		$this->extension_manager	= $extension_manager;
 		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;
+
+		$this->template->assign_vars(array(
+			'IS_PHPBB31' => $this->settings->is_phpbb31,
+			'IS_PHPBB32' => $this->settings->is_phpbb32,
+		));
 	}
 
 	/**
@@ -472,8 +477,6 @@ class mchat
 			'MCHAT_NAVBAR_LINK'		=> $this->settings->cfg('mchat_navbar_link'),
 			'MCHAT_CUSTOM_PAGE'		=> $this->settings->cfg('mchat_custom_page'),
 			'U_MCHAT'				=> $this->helper->route('dmzx_mchat_controller'),
-			'IS_PHPBB31'			=> $this->settings->is_phpbb31,
-			'IS_PHPBB32'			=> $this->settings->is_phpbb32,
 		));
 	}
 
@@ -721,7 +724,6 @@ class mchat
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
 
 			$this->template->assign_block_vars('mchatrow', array(
-
 				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
