@@ -65,41 +65,42 @@
 
 }
 
-.mchat-avatar a {
-	unicode-bidi: normal;
-}
-
-.mchat-avatar img {
+.mchat-avatar a, .mchat-avatar img {
 	display: block;
 }
 
-.mchat-message .mchat-buttons a {
+.mchat-message .mchat-buttons li {
 	opacity: .3;
 }
 
-.mchat-message:hover .mchat-buttons a {
+.mchat-message:hover .mchat-buttons li {
 	opacity: .6;
 }
 
-.mchat-message .mchat-buttons a:hover {
+.mchat-message .mchat-buttons li:hover {
 	opacity: 1;
 }
 
 .mchat-buttons {
 	float: right;
 	list-style: none;
+	margin-top: 1px;
 }
 
-.mchat-buttons > li {
+.mchat-message-wrapper .mchat-buttons > li {
 	float: left;
-	padding: 0 3px;
+	margin: 0 3px;
 }
 
-.mchat-buttons > li:last-child {
-	padding-right: 0 !important;
+.mchat-button {
+	margin-left: 3px;
 }
 
-.mchat-buttons .mchat-button span {
+.mchat-button.fa {
+	font-size: 12pt;
+}
+
+.mchat-button span {
 	display: block;
 	height: 0;
 	overflow: hidden;
@@ -107,7 +108,7 @@
 	width: 1px;
 }
 
-.mchat-button:before {
+.mchat-icon:before {
 	content: '';
 	background-image: url("./images/message_icons.png");
 	background-repeat: no-repeat;
@@ -115,7 +116,6 @@
 	height: 16px;
 	display: block;
 	float: right;
-	margin-left: 3px;
 }
 
 .mchat-icon-mention:before      { background-position: -2px -2px; }
@@ -131,7 +131,7 @@
 	clear: both;
 	overflow: hidden;
 	padding: 0 5px 2px;
-	font-size: 1.1em;
+	font-size: 1.2em;
 }
 
 .mchat-text li {
@@ -234,10 +234,10 @@
 #mchat-status-icons {
 	position: relative;
 	display: inline-block;
-	vertical-align: top;
+	vertical-align: text-top;
 }
 
-#mchat-status-icons > div {
+#mchat-status-icons i {
 	top: 0;
 	left: 0;
 	width: 16px;
@@ -245,26 +245,42 @@
 	float: left;
 }
 
-#mchat-refresh-error {
+#mchat-status-icons i.fa {
+	font-size: 12pt;
+}
+
+#mchat-status-error {
 	display: none;
 	cursor: help;
+}
+
+.mchat-status-error {
 	background-image: url("./images/error.gif");
 }
 
-#mchat-refresh-ok {
+#mchat-status-ok {
 	display: none;
 	cursor: help;
+}
+
+.mchat-status-ok {
 	background-image: url("./images/ok.gif");
 }
 
-#mchat-refresh-load {
+#mchat-status-load {
 	display: none;
 	cursor: wait;
+}
+
+.mchat-status-load {
 	background-image: url("./images/load.gif");
 }
 
-#mchat-refresh-paused {
+#mchat-status-paused {
 	cursor: help;
+}
+
+.mchat-status-paused {
 	background-image: url("./images/paused.gif");
 }
 

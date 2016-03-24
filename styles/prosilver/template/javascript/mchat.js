@@ -70,8 +70,8 @@ jQuery(function($) {
 		});
 		return deferred.promise().fail(function(xhr, textStatus, errorThrown) {
 			mChat.sound('error');
-			mChat.cached('refresh-load', 'refresh-ok', 'refresh-paused').hide();
-			mChat.cached('refresh-error').show();
+			mChat.cached('status-load', 'status-ok', 'status-paused').hide();
+			mChat.cached('status-error').show();
 			if (errorThrown == 'session') {
 				mChat.endSession(true);
 				alert(mChat.sessOut);
@@ -208,8 +208,8 @@ jQuery(function($) {
 					}
 				});
 			}
-			mChat.cached('refresh-ok', 'refresh-error', 'refresh-paused').hide();
-			mChat.cached('refresh-load').show();
+			mChat.cached('status-ok', 'status-error', 'status-paused').hide();
+			mChat.cached('status-load').show();
 			return ajaxRequest(message ? 'add' : 'refresh', !!message, data).done(function(json) {
 				if (json.add) {
 					var $html = $(json.add);
@@ -252,8 +252,8 @@ jQuery(function($) {
 					mChat.whois();
 				}
 				if (mChat.refreshInterval) {
-					mChat.cached('refresh-load', 'refresh-error', 'refresh-paused').hide();
-					mChat.cached('refresh-ok').show();
+					mChat.cached('status-load', 'status-error', 'status-paused').hide();
+					mChat.cached('status-ok').show();
 				}
 			});
 		},
@@ -374,8 +374,8 @@ jQuery(function($) {
 				if (mChat.pause) {
 					mChat.cached('input').one('keypress', mChat.endSession);
 				}
-				mChat.cached('refresh-ok').show();
-				mChat.cached('refresh-load', 'refresh-error', 'refresh-paused').hide();
+				mChat.cached('status-ok').show();
+				mChat.cached('status-load', 'status-error', 'status-paused').hide();
 				mChat.cached('refresh-text').html(mChat.refreshYes);
 			}
 		},
@@ -392,8 +392,8 @@ jQuery(function($) {
 					mChat.whois();
 				}
 			}
-			mChat.cached('refresh-load', 'refresh-ok', 'refresh-error').hide();
-			mChat.cached('refresh-paused').show();
+			mChat.cached('status-load', 'status-ok', 'status-error').hide();
+			mChat.cached('status-paused').show();
 			mChat.cached('refresh-text').html(mChat.refreshNo);
 		},
 		mention: function() {
