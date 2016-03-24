@@ -33,6 +33,12 @@ class settings
 	/** @var array */
 	public $ucp;
 
+	/** @var bool */
+	public $is_phpbb31;
+
+	/** @var bool */
+	public $is_phpbb32;
+
 	/**
 	 * Constructor
 	 *
@@ -49,6 +55,9 @@ class settings
 		$this->auth		= $auth;
 		$this->global	= $global;
 		$this->ucp		= $ucp;
+
+		$this->is_phpbb31 = phpbb_version_compare($config['version'], '3.1.0@dev', '>=') && phpbb_version_compare($config['version'], '3.2.0@dev', '<');
+		$this->is_phpbb32 = phpbb_version_compare($config['version'], '3.2.0@dev', '>=') && phpbb_version_compare($config['version'], '3.3.0@dev', '<');
 
 		$this->inject_core_config_values();
 	}

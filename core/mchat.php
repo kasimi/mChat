@@ -633,8 +633,10 @@ class mchat
 			'MCHAT_RELATIVE_TIME'			=> $this->settings->cfg('mchat_relative_time'),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->settings->cfg('mchat_timeout'),
 			'S_MCHAT_AVATARS'				=> $this->display_avatars(),
+			'IS_PHPBB31'					=> $this->settings->is_phpbb31,
+			'IS_PHPBB32'					=> $this->settings->is_phpbb32,
 			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
-			'STYLE_PATH'					=> generate_board_url() . '/styles/' . $this->user->style['style_path'],
+			'STYLE_PATH'					=> generate_board_url() . '/styles/' . rawurlencode($this->user->style['style_path']),
 		));
 	}
 
