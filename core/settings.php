@@ -50,14 +50,14 @@ class settings
 	 */
 	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, $global, $ucp)
 	{
-		$this->user		= $user;
-		$this->config	= $config;
-		$this->auth		= $auth;
-		$this->global	= $global;
-		$this->ucp		= $ucp;
+		$this->user			= $user;
+		$this->config		= $config;
+		$this->auth			= $auth;
+		$this->global		= $global;
+		$this->ucp			= $ucp;
 
-		$this->is_phpbb31 = phpbb_version_compare($config['version'], '3.1.0@dev', '>=') && phpbb_version_compare($config['version'], '3.2.0@dev', '<');
-		$this->is_phpbb32 = phpbb_version_compare($config['version'], '3.2.0@dev', '>=') && phpbb_version_compare($config['version'], '3.3.0@dev', '<');
+		$this->is_phpbb31	= phpbb_version_compare($config['version'], '3.1.0@dev', '>=') && phpbb_version_compare($config['version'], '3.2.0@dev', '<');
+		$this->is_phpbb32	= phpbb_version_compare($config['version'], '3.2.0@dev', '>=') && phpbb_version_compare($config['version'], '3.3.0@dev', '<');
 
 		$this->inject_core_config_values();
 	}

@@ -472,6 +472,8 @@ class mchat
 			'MCHAT_NAVBAR_LINK'		=> $this->settings->cfg('mchat_navbar_link'),
 			'MCHAT_CUSTOM_PAGE'		=> $this->settings->cfg('mchat_custom_page'),
 			'U_MCHAT'				=> $this->helper->route('dmzx_mchat_controller'),
+			'IS_PHPBB31'			=> $this->settings->is_phpbb31,
+			'IS_PHPBB32'			=> $this->settings->is_phpbb32,
 		));
 	}
 
@@ -633,8 +635,6 @@ class mchat
 			'MCHAT_RELATIVE_TIME'			=> $this->settings->cfg('mchat_relative_time'),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->settings->cfg('mchat_timeout'),
 			'S_MCHAT_AVATARS'				=> $this->display_avatars(),
-			'IS_PHPBB31'					=> $this->settings->is_phpbb31,
-			'IS_PHPBB32'					=> $this->settings->is_phpbb32,
 			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
 			'STYLE_PATH'					=> generate_board_url() . '/styles/' . rawurlencode($this->user->style['style_path']),
 		));
@@ -859,6 +859,16 @@ class mchat
 		}
 
 		return $sql_ary;
+	}
+
+	/** Inserts a message with posting information into the database
+	 *
+	 * @param string $mode One of post|quote|edit|reply
+	 * @param $data The post data
+	 */
+	public function insert_posting($mode, $data)
+	{
+		$this->functions->mchat_insert_posting($mode, $data);
 	}
 
 	/**

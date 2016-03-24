@@ -85,7 +85,6 @@ services:
     dmzx.mchat.main.listener:
         class: dmzx\mchat\event\main_listener
         arguments:
-            - '@dmzx.mchat.functions'
             - '@dmzx.mchat.core'
             - '@controller.helper'
             - '@user'
