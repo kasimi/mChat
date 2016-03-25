@@ -907,7 +907,7 @@ class mchat
 			return true;
 		}
 
-		$can_edit_delete = $this->settings->cfg('mchat_edit_delete_limit') == 0 || $message_time >= time() - $this->settings->cfg('mchat_edit_delete_limit');
+		$can_edit_delete = !$this->settings->cfg('mchat_edit_delete_limit') || $message_time >= time() - $this->settings->cfg('mchat_edit_delete_limit');
 		return $can_edit_delete && $this->user->data['user_id'] == $author_id && $this->user->data['is_registered'];
 	}
 
