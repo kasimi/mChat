@@ -492,8 +492,6 @@ jQuery(function($) {
 			}
 		});
 
-		mChat.startRelativeTimeUpdate(mChat.cached('messages'));
-
 		if (mChat.cached('input').is('input')) {
 			$('#mchat-form').keypress(function(e) {
 				if (e.which == 13) {
@@ -520,6 +518,8 @@ jQuery(function($) {
 			maxWidth: mChat.cached('form').width() - (mChat.cached('input').outerWidth(true) - mChat.cached('input').width())
 		});
 	}
+
+	mChat.startRelativeTimeUpdate(mChat.cached('messages'));
 
 	$(window).on('beforeunload', function() {
 		mChat.pageIsUnloading = true;

@@ -307,8 +307,7 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
-		$is_archive = $this->request->variable('archive', 0);
-		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', $is_archive);
+		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', $this->request->variable('archive', false));
 
 		$message = $this->request->variable('message', '', true);
 
@@ -330,7 +329,7 @@ class mchat
 		$rows = $this->functions->mchat_get_messages($sql_where, 1);
 
 		$this->assign_global_template_data();
-		$this->assign_messages($rows, $is_archive ? 'archive' : '');
+		$this->assign_messages($rows);
 
 		return array('edit' => $this->render_template('mchat_messages.html'));
 	}
@@ -528,7 +527,7 @@ class mchat
 		));
 
 		// The template needs some language variables if we display relative time for messages
-		if ($this->settings->cfg('mchat_relative_time') && $page != 'archive')
+		if ($this->settings->cfg('mchat_relative_time'))
 		{
 			$minutes_limit = $this->get_relative_minutes_limit();
 			for ($i = 0; $i < $minutes_limit; $i++)
@@ -545,9 +544,9 @@ class mchat
 		$actions = array_keys(array_filter(array(
 			'edit'		=> $this->auth_message('u_mchat_edit', true, time()),
 			'del'		=> $this->auth_message('u_mchat_delete', true, time()),
-			'refresh'	=> $page != 'archive' && $this->auth->acl_get('u_mchat_view'),
-			'add'		=> $page != 'archive' && $u_mchat_use,
-			'whois'		=> $page != 'archive' && $this->settings->cfg('mchat_whois'),
+			'refresh'	=> $page !== 'archive' && $this->auth->acl_get('u_mchat_view'),
+			'add'		=> $page !== 'archive' && $u_mchat_use,
+			'whois'		=> $page !== 'archive' && $this->settings->cfg('mchat_whois'),
 		)));
 
 		foreach ($actions as $i => $action)
@@ -560,14 +559,14 @@ class mchat
 		}
 
 		$limit = $this->settings->cfg('mchat_message_num_' . $page);
-		$start = $page == 'archive' ? $this->request->variable('start', 0) : 0;
+		$start = $page === 'archive' ? $this->request->variable('start', 0) : 0;
 		$rows = $this->functions->mchat_get_messages('', $limit, $start);
 
 		$this->assign_global_template_data();
-		$this->assign_messages($rows, $page);
+		$this->assign_messages($rows);
 
 		// Render pagination
-		if ($page == 'archive')
+		if ($page === 'archive')
 		{
 			$archive_url = $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive'));
 			$total_messages = $this->functions->mchat_total_message_count();
@@ -576,7 +575,7 @@ class mchat
 		}
 
 		// Render legend
-		if ($page != 'index' && $this->settings->cfg('mchat_whois'))
+		if ($page !== 'index' && $this->settings->cfg('mchat_whois'))
 		{
 			$legend = $this->functions->mchat_legend();
 			$this->template->assign_var('LEGEND', implode($this->user->lang('COMMA_SEPARATOR'), $legend));
@@ -657,9 +656,8 @@ class mchat
 	 * Assigns all message rows to the template
 	 *
 	 * @param array $rows
-	 * @param string $page
 	 */
-	protected function assign_messages($rows, $page = '')
+	protected function assign_messages($rows)
 	{
 		if (!$rows)
 		{
@@ -718,7 +716,7 @@ class mchat
 			}
 
 			$message_age = time() - $row['message_time'];
-			$minutes_ago = $this->get_minutes_ago($message_age, $page);
+			$minutes_ago = $this->get_minutes_ago($message_age);
 			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'));
 
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
@@ -754,12 +752,11 @@ class mchat
 	 * or the message is older than 59 minutes or we render for the archive, -1 is returned.
 	 *
 	 * @param int $message_age
-	 * @param string $page
 	 * @return int
 	 */
-	protected function get_minutes_ago($message_age, $page)
+	protected function get_minutes_ago($message_age)
 	{
-		if ($this->settings->cfg('mchat_relative_time') && $page != 'archive')
+		if ($this->settings->cfg('mchat_relative_time'))
 		{
 			$minutes_ago = floor($message_age / 60);
 			if ($minutes_ago < $this->get_relative_minutes_limit())
