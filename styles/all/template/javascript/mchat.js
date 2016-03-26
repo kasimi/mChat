@@ -455,7 +455,7 @@ jQuery(function($) {
 	}).get();
 
 	mChat.hiddenFields = {};
-	$('#mchat-form').find('input[type=hidden]').each(function() {
+	mChat.cached('form').find('input[type=hidden]').each(function() {
 		mChat.hiddenFields[this.name] = this.value;
 	});
 
@@ -493,7 +493,7 @@ jQuery(function($) {
 		});
 
 		if (mChat.cached('input').is('input')) {
-			$('#mchat-form').keypress(function(e) {
+			mChat.cached('form').keypress(function(e) {
 				if (e.which == 13) {
 					mChat.add();
 					e.preventDefault();
@@ -503,7 +503,7 @@ jQuery(function($) {
 		}
 
 		if (mChat.showCharCount) {
-			$('#mchat-form').keyup(function(e) {
+			mChat.cached('form').keyup(function(e) {
 				var count = mChat.inputMessageLength();
 				var $elem = mChat.cached('character-count');
 				$elem.html(mChat.charCount.format({current: count, max: mChat.mssgLngth})).css('visibility', count > 0 ? 'visible' : 'hidden');
@@ -513,9 +513,11 @@ jQuery(function($) {
 			});
 		}
 
-		mChat.cached('input').autoGrowInput({
-			minWidth: mChat.cached('input').width(),
-			maxWidth: mChat.cached('form').width() - (mChat.cached('input').outerWidth(true) - mChat.cached('input').width())
+		mChat.cached('form').one('keypress', function() {
+			mChat.cached('input').autoGrowInput({
+				minWidth: mChat.cached('input').width(),
+				maxWidth: mChat.cached('form').width() - (mChat.cached('input').outerWidth(true) - mChat.cached('input').width())
+			});
 		});
 	}
 

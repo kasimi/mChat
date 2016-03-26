@@ -49,26 +49,30 @@ class mchat
 	/** @var string */
 	protected $php_ext;
 
+	/** @var \phpbb\collapsiblecategories\operator\operator */
+	protected $cc_operator;
+
 	/** @var boolean */
 	protected $remove_disallowed_bbcodes = false;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \dmzx\mchat\core\functions		$functions
-	 * @param \dmzx\mchat\core\settings			$settings
-	 * @param \phpbb\controller\helper			$helper
-	 * @param \phpbb\template\template			$template
-	 * @param \phpbb\user						$user
-	 * @param \phpbb\auth\auth					$auth
-	 * @param \phpbb\pagination					$pagination
-	 * @param \phpbb\request\request			$request
-	 * @param \phpbb\event\dispatcher_interface $dispatcher
-	 * @param \phpbb\extension\manager 			$extension_manager
-	 * @param string							$root_path
-	 * @param string							$php_ext
+	 * @param \dmzx\mchat\core\functions						$functions
+	 * @param \dmzx\mchat\core\settings							$settings
+	 * @param \phpbb\controller\helper							$helper
+	 * @param \phpbb\template\template							$template
+	 * @param \phpbb\user										$user
+	 * @param \phpbb\auth\auth									$auth
+	 * @param \phpbb\pagination									$pagination
+	 * @param \phpbb\request\request							$request
+	 * @param \phpbb\event\dispatcher_interface 				$dispatcher
+	 * @param \phpbb\extension\manager 							$extension_manager
+	 * @param string											$root_path
+	 * @param string											$php_ext
+	 * @param \phpbb\collapsiblecategories\operator\operator	$cc_operator
 	 */
-	public function __construct(\dmzx\mchat\core\functions $functions, \dmzx\mchat\core\settings $settings, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\extension\manager $extension_manager, $root_path, $php_ext)
+	public function __construct(\dmzx\mchat\core\functions $functions, \dmzx\mchat\core\settings $settings, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\extension\manager $extension_manager, $root_path, $php_ext, \phpbb\collapsiblecategories\operator\operator $cc_operator = null)
 	{
 		$this->functions			= $functions;
 		$this->settings				= $settings;
@@ -82,6 +86,7 @@ class mchat
 		$this->extension_manager	= $extension_manager;
 		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;
+		$this->cc_operator			= $cc_operator;
 
 		$this->template->assign_vars(array(
 			'IS_PHPBB31' => $this->settings->is_phpbb31,
@@ -579,6 +584,20 @@ class mchat
 		{
 			$legend = $this->functions->mchat_legend();
 			$this->template->assign_var('LEGEND', implode($this->user->lang('COMMA_SEPARATOR'), $legend));
+		}
+
+		// Make mChat collapsible
+		if ($page === 'index' && $this->cc_operator !== null)
+		{
+			$cc_fid = 'mchat';
+			$this->template->assign_vars(array(
+				'MCHAT_IS_COLLAPSIBLE'	=> true,
+				'S_MCHAT_HIDDEN'		=> in_array($cc_fid, $this->cc_operator->get_user_categories()),
+       			'U_MCHAT_COLLAPSE_URL'	=> $this->helper->route('phpbb_collapsiblecategories_main_controller', array(
+            		'forum_id'	=> $cc_fid,
+            		'hash'		=> generate_link_hash('collapsible_' . $cc_fid),
+				)),
+			));
 		}
 
 		$this->assign_authors();

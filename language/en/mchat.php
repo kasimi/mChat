@@ -72,6 +72,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_SMILES'					=> 'Smilies',
 	'MCHAT_TOTALMESSAGES'			=> 'Total messages: <strong>%1$d</strong>',
 	'MCHAT_USESOUND'				=> 'Play sound',
+	'MCHAT_COLLAPSE_TITLE'			=> 'Toggle visibility of mChat',
 	'MCHAT_WHO_IS_REFRESH_EXPLAIN'	=> 'Refreshes every <strong>%1$d</strong> seconds',
 	'MCHAT_MINUTES_AGO'				=> array(
 		0 => 'just now',
