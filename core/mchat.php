@@ -879,6 +879,22 @@ class mchat
 		return $sql_ary;
 	}
 
+	/**
+	 * Sets the default values as configured in the config.yml when a user registers a new account
+	 *
+	 * @param array $sql_ary
+	 * @return array
+	 */
+	public function set_user_default_values($sql_ary)
+	{
+		foreach ($this->settings->ucp as $config_name => $config_data)
+		{
+			$sql_ary['user_' . $config_name] = $config_data['default'];
+		}
+
+		return $sql_ary;
+	}
+
 	/** Inserts a message with posting information into the database
 	 *
 	 * @param string $mode One of post|quote|edit|reply
