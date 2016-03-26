@@ -524,8 +524,8 @@ class mchat
 			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> $this->user->lang('MCHAT_WHO_IS_REFRESH_EXPLAIN', $this->settings->cfg('mchat_whois_refresh')),
 			'MCHAT_SESSION_TIMELEFT'		=> $this->user->lang('MCHAT_SESSION_ENDS', gmdate('H:i:s', (int) $this->settings->cfg('mchat_timeout'))),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
-			'MCHAT_MESS_LONG'				=> addslashes($this->user->lang('MCHAT_MESS_LONG', $this->settings->cfg('mchat_max_message_lngth'))),
-			'MCHAT_REFRESH_YES'				=> addslashes($this->user->lang('MCHAT_REFRESH_YES', $this->settings->cfg('mchat_refresh'))),
+			'A_MCHAT_MESS_LONG'				=> addslashes($this->user->lang('MCHAT_MESS_LONG', $this->settings->cfg('mchat_max_message_lngth'))),
+			'A_MCHAT_REFRESH_YES'			=> addslashes($this->user->lang('MCHAT_REFRESH_YES', $this->settings->cfg('mchat_refresh'))),
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_controller'),
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'rules')),
 			'U_MCHAT_ARCHIVE_URL'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive')),
@@ -539,7 +539,7 @@ class mchat
 			{
 				$this->template->assign_block_vars('mchattime', array(
 					'KEY'		=> $i,
-					'LANG'		=> addslashes($this->user->lang('MCHAT_MINUTES_AGO', $i)),
+					'A_LANG'	=> addslashes($this->user->lang('MCHAT_MINUTES_AGO', $i)),
 					'IS_LAST'	=> $i + 1 === $minutes_limit,
 				));
 			}
@@ -839,7 +839,7 @@ class mchat
 				$this->template->assign_var($option['template_var'], !$is_disallowed);
 			}
 
-			$this->template->assign_var('MCHAT_DISALLOWED_BBCODES', addslashes(str_replace('=', '-', $this->settings->cfg('mchat_bbcode_disallowed'))));
+			$this->template->assign_var('A_MCHAT_DISALLOWED_BBCODES', addslashes(str_replace('=', '-', $this->settings->cfg('mchat_bbcode_disallowed'))));
 
 			if (!function_exists('display_custom_bbcodes'))
 			{
