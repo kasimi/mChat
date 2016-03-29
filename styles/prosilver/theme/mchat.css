@@ -130,8 +130,12 @@
 .mchat-text {
 	clear: both;
 	overflow: hidden;
-	padding: 0 5px 2px;
+	padding: 2px 5px;
 	font-size: 1.2em;
+}
+
+.mchat-text strong {
+	font-weight: bold !important;
 }
 
 .mchat-text li {
