@@ -66,7 +66,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_REFRESH_NO'				=> 'Update is off',
 	'MCHAT_REFRESH_YES'				=> 'Updates every <strong>%1$d</strong> seconds',
 	'MCHAT_RESPOND'					=> 'Respond to user',
-	'MCHAT_RESET_QUESTION'			=> 'Clear the input area?',
 	'MCHAT_SESSION_ENDS'			=> 'Chat session ends in %1$s',
 	'MCHAT_SESSION_OUT'				=> 'Chat session has expired',
 	'MCHAT_SMILES'					=> 'Smilies',
