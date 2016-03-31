@@ -507,11 +507,13 @@ jQuery(function($) {
 
 		if (mChat.pause) {
 			mChat.cached('form').keyup(function(e) {
-				var val = mChat.cached('input').val();
-				if (mChat.isPaused && val === '') {
-					mChat.pauseEnd();
-				} else if (!mChat.isPaused && val !== '') {
-					mChat.pauseStart();
+				if (mChat.refreshInterval !== false) {
+					var val = mChat.cached('input').val();
+					if (mChat.isPaused && val === '') {
+						mChat.pauseEnd();
+					} else if (!mChat.isPaused && val !== '') {
+						mChat.pauseStart();
+					}
 				}
 			});
 		}
