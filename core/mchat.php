@@ -796,11 +796,11 @@ class mchat
 	 */
 	protected function get_relative_minutes_limit()
 	{
-		$timeout = $this->settings->cfg('session_length');
+		$timeout = $this->settings->cfg('mchat_timeout');
 
-		if ($this->settings->cfg('mchat_timeout'))
+		if (!$timeout)
 		{
-			$timeout = $this->settings->cfg('mchat_timeout');
+			$timeout = $this->settings->cfg('session_length');
 		}
 
 		return min(max((int) ceil($timeout / 60), 1), 60);
