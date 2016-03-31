@@ -196,6 +196,18 @@ class acp_controller
 
 			if (!$error)
 			{
+				if ($this->request->variable('mchat_overwrite', 0) && $this->request->variable('mchat_overwrite_confirm', 0))
+				{
+					$mchat_new_user_config = array();
+					foreach ($mchat_new_config as $config_name => $config_value)
+					{
+						$mchat_new_user_config['user_' . $config_name] = $config_value;
+					}
+
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', $mchat_new_user_config);
+					$this->db->sql_query($sql);
+				}
+
 				// Set the options the user configured
 				foreach ($mchat_new_config as $config_name => $config_value)
 				{
