@@ -4,7 +4,7 @@
  *
  * @package phpBB Extension - mChat
  * @copyright (c) 2016 dmzx - http://www.dmzx-web.net
- * @copyright (c) 2016 kasimi
+ * @copyright (c) 2016 kasimi - https://kasimi.net
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -24,7 +24,7 @@ class ucp_mchat_module
 
 		// Set template
 		$this->tpl_name = 'ucp_mchat';
-		$this->page_title = 'UCP_PROFILE_MCHAT';
+		$this->page_title = 'UCP_MCHAT_CONFIG';
 
 		// Get an instance of the UCP controller and display the options
 		$controller = $phpbb_container->get('dmzx.mchat.ucp.controller');
