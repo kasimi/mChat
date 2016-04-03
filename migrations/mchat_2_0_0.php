@@ -16,7 +16,7 @@ class mchat_2_0_0 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\dmzx\mchat\migrations\mchat_2_0_0_rc4',
+			'\dmzx\mchat\migrations\mchat_2_0_0_rc5',
 		);
 	}
 
