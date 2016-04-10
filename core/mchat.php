@@ -137,8 +137,6 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NO_CUSTOM_PAGE');
 		}
 
-		$this->functions->mchat_prune();
-
 		$this->functions->mchat_add_user_session();
 
 		$this->assign_whois();
@@ -169,8 +167,6 @@ class mchat
 		{
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS_ARCHIVE');
 		}
-
-		$this->functions->mchat_prune();
 
 		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', true);
 

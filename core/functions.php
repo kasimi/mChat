@@ -228,25 +228,22 @@ class functions
 	 */
 	public function mchat_prune()
 	{
-		if ($this->settings->cfg('mchat_prune'))
+		$mchat_total_messages = $this->mchat_total_message_count();
+
+		if ($mchat_total_messages > $this->settings->cfg('mchat_prune_num'))
 		{
-			$mchat_total_messages = $this->mchat_total_message_count();
+			$sql = 'SELECT message_id
+				FROM '. $this->mchat_table . '
+				ORDER BY message_id ASC';
+			$result = $this->db->sql_query_limit($sql, 1);
+			$first_id = (int) $this->db->sql_fetchfield('message_id');
+			$this->db->sql_freeresult($result);
 
-			if ($mchat_total_messages > $this->settings->cfg('mchat_prune_num'))
-			{
-				$sql = 'SELECT message_id
-					FROM '. $this->mchat_table . '
-					ORDER BY message_id ASC';
-				$result = $this->db->sql_query_limit($sql, 1);
-				$first_id = (int) $this->db->sql_fetchfield('message_id');
-				$this->db->sql_freeresult($result);
+			// Compute new oldest message id
+			$delete_id = $mchat_total_messages - $this->settings->cfg('mchat_prune_num') + $first_id;
 
-				// Compute new oldest message id
-				$delete_id = $mchat_total_messages - $this->settings->cfg('mchat_prune_num') + $first_id;
-
-				// Delete older messages
-				$this->mchat_action('prune', null, $delete_id);
-			}
+			// Delete older messages
+			$this->mchat_action('prune', null, $delete_id);
 		}
 	}
 
@@ -570,7 +567,7 @@ class functions
 					$prune_ids[] = (int) $row['message_id'];
 				}
 
-				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE ' .$this->db->sql_in_set('message_id', $prune_ids));
+				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
 				$this->db->sql_multi_insert($this->mchat_deleted_messages_table, $rows);
 				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
 				break;

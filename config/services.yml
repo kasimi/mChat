@@ -92,3 +92,12 @@ services:
             - '%core.php_ext%'
         tags:
             - { name: event.listener }
+    dmzx.mchat.cron.task.mchat_prune:
+        class: dmzx\mchat\cron\mchat_prune
+        arguments:
+            - '@dmzx.mchat.functions'
+            - '@dmzx.mchat.settings'
+        calls:
+            - [set_name, [cron.task.mchat_prune]]
+        tags:
+            - { name: cron.task }
