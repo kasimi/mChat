@@ -399,7 +399,7 @@ jQuery(function($) {
 		},
 		mention: function() {
 			var $container = $(this).closest('.mchat-message');
-			var username = mChat.entityDecode($container.data('mchat-username'));
+			var username = $container.data('mchat-username');
 			var usercolor = $container.data('mchat-usercolor');
 			if (usercolor) {
 				username = '[b][color=' + usercolor + ']' + username + '[/color][/b]';
@@ -410,28 +410,18 @@ jQuery(function($) {
 		},
 		quote: function() {
 			var $container = $(this).closest('.mchat-message');
-			var username = mChat.entityDecode($container.data('mchat-username'));
-			var quote = mChat.entityDecode($container.data('mchat-message'));
+			var username = $container.data('mchat-username');
+			var quote = $container.data('mchat-message');
 			insert_text('[quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		like: function() {
 			var $container = $(this).closest('.mchat-message');
-			var username = mChat.entityDecode($container.data('mchat-username'));
-			var quote = mChat.entityDecode($container.data('mchat-message'));
+			var username = $container.data('mchat-username');
+			var quote = $container.data('mchat-message');
 			insert_text(mChat.likes + '[quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		ip: function() {
 			popup(this.href, 750, 500);
-		},
-		entityDecode: function(text) {
-			var s = decodeURIComponent(text.toString().replace(/\+/g, ' '));
-			s = s.replace(/&lt;/g, '<');
-			s = s.replace(/&gt;/g, '>');
-			s = s.replace(/&#58;/g, ':');
-			s = s.replace(/&#46;/g, '.');
-			s = s.replace(/&amp;/g, '&');
-			s = s.replace(/&quot;/g, "'");
-			return s;
 		},
 		inputMessageLength: function() {
 			return $.trim(mChat.cached('input').val()).replace(/\[\/?[^\[\]]+\]/g, '').length;
