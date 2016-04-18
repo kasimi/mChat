@@ -108,9 +108,16 @@
 	width: 1px;
 }
 
+.mchat-icons-black .mchat-icon:before {
+    background-image: url("./images/message_icons_black.png");
+}
+
+.mchat-icons-white .mchat-icon:before {
+    background-image: url("./images/message_icons_white.png");
+}
+
 .mchat-icon:before {
 	content: '';
-	background-image: url("./images/message_icons.png");
 	background-repeat: no-repeat;
 	width: 16px;
 	height: 16px;
