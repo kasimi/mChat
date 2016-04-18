@@ -11,9 +11,6 @@
 
 namespace dmzx\mchat\cron;
 
-/**
- * Auto groups cron task.
- */
 class mchat_prune extends \phpbb\cron\task\base
 {
 	/** @var \dmzx\mchat\core\functions */

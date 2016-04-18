@@ -114,7 +114,7 @@ class acp_listener implements EventSubscriberInterface
 
 		$event['categories'] = array_merge($event['categories'], array(
 			'mchat'				=> 'ACP_CAT_MCHAT',
-			'mchat_user_config'	=> 'ACP_CAT_MCHAT_USER_CONFIG'
+			'mchat_user_config'	=> 'ACP_CAT_MCHAT_USER_CONFIG',
 		));
 	}
 

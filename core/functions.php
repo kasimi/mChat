@@ -233,7 +233,7 @@ class functions
 		if ($mchat_total_messages > $this->settings->cfg('mchat_prune_num'))
 		{
 			$sql = 'SELECT message_id
-				FROM '. $this->mchat_table . '
+				FROM ' . $this->mchat_table . '
 				ORDER BY message_id ASC';
 			$result = $this->db->sql_query_limit($sql, 1);
 			$first_id = (int) $this->db->sql_fetchfield('message_id');
@@ -570,6 +570,7 @@ class functions
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
 				$this->db->sql_multi_insert($this->mchat_deleted_messages_table, $rows);
 				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED', false, array($this->user->data['username']));
 				break;
 		}
 
