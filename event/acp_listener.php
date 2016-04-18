@@ -70,7 +70,12 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	public function permissions($event)
 	{
-		$mchat_permissions = array();
+		$ucp_settings = array();
+
+		foreach (array_keys($this->settings->ucp) as $config_name)
+		{
+			$ucp_configs[] = 'u_' . $config_name;
+		}
 
 		$permission_categories = array(
 			'mchat' => array(
@@ -89,8 +94,10 @@ class acp_listener implements EventSubscriberInterface
 				'u_mchat_urls',
 				'a_mchat',
 			),
-			'mchat_user_config' => array_map(function($key) { return 'u_' . $key; }, array_keys($this->settings->ucp)),
+			'mchat_user_config' => $ucp_configs,
 		);
+
+		$mchat_permissions = array();
 
 		foreach ($permission_categories as $cat => $permissions)
 		{
