@@ -261,7 +261,7 @@ class mchat
 			$message = utf8_ucfirst($message);
 		}
 
-		$sql_ary = $this->process_message($message, array(
+		$sql_ary = array_merge($this->process_message($message), array(
 			'user_id'			=> $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
 			'message_time'		=> time(),
@@ -312,7 +312,7 @@ class mchat
 
 		$message = $this->request->variable('message', '', true);
 
-		$sql_ary = $this->process_message($message, array(
+		$sql_ary = array_merge($this->process_message($message), array(
 			'edit_time' => time(),
 		));
 
@@ -956,14 +956,13 @@ class mchat
 	}
 
 	/**
-	 * Performs bound checks on the message and returns an array containing the message,
-	 * BBCode options and additional data ready to be sent to the database
+	 * Performs bound checks on the message and returns an array containing the message
+	 * and BBCode options ready to be sent to the database
 	 *
 	 * @param string $message
-	 * @param array $merge_ary
 	 * @return array
 	 */
-	protected function process_message($message, $merge_ary)
+	protected function process_message($message)
 	{
 		// Must have something other than bbcode in the message
 		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
@@ -1025,12 +1024,12 @@ class mchat
 		$this->settings->set_cfg('min_post_chars', $cfg_min_post_chars);
 		$this->settings->set_cfg('max_post_smilies', $cfg_max_post_smilies);
 
-		return array_merge($merge_ary, array(
+		return array(
 			'message'			=> str_replace("'", '&#39;', $message),
 			'bbcode_bitfield'	=> $bitfield,
 			'bbcode_uid'		=> $uid,
 			'bbcode_options'	=> $options,
-		));
+		);
 	}
 
 	/**
