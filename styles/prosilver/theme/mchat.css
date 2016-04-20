@@ -109,11 +109,11 @@
 }
 
 .mchat-icons-black .mchat-icon:before {
-    background-image: url("./images/message_icons_black.png");
+	background-image: url("./images/message_icons_black.png");
 }
 
 .mchat-icons-white .mchat-icon:before {
-    background-image: url("./images/message_icons_white.png");
+	background-image: url("./images/message_icons_white.png");
 }
 
 .mchat-icon:before {
@@ -125,7 +125,7 @@
 	float: right;
 }
 
-.mchat-icon-mention:before      { background-position: -2px -2px; }
+.mchat-icon-mention:before     { background-position: -2px -2px; }
 .mchat-icon-edit:before         { background-position: -22px -2px; }
 .mchat-icon-pm:before           { background-position: -42px -2px; }
 .mchat-icon-quote:before        { background-position: -62px -2px; }
@@ -349,5 +349,5 @@
 }
 
 .hidden-category + .forabg #mchat-body .topiclist.forums {
-    display: block;
+	display: block;
 }

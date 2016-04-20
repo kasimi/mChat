@@ -589,9 +589,9 @@ class mchat
 			$this->template->assign_vars(array(
 				'MCHAT_IS_COLLAPSIBLE'	=> true,
 				'S_MCHAT_HIDDEN'		=> in_array($cc_fid, $this->cc_operator->get_user_categories()),
-       			'U_MCHAT_COLLAPSE_URL'	=> $this->helper->route('phpbb_collapsiblecategories_main_controller', array(
-            		'forum_id'	=> $cc_fid,
-            		'hash'		=> generate_link_hash('collapsible_' . $cc_fid),
+				'U_MCHAT_COLLAPSE_URL'	=> $this->helper->route('phpbb_collapsiblecategories_main_controller', array(
+					'forum_id'	=> $cc_fid,
+					'hash'		=> generate_link_hash('collapsible_' . $cc_fid),
 				)),
 			));
 		}
