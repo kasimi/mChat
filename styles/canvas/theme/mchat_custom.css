@@ -8,17 +8,21 @@
  */
 
 ul#mchat-messages.topiclist li {
-    padding: 0;
+	padding: 0;
 }
 
 .mchat-text {
-    font-size: 1.1em;
+	font-size: 1.1em;
 }
 
 ul.mchat-buttons > li {
-    background: none !important;
+	background: none !important;
 }
 
 #mchat-panel.cp-mini .button2 {
-  float: none;
+	float: none;
+}
+
+#mchat-panel #st_editor_buttons {
+	display: block !important;
 }
