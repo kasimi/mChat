@@ -125,7 +125,7 @@
 	float: right;
 }
 
-.mchat-icon-mention:before     { background-position: -2px -2px; }
+.mchat-icon-mention:before      { background-position: -2px -2px; }
 .mchat-icon-edit:before         { background-position: -22px -2px; }
 .mchat-icon-pm:before           { background-position: -42px -2px; }
 .mchat-icon-quote:before        { background-position: -62px -2px; }
@@ -139,6 +139,10 @@
 	overflow: hidden;
 	padding: 2px 5px;
 	font-size: 1.2em;
+}
+
+.mchat-bot-message .mchat-text {
+    font-style: italic;
 }
 
 .mchat-text strong {
