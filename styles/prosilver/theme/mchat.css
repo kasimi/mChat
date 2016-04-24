@@ -63,6 +63,12 @@
 		padding: 0 8px !important;
 	}
 
+	#mchat-input {
+		width: 95% !important;
+		margin: 5px 0 !important;
+		max-width: 100%;
+	}
+
 }
 
 .mchat-avatar a, .mchat-avatar img {
