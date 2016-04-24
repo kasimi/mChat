@@ -904,14 +904,16 @@ class mchat
 		return $sql_ary;
 	}
 
-	/** Inserts a message with posting information into the database
+	/**
+	 * Inserts a message with posting information into the database
 	 *
-	 * @param string $mode One of post|quote|edit|reply
-	 * @param $data The post data
+	 * @param string $mode One of post|quote|edit|reply|login
+	 * @param $data The post data. Can be null if mode is login.
 	 */
-	public function insert_posting($mode, $data)
+	public function insert_posting($mode, $data = null)
 	{
-		$this->functions->mchat_insert_posting($mode, $data);
+		$is_hidden_login = $this->request->is_set_post('viewonline') || !$this->user->data['user_allow_viewonline'];
+		$this->functions->mchat_insert_posting($mode, $data, $is_hidden_login);
 	}
 
 	/**

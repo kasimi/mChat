@@ -79,6 +79,8 @@ parameters:
             default: 0
         mchat_posts_topic:
             default: 0
+        mchat_posts_login:
+            default: 0
         mchat_prune:
             default: 0
         mchat_prune_num:

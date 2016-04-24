@@ -50,6 +50,18 @@ class functions
 	protected $foes = null;
 
 	/**
+	 * Value of the phpbb_mchat.post_id field for login notification
+	 * messages if the user session is visible at the time of login
+	 */
+	const LOGIN_VISIBLE	= 1;
+
+	/**
+	 * Value of the phpbb_mchat.post_id field for login notification
+	 * messages if the user session is hidden at the time of login
+	 */
+	const LOGIN_HIDDEN	= 2;
+
+	/**
 	* Constructor
 	*
 	* @param \dmzx\mchat\core\settings				$settings
@@ -115,7 +127,7 @@ class functions
 	/**
 	 * Returns the total session time in seconds
 	 *
-	 * @return string
+	 * @return int
 	 */
 	protected function mchat_session_time()
 	{
@@ -260,21 +272,32 @@ class functions
 	/**
 	 * Fetch messages from the database
 	 *
-	 * @param $sql_where
+	 * @param string $sql_where
 	 * @param int $total
 	 * @param int $offset
 	 * @return array
 	 */
 	public function mchat_get_messages($sql_where, $total = 0, $offset = 0)
 	{
-		// Exclude post notifications
-		if (!$this->settings->cfg('mchat_posts'))
+		$sql_where_ary = array();
+
+		if (!empty($sql_where))
 		{
-			if (!empty($sql_where))
+			$sql_where_ary[] = '(' . $sql_where . ')';
+		}
+
+		if ($this->settings->cfg('mchat_posts'))
+		{
+			// If the current user doesn't have permission to see hidden users, exclude their login posts
+			if (!$this->auth->acl_get('u_viewonline'))
 			{
-				$sql_where = '(' . $sql_where . ') AND ';
+				$sql_where_ary[] = sprintf('(m.forum_id <> 0 OR m.post_id <> %d)', self::LOGIN_HIDDEN);
 			}
-			$sql_where .= 'm.forum_id = 0';
+		}
+		else
+		{
+			// Exclude all post notifications
+			$sql_where_ary[] = 'm.post_id = 0';
 		}
 
 		$sql_array = array(
@@ -290,7 +313,7 @@ class functions
 					'ON'	=> 'm.post_id = p.post_id',
 				)
 			),
-			'WHERE'		=> $sql_where,
+			'WHERE'		=> implode(' AND ', $sql_where_ary),
 			'ORDER_BY'	=> 'm.message_id DESC',
 		);
 
@@ -409,13 +432,14 @@ class functions
 	 * @param string $mode One of post|quote|edit|reply
 	 * @param $data The post data
 	 */
-	public function mchat_insert_posting($mode, $data)
+	public function mchat_insert_posting($mode, $data, $is_hidden_login)
 	{
 		$mode_config = array(
 			'post'	=> 'mchat_posts_topic',
 			'quote'	=> 'mchat_posts_quote',
 			'edit'	=> 'mchat_posts_edit',
 			'reply'	=> 'mchat_posts_reply',
+			'login' => 'mchat_posts_login',
 		);
 
 		if (empty($mode_config[$mode]) || !$this->settings->cfg($mode_config[$mode]))
@@ -423,10 +447,22 @@ class functions
 			return;
 		}
 
-		$board_url = generate_board_url();
-		$topic_url = '[url=' . $board_url . '/viewtopic.' . $this->php_ext . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url]';
-		$forum_url = '[url=' . $board_url . '/viewforum.' . $this->php_ext . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . '[/url]';
-		$message = $this->user->lang('MCHAT_NEW_' . strtoupper($mode), $topic_url, $forum_url);
+		if ($mode === 'login')
+		{
+			$data = array(
+				'forum_id'	=> 0,
+				'post_id'	=> $is_hidden_login ? self::LOGIN_HIDDEN : self::LOGIN_VISIBLE,
+			);
+
+			$message = $this->user->lang('MCHAT_NEW_LOGIN');
+		}
+		else
+		{
+			$board_url = generate_board_url();
+			$topic_url = '[url=' . $board_url . '/viewtopic.' . $this->php_ext . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url]';
+			$forum_url = '[url=' . $board_url . '/viewforum.' . $this->php_ext . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . '[/url]';
+			$message = $this->user->lang('MCHAT_NEW_' . strtoupper($mode), $topic_url, $forum_url);
+		}
 
 		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
 		generate_text_for_storage($message, $uid, $bitfield, $options, true, false, false);
@@ -441,6 +477,7 @@ class functions
 			'bbcode_options'	=> $options,
 			'message_time'		=> time(),
 		);
+
 		$sql = 'INSERT INTO ' .	$this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
 	}

@@ -56,6 +56,7 @@ class main_listener implements EventSubscriberInterface
 			'core.posting_modify_submit_post_after'		=> 'posting_modify_submit_post_after',
 			'core.display_custom_bbcodes_modify_sql'	=> 'display_custom_bbcodes_modify_sql',
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
+			'core.login_box_redirect'					=> 'user_login_success',
 		);
 	}
 
@@ -131,5 +132,16 @@ class main_listener implements EventSubscriberInterface
 	public function user_registration_set_default_values($event)
 	{
 		$event['sql_ary'] = $this->mchat->set_user_default_values($event['sql_ary']);
+	}
+
+	/**
+	 * @param object $event The event object
+	 */
+	public function user_login_success($event)
+	{
+		if (!$event['admin'])
+		{
+			$this->mchat->insert_posting('login');
+		}
 	}
 }

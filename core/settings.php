@@ -146,7 +146,7 @@ class settings
 	{
 		$enabled_notifications_lang = array();
 
-		foreach (array('topic', 'reply', 'quote', 'edit') as $notification)
+		foreach (array('topic', 'reply', 'quote', 'edit', 'login') as $notification)
 		{
 			if ($this->cfg('mchat_posts_' . $notification))
 			{

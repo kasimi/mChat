@@ -64,6 +64,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_POSTS_REPLY'				=> 'Display new replies',
 	'MCHAT_POSTS_EDIT'				=> 'Display edited posts',
 	'MCHAT_POSTS_QUOTE'				=> 'Display quoted posts',
+	'MCHAT_POSTS_LOGIN'				=> 'Display user logins',
 
 	'MCHAT_DATE_FORMAT'				=> 'Date format',
 	'MCHAT_DATE_FORMAT_EXPLAIN'		=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date">date()</a> function.',

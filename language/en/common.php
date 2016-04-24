@@ -63,4 +63,5 @@ $lang = array_merge($lang, array(
 	'MCHAT_NEW_REPLY'				=> 'posted a reply: %1$s in %2$s',
 	'MCHAT_NEW_QUOTE'				=> 'replied with a quote: %1$s in %2$s',
 	'MCHAT_NEW_EDIT'				=> 'edited a post: %1$s in %2$s',
+	'MCHAT_NEW_LOGIN'				=> 'just logged in',
 ));
