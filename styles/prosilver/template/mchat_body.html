@@ -2,13 +2,7 @@
 	<!-- INCLUDE overall_header.html -->
 <!-- ENDIF -->
 
-<!-- IF MCHAT_IS_ARCHIVE_PAGE or not (MCHAT_ALLOW_USE and S_BBCODE_ALLOWED) -->
-	<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
-<!-- ENDIF -->
-<!-- INCLUDEJS javascript/jquery.auto-grow-input.js -->
-<!-- INCLUDEJS javascript/jquery.titlealert.min.js -->
-<!-- INCLUDEJS javascript/js.cookie-2.0.4.min.js -->
-<!-- INCLUDEJS javascript/mchat.js -->
+<!-- INCLUDE mchat_script_data.html -->
 
 <!-- IF MCHAT_IS_ARCHIVE_PAGE and (.pagination or MCHAT_TOTAL_MESSAGES) -->
 <div class="action-bar bar-top">
@@ -47,8 +41,6 @@
 		</ul>
 
 		<div id="mchat-body" class="postbody<!-- IF MCHAT_IS_COLLAPSIBLE --> collapsible<!-- ENDIF -->">
-			<!-- INCLUDE mchat_script_data.html -->
-
 			<!-- IF not MCHAT_SOUND_DISABLED -->
 				<audio id="mchat-sound-add" class="hidden" src="{EXT_URL}sounds/add.mp3" preload="auto"></audio>
 				<audio id="mchat-sound-edit" class="hidden" src="{EXT_URL}sounds/edit.mp3" preload="auto"></audio>
