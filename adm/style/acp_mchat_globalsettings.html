@@ -115,7 +115,7 @@
 		</dl>
 		<dl>
 			<dt><label for="mchat_static_message">{L_MCHAT_STATIC_MESSAGE}{L_COLON}</label><br />
-			<span>{L_MCHAT_STATIC_MESSAGE_EXPLAIN}</span></dt>
+				<span>{L_MCHAT_STATIC_MESSAGE_EXPLAIN}</span></dt>
 			<dd><textarea name="mchat_static_message" id="mchat_static_message" rows="5" cols="40">{MCHAT_STATIC_MESSAGE}</textarea></dd>
 		</dl>
 	</fieldset>
@@ -161,7 +161,7 @@
 		<legend>{L_MCHAT_SETTINGS_STATS}</legend>
 		<dl>
 			<dt><label for="mchat_whois_refresh">{L_MCHAT_WHOIS_REFRESH}{L_COLON}</label><br />
-			<span>{L_MCHAT_WHOIS_REFRESH_EXPLAIN}</span></dt>
+				<span>{L_MCHAT_WHOIS_REFRESH_EXPLAIN}</span></dt>
 			<dd><input type="text" name="mchat_whois_refresh" id="mchat_whois_refresh" size="10" value="{MCHAT_WHOIS_REFRESH}" /></dd>
 		</dl>
 	</fieldset>
@@ -174,7 +174,8 @@
 				<label><input type="radio" class="radio" name="mchat_prune" value="0"<!-- IF not MCHAT_PRUNE --> id="mchat_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="mchat_prune_num">{L_MCHAT_PRUNE_NUM}{L_COLON}</label></dt>
+			<dt><label for="mchat_prune_num">{L_MCHAT_PRUNE_NUM}{L_COLON}</label><br />
+				<span>{L_MCHAT_PRUNE_NUM_EXPLAIN}</span></dt>
 			<dd><input type="text" name="mchat_prune_num" size="10" id="mchat_prune_num" value="{MCHAT_PRUNE_NUM}" /></dd>
 		</dl>
 		<!-- IF MCHAT_FOUNDER -->

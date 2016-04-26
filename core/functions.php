@@ -240,22 +240,52 @@ class functions
 	 */
 	public function mchat_prune()
 	{
-		$mchat_total_messages = $this->mchat_total_message_count();
+		// ID of the first message that we want to keep.
+		// All messages with a smaller ID will be deleted.
+		$first_keep_id = false;
 
-		if ($mchat_total_messages > $this->settings->cfg('mchat_prune_num'))
+		$prune_num = $this->settings->cfg('mchat_prune_num');
+
+		if (ctype_digit($prune_num))
 		{
-			$sql = 'SELECT message_id
-				FROM ' . $this->mchat_table . '
-				ORDER BY message_id ASC';
-			$result = $this->db->sql_query_limit($sql, 1);
-			$first_id = (int) $this->db->sql_fetchfield('message_id');
-			$this->db->sql_freeresult($result);
+			// Retain fixed number of messages
+			$mchat_total_messages = $this->mchat_total_message_count();
 
-			// Compute new oldest message id
-			$delete_id = $mchat_total_messages - $this->settings->cfg('mchat_prune_num') + $first_id;
+			if ($mchat_total_messages > $prune_num)
+			{
+				$sql = 'SELECT message_id
+					FROM ' . $this->mchat_table . '
+					ORDER BY message_id ASC';
+				$result = $this->db->sql_query_limit($sql, 1);
+				$first_id = (int) $this->db->sql_fetchfield('message_id');
+				$this->db->sql_freeresult($result);
 
-			// Delete older messages
-			$this->mchat_action('prune', null, $delete_id);
+				$first_keep_id = $mchat_total_messages - $this->settings->cfg('mchat_prune_num') + $first_id;
+			}
+		}
+		else
+		{
+			// Retain messages of the specified time period
+			$time_period = strtotime($prune_num, 0);
+
+			if ($time_period !== false)
+			{
+				$time_limit = time() - $time_period;
+
+				$sql = 'SELECT message_id
+					FROM ' . $this->mchat_table . '
+					WHERE message_time > ' . (int) $time_limit . '
+					ORDER BY message_id ASC';
+				$result = $this->db->sql_query_limit($sql, 1);
+				$first_keep_id = (int) $this->db->sql_fetchfield('message_id');
+				$this->db->sql_freeresult($result);
+			}
+		}
+
+		// Delete messages
+		if ($first_keep_id !== false)
+		{
+			$this->mchat_action('prune', null, $first_keep_id);
 		}
 	}
 
