@@ -13,6 +13,9 @@ namespace dmzx\mchat\controller;
 
 class acp_controller
 {
+	/** @var \dmzx\mchat\core\functions */
+	protected $functions;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -49,6 +52,7 @@ class acp_controller
 	/**
 	 * Constructor
 	 *
+	 * @param \dmzx\mchat\core\functions		$functions
 	 * @param \phpbb\template\template			$template
 	 * @param \phpbb\log\log_interface			$log
 	 * @param \phpbb\user						$user
@@ -61,8 +65,9 @@ class acp_controller
 	 * @param string							$root_path
 	 * @param string							$php_ext
 	 */
-	public function __construct(\phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, \dmzx\mchat\core\settings $settings, $mchat_table, $mchat_deleted_messages_table, $root_path, $php_ext)
+	public function __construct(\dmzx\mchat\core\functions $functions, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, \dmzx\mchat\core\settings $settings, $mchat_table, $mchat_deleted_messages_table, $root_path, $php_ext)
 	{
+		$this->functions					= $functions;
 		$this->template						= $template;
 		$this->log							= $log;
 		$this->user							= $user;
@@ -87,15 +92,7 @@ class acp_controller
 
 		$error = array();
 
-		if ($this->request->is_set_post('mchat_purge') && $this->request->variable('mchat_purge_confirm', false) && check_form_key('acp_mchat') && $this->user->data['user_type'] == USER_FOUNDER)
-		{
-			$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
-			$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_deleted_messages_table);
-			$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
-			trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
-		}
-		else if ($this->request->is_set_post('submit'))
+		if ($this->request->is_set_post('submit'))
 		{
 			$mchat_new_config = array();
 			$validation = array();
@@ -145,6 +142,23 @@ class acp_controller
 
 			// Replace "error" strings with their real, localised form
 			$error = array_map(array($this->user, 'lang'), $error);
+		}
+
+		if (!$error)
+		{
+			if ($this->request->is_set_post('mchat_purge') && $this->request->variable('mchat_purge_confirm', false) && check_form_key('acp_mchat') && $this->user->data['user_type'] == USER_FOUNDER)
+			{
+				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
+				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_deleted_messages_table);
+				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
+				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
+			}
+			else if ($this->request->is_set_post('mchat_prune_now') && $this->request->variable('mchat_prune_now_confirm', false) && check_form_key('acp_mchat') && $this->user->data['user_type'] == USER_FOUNDER)
+			{
+				$num_pruned_messages = count($this->functions->mchat_prune());
+				trigger_error($this->user->lang('MCHAT_PRUNED', $num_pruned_messages) . adm_back_link($u_action));
+			}
 		}
 
 		foreach (array_keys($this->settings->global) as $key)

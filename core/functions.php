@@ -238,23 +238,22 @@ class functions
 	/**
 	 * Prune messages
 	 *
-	 * @return bool
+	 * @return array
 	 */
 	public function mchat_prune()
 	{
 		$sql_aray = array(
 			'SELECT'	=> 'message_id',
 			'FROM'		=> array($this->mchat_table => 'm'),
-			'ORDER_BY'	=> 'message_id DESC',
 		);
 
 		$prune_num = $this->settings->cfg('mchat_prune_num');
-		$offset = 0;
 
 		if (ctype_digit($prune_num))
 		{
 			// Retain fixed number of messages
 			$offset = $prune_num;
+			$sql_aray['ORDER_BY'] = 'message_id DESC';
 		}
 		else
 		{
@@ -263,23 +262,36 @@ class functions
 
 			if ($time_period === false)
 			{
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNE_FAIL', false, array($this->user->data['username']));
 				return false;
 			}
 
+			$offset = 0;
 			$sql_aray['WHERE'] = 'message_time < ' . (int) (time() - $time_period);
 		}
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_aray);
-		$result = $this->db->sql_query_limit($sql, 1, $offset);
-		$highest_delete_id = (int) $this->db->sql_fetchfield('message_id');
+		$result = $this->db->sql_query_limit($sql, 0, $offset);
+		$rows = $this->db->sql_fetchrowset();
 		$this->db->sql_freeresult($result);
 
-		if ($highest_delete_id)
+		$prune_ids = array();
+
+		foreach ($rows as $row)
 		{
-			$this->mchat_action('prune', null, $highest_delete_id);
+			$prune_ids[] = (int) $row['message_id'];
 		}
 
-		return $highest_delete_id;
+		if ($prune_ids)
+		{
+			$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
+			$this->db->sql_multi_insert($this->mchat_deleted_messages_table, $rows);
+			$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
+		}
+
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED', false, array($this->user->data['username'], count($prune_ids)));
+
+		return $prune_ids;
 	}
 
 	/**
@@ -609,27 +621,6 @@ class functions
 				$this->db->sql_query('INSERT INTO ' . $this->mchat_deleted_messages_table . ' ' . $this->db->sql_build_array('INSERT', array('message_id' => (int) $message_id)));
 				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, array($this->user->data['username']));
-				break;
-
-			// User triggers messages to be pruned
-			case 'prune':
-				$sql = 'SELECT message_id
-					FROM ' . $this->mchat_table . '
-					WHERE message_id <= ' . (int) $message_id;
-				$result = $this->db->sql_query($sql);
-				$rows = $this->db->sql_fetchrowset();
-				$this->db->sql_freeresult($result);
-
-				$prune_ids = array();
-				foreach ($rows as $row)
-				{
-					$prune_ids[] = (int) $row['message_id'];
-				}
-
-				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
-				$this->db->sql_multi_insert($this->mchat_deleted_messages_table, $rows);
-				$this->cache->destroy('sql', $this->mchat_deleted_messages_table);
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED', false, array($this->user->data['username']));
 				break;
 		}
 

@@ -6,6 +6,7 @@ services:
     dmzx.mchat.acp.controller:
         class: dmzx\mchat\controller\acp_controller
         arguments:
+            - '@dmzx.mchat.functions'
             - '@template'
             - '@log'
             - '@user'
