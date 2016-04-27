@@ -41,7 +41,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_SETTINGS_ARCHIVE'						=> 'Archive page settings',
 	'MCHAT_SETTINGS_POSTS'							=> 'New posts settings',
 	'MCHAT_SETTINGS_MESSAGES'						=> 'Message settings',
-	'MCHAT_SETTINGS_PRUNE'							=> 'Pruning settings',
+	'MCHAT_SETTINGS_PRUNE'							=> 'Pruning settings (adjustable for founders only)',
 	'MCHAT_SETTINGS_STATS'							=> 'Who is chatting settings',
 
 	'MCHAT_GLOBALUSERSETTINGS_EXPLAIN'				=> 'Settings for which a user does <strong>not</strong> have permission to customise are applied as configured below.<br />New user accounts will have initial settings as configured below.<br /><br />Go to the <em>mChat in UCP</em> tab of the user permissions section to adjust customisation permissions.<br />Go to the <em>Preferences</em> form in the <em>user management</em> section to see the status of each user’s settings.',

@@ -110,6 +110,13 @@ class acp_controller
 				}
 			}
 
+			// Don't allow changing pruning settings for non founders
+			if ($this->user->data['user_type'] != USER_FOUNDER)
+			{
+				unset($mchat_new_config['mchat_prune']);
+				unset($mchat_new_config['mchat_prune_num']);
+			}
+
 			if (!function_exists('validate_data'))
 			{
 				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
