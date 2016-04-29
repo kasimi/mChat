@@ -777,12 +777,13 @@ class mchat
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
 
 			$this->template->assign_block_vars('mchatrow', array(
-				'MCHAT_ALLOW_EDIT'			=> !$is_notification && $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
+				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'IS_BOT_MESSAGE'			=> (bool) $row['post_id'],
 				'MCHAT_IS_POSTER'			=> $is_poster,
+				'MCHAT_IS_NOTIFICATION'		=> $is_notification,
 				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 				'MCHAT_MESSAGE_EDIT'		=> $is_notification ? '' : $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
