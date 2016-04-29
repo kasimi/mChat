@@ -303,7 +303,7 @@ class mchat
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
-		if (!$author || !$this->auth_message('u_mchat_edit', $author['user_id'], $author['message_time']))
+		if (!$author || $author['post_id'] || !$this->auth_message('u_mchat_edit', $author['user_id'], $author['message_time']))
 		{
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
@@ -706,12 +706,15 @@ class mchat
 
 		$foes = $this->functions->mchat_foes();
 
+		// Remove template data from previous render
 		$this->template->destroy_block_vars('mchatrow');
 
 		$user_avatars = array();
 
-		foreach ($rows as $i => $row)
+		// Cache avatars
+		foreach ($rows as $row)
 		{
+
 			if (!isset($user_avatars[$row['user_id']]))
 			{
 				$display_avatar = $this->display_avatars() && $row['user_avatar'];
@@ -726,11 +729,13 @@ class mchat
 
 		$board_url = generate_board_url() . '/';
 
-		foreach ($rows as $i => $row)
+		foreach ($rows as $row)
 		{
 			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
 
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
+
+			$is_notification = (bool) $row['post_id'];
 
 			// Fix profile link root path by replacing relative paths with absolute board URL
 			if ($this->request->is_ajax())
@@ -742,6 +747,28 @@ class mchat
 			{
 				$row['message'] = $this->user->lang('MCHAT_FOE', $username_full);
 			}
+			else if ($is_notification)
+			{
+				$data = @unserialize($row['message']);
+
+				// If unserializing failed the message content is plain text and we don't need to process it
+				if ($data !== false)
+				{
+					if ($row['forum_id'])
+					{
+						// If forum_id is 0 it's a post notification, extract forum name and post subject from the data
+						$board_url = generate_board_url() . '/';
+						$topic_url = '[url=' . $board_url . 'viewtopic.' . $this->php_ext . '?p=' . $row['post_id'] . '#p' . $row['post_id'] . ']' . $data[functions::INDEX_POST_SUBJECT] . '[/url]';
+						$forum_url = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . $data[functions::INDEX_FORUM_NAME] . '[/url]';
+						$row['message'] = $this->user->lang($data[functions::INDEX_LANG_VAR], $topic_url, $forum_url);
+					}
+					else
+					{
+						// Otherwise it's a login notification, no data needed for that
+						$row['message'] = $this->user->lang($data[functions::INDEX_LANG_VAR]);
+					}
+				}
+			}
 
 			$message_age = time() - $row['message_time'];
 			$minutes_ago = $this->get_minutes_ago($message_age);
@@ -750,14 +777,14 @@ class mchat
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
 
 			$this->template->assign_block_vars('mchatrow', array(
-				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
+				'MCHAT_ALLOW_EDIT'			=> !$is_notification && $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'IS_BOT_MESSAGE'			=> (bool) $row['post_id'],
 				'MCHAT_IS_POSTER'			=> $is_poster,
 				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
-				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
+				'MCHAT_MESSAGE_EDIT'		=> $is_notification ? '' : $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'		=> $username_full,
 				'MCHAT_USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),

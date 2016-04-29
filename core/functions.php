@@ -62,6 +62,14 @@ class functions
 	const LOGIN_HIDDEN	= 2;
 
 	/**
+	 * The message content of post notifications is a serialized array.
+	 * The values in this array can be accessed using these indices.
+	 */
+	const INDEX_LANG_VAR		= 0;
+	const INDEX_POST_SUBJECT	= 1;
+	const INDEX_FORUM_NAME		= 2;
+
+	/**
 	* Constructor
 	*
 	* @param \dmzx\mchat\core\settings				$settings
@@ -464,8 +472,9 @@ class functions
 	/**
 	 * Inserts a message with posting information into the database
 	 *
-	 * @param string $mode One of post|quote|edit|reply
-	 * @param $data The post data
+	 * @param string $mode One of post|quote|edit|reply|login
+	 * @param array $data The post data
+	 * @param bool $is_hidden_login
 	 */
 	public function mchat_insert_posting($mode, $data, $is_hidden_login)
 	{
@@ -482,31 +491,33 @@ class functions
 			return;
 		}
 
+		$message_data = array(
+			self::INDEX_LANG_VAR => 'MCHAT_NEW_' . strtoupper($mode),
+		);
+
 		if ($mode === 'login')
 		{
 			$data = array(
 				'forum_id'	=> 0,
 				'post_id'	=> $is_hidden_login ? self::LOGIN_HIDDEN : self::LOGIN_VISIBLE,
 			);
-
-			$message = $this->user->lang('MCHAT_NEW_LOGIN');
 		}
 		else
 		{
-			$board_url = generate_board_url();
-			$topic_url = '[url=' . $board_url . '/viewtopic.' . $this->php_ext . '?p=' . $data['post_id'] . '#p' . $data['post_id'] . ']' . $data['post_subject'] . '[/url]';
-			$forum_url = '[url=' . $board_url . '/viewforum.' . $this->php_ext . '?f=' . $data['forum_id'] . ']' . $data['forum_name'] . '[/url]';
-			$message = $this->user->lang('MCHAT_NEW_' . strtoupper($mode), $topic_url, $forum_url);
+			$message_data[self::INDEX_POST_SUBJECT] = $data['post_subject'];
+			$message_data[self::INDEX_FORUM_NAME] = $data['forum_name'];
 		}
 
+		$message = serialize($message_data);
 		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
 		generate_text_for_storage($message, $uid, $bitfield, $options, true, false, false);
+
 		$sql_ary = array(
 			'forum_id'			=> $data['forum_id'],
 			'post_id'			=> $data['post_id'],
 			'user_id'			=> $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
-			'message'			=> utf8_normalize_nfc($message),
+			'message'			=> $message,
 			'bbcode_bitfield'	=> $bitfield,
 			'bbcode_uid'		=> $uid,
 			'bbcode_options'	=> $options,
@@ -548,7 +559,7 @@ class functions
 	 */
 	public function mchat_author_for_message($message_id)
 	{
-		$sql = 'SELECT u.user_id, u.username, m.message_time
+		$sql = 'SELECT u.user_id, u.username, m.message_time, m.forum_id, m.post_id
 			FROM ' . $this->mchat_table . ' m
 			LEFT JOIN ' . USERS_TABLE . ' u ON m.user_id = u.user_id
 			WHERE m.message_id = ' . (int) $message_id;
