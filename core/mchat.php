@@ -494,11 +494,7 @@ class mchat
 		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
 		$static_message = $lang_static_message ?: $this->settings->cfg('mchat_static_message');
 
-		$u_mchat_use = $this->auth->acl_get('u_mchat_use');
-
 		$this->template->assign_vars(array(
-			'MCHAT_ALLOW_USE'				=> $u_mchat_use,
-			'S_BBCODE_ALLOWED'				=> $this->settings->cfg('allow_bbcode') && $this->auth->acl_get('u_mchat_bbcode'),
 			'MCHAT_ALLOW_SMILES'			=> $this->settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies'),
 			'MCHAT_INPUT_AREA'				=> $this->settings->cfg('mchat_input_area'),
 			'MCHAT_MESSAGE_TOP'				=> $this->settings->cfg('mchat_message_top'),
@@ -546,7 +542,7 @@ class mchat
 			'edit'		=> $this->auth_message('u_mchat_edit', true, time()),
 			'del'		=> $this->auth_message('u_mchat_delete', true, time()),
 			'refresh'	=> $page !== 'archive' && $this->auth->acl_get('u_mchat_view'),
-			'add'		=> $page !== 'archive' && $u_mchat_use,
+			'add'		=> $page !== 'archive' && $this->auth->acl_get('u_mchat_use'),
 			'whois'		=> $page !== 'archive' && $this->settings->cfg('mchat_whois'),
 		)));
 
@@ -598,7 +594,7 @@ class mchat
 
 		$this->assign_authors();
 
-		if ($u_mchat_use)
+		if ($this->auth->acl_get('u_mchat_use'))
 		{
 			add_form_key('mchat');
 		}
@@ -642,6 +638,8 @@ class mchat
 	protected function assign_global_template_data()
 	{
 		$this->template->assign_vars(array(
+			'S_BBCODE_ALLOWED'				=> $this->auth->acl_get('u_mchat_bbcode') && $this->settings->cfg('allow_bbcode'),
+			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
 			'MCHAT_ALLOW_IP'				=> $this->auth->acl_get('u_mchat_ip'),
 			'MCHAT_ALLOW_PM'				=> $this->auth->acl_get('u_mchat_pm'),
 			'MCHAT_ALLOW_LIKE'				=> $this->auth->acl_get('u_mchat_like'),
