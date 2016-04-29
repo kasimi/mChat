@@ -1011,19 +1011,14 @@ class mchat
 			}
 		}
 
-		$cfg_min_post_chars = $this->settings->cfg('min_post_chars');
-		$cfg_max_post_smilies = $this->settings->cfg('max_post_smilies');
-
-		// We override the $this->settings->cfg('min_post_chars') entry?
 		if ($this->settings->cfg('mchat_override_min_post_chars'))
 		{
-			$this->settings->set_cfg('min_post_chars', 0);
+			$this->settings->set_cfg('min_post_chars', 0, true);
 		}
 
-		// We do the same for the max number of smilies?
 		if ($this->settings->cfg('mchat_override_smilie_limit'))
 		{
-			$this->settings->cfg('max_post_smilies', 0);
+			$this->settings->set_cfg('max_post_smilies', 0, true);
 		}
 
 		$mchat_bbcode	= $this->settings->cfg('allow_bbcode') && $this->auth->acl_get('u_mchat_bbcode');
@@ -1050,10 +1045,6 @@ class mchat
 
 			$message = preg_replace($bbcode_replace, '', $message);
 		}
-
-		// Reset the config settings
-		$this->settings->set_cfg('min_post_chars', $cfg_min_post_chars);
-		$this->settings->set_cfg('max_post_smilies', $cfg_max_post_smilies);
 
 		return array(
 			'message'			=> str_replace("'", '&#39;', $message),

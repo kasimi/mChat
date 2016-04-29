@@ -101,10 +101,18 @@ class settings
 	/**
 	 * @param $config
 	 * @param $value
+	 * @param bool $volatile
 	 */
-	public function set_cfg($config, $value)
+	public function set_cfg($config, $value, $volatile = false)
 	{
-		$this->config->set($config, $value);
+		if ($volatile)
+		{
+			$this->config[$config] = $value;
+		}
+		else
+		{
+			$this->config->set($config, $value);
+		}
 	}
 
 	/**
