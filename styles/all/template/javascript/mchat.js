@@ -459,17 +459,13 @@ jQuery(function($) {
 			mChat.cached('messages').animate({scrollTop: mChat.cached('messages')[0].scrollHeight, easing: 'swing', duration: 'slow'});
 		}
 
-		if (!mChat.cached('user-sound').prop('checked')) {
-			Cookies.set('mchat_no_sound', 'yes');
-		}
-
 		mChat.cached('user-sound').prop('checked', mChat.playSound && !Cookies.get('mchat_no_sound')).change(function() {
 			if (this.checked) {
 				Cookies.remove('mchat_no_sound');
 			} else {
 				Cookies.set('mchat_no_sound', 'yes');
 			}
-		});
+		}).change();
 
 		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
 			$('#format-buttons .bbcode-' + bbcode).remove();
