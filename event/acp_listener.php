@@ -70,7 +70,7 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	public function permissions($event)
 	{
-		$ucp_settings = array();
+		$ucp_configs = array();
 
 		foreach (array_keys($this->settings->ucp) as $config_name)
 		{
