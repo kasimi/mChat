@@ -283,14 +283,14 @@ class mchat
 		 */
 		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_add');
 
-		$data = $this->action_refresh();
+		$response = $this->action_refresh();
 
 		if ($is_new_session)
 		{
-			$data['whois'] = true;
+			$response = array_merge($response, $this->action_whois());
 		}
 
-		return $data;
+		return $response;
 	}
 
 	/**
@@ -475,15 +475,15 @@ class mchat
 
 		$this->assign_whois();
 
-		$data = array('whois' => $this->render_template('mchat_whois.html'));
+		$response = array('whois' => $this->render_template('mchat_whois.html'));
 
 		if ($this->settings->cfg('mchat_navbar_link_count') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_custom_page'))
 		{
-			$data['navlink'] = $this->active_users['users_count_title'];
-			$data['navlink_title'] = strip_tags($this->active_users['users_total']);
+			$response['navlink'] = $this->active_users['users_count_title'];
+			$response['navlink_title'] = strip_tags($this->active_users['users_total']);
 		}
 
-		return $data;
+		return $response;
 	}
 
 	/**

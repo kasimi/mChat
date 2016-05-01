@@ -241,7 +241,7 @@ jQuery(function($) {
 					mChat.removeMessages(json.del);
 				}
 				if (json.whois) {
-					mChat.whois();
+					mChat.handleWhoisResponse(json);
 				}
 				if (mChat.refreshInterval) {
 					mChat.cached('status-load', 'status-error', 'status-paused').hide();
@@ -254,26 +254,27 @@ jQuery(function($) {
 				mChat.cached('refresh-pending').show();
 				mChat.cached('refresh-explain').hide();
 			}
-			ajaxRequest('whois', false, {}).done(function(json) {
-				var $whois = $(json.whois);
-				var $userlist = $whois.find('#mchat-userlist');
-				if (Cookies.get('mchat_show_userlist')) {
-					$userlist.show();
-				}
-				mChat.cached('whois').replaceWith($whois);
-				mChat.cache.whois = $whois;
-				mChat.cache.userlist = $userlist;
-				if (mChat.customPage) {
-					mChat.cached('refresh-pending').hide();
-					mChat.cached('refresh-explain').show();
-				}
-				if (json.navlink) {
-					$('.mchat-nav-link').html(json.navlink);
-				}
-				if (json.navlink_title) {
-					$('.mchat-nav-link-title').prop('title', json.navlink_title);
-				}
-			});
+			ajaxRequest('whois', false, {}).done(mChat.handleWhoisResponse);
+		},
+		handleWhoisResponse: function(json) {
+			var $whois = $(json.whois);
+			var $userlist = $whois.find('#mchat-userlist');
+			if (Cookies.get('mchat_show_userlist')) {
+				$userlist.show();
+			}
+			mChat.cached('whois').replaceWith($whois);
+			mChat.cache.whois = $whois;
+			mChat.cache.userlist = $userlist;
+			if (mChat.customPage) {
+				mChat.cached('refresh-pending').hide();
+				mChat.cached('refresh-explain').show();
+			}
+			if (json.navlink) {
+				$('.mchat-nav-link').html(json.navlink);
+			}
+			if (json.navlink_title) {
+				$('.mchat-nav-link-title').prop('title', json.navlink_title);
+			}
 		},
 		updateMessages: function($messages) {
 			var soundPlayed = false;
