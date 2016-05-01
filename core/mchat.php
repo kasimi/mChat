@@ -772,11 +772,7 @@ class mchat
 
 		foreach ($rows as $row)
 		{
-			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
-
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
-
-			$is_notification = (bool) $row['post_id'];
 
 			// Fix profile link root path by replacing relative paths with absolute board URL
 			if ($this->request->is_ajax())
@@ -784,31 +780,15 @@ class mchat
 				$username_full = preg_replace('#(?<=href=")[\./]+?/(?=\w)#', $board_url, $username_full);
 			}
 
+			$is_notification = (bool) $row['post_id'];
+
 			if (in_array($row['user_id'], $this->foes))
 			{
 				$row['message'] = $this->user->lang('MCHAT_FOE', $username_full);
 			}
 			else if ($is_notification)
 			{
-				$data = @unserialize($row['message']);
-
-				// If unserializing failed the message content is plain text and we don't need to process it
-				if ($data !== false)
-				{
-					if ($row['forum_id'])
-					{
-						// If forum_id is 0 it's a post notification, extract forum name and post subject from the data
-						$board_url = generate_board_url() . '/';
-						$topic_url = '[url=' . $board_url . 'viewtopic.' . $this->php_ext . '?p=' . $row['post_id'] . '#p' . $row['post_id'] . ']' . $data[functions::INDEX_POST_SUBJECT] . '[/url]';
-						$forum_url = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . $data[functions::INDEX_FORUM_NAME] . '[/url]';
-						$row['message'] = $this->user->lang($data[functions::INDEX_LANG_VAR], $topic_url, $forum_url);
-					}
-					else
-					{
-						// Otherwise it's a login notification, no data needed for that
-						$row['message'] = $this->user->lang($data[functions::INDEX_LANG_VAR]);
-					}
-				}
+				$this->process_notification($row, $board_url);
 			}
 
 			$message_age = time() - $row['message_time'];
@@ -816,6 +796,8 @@ class mchat
 			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'));
 
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
+
+			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
 
 			$this->template->assign_block_vars('mchatrow', array(
 				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
@@ -841,6 +823,41 @@ class mchat
 				'MCHAT_MESSAGE_TIME'		=> $row['message_time'],
 				'MCHAT_EDIT_TIME'			=> $row['edit_time'],
 			));
+		}
+	}
+
+	/**
+	 * Converts the serialized data in a post notification row so that it can be passed to generate_text_for_display()
+	 *
+	 * @param array $row The row to modify
+	 * @param string $board_url
+	 */
+	protected function process_notification(&$row, $board_url)
+	{
+		$data = @unserialize($row['message']);
+
+		// If unserializing failed the message content is plain text and we don't need to process it
+		if ($data === false)
+		{
+			return;
+		}
+
+		$args = array();
+
+		// If forum_id is 0 it's a login notification, no data needed for that.
+		// If forum_id is not 0 it's a post notification, we need to extract forum name and post subject from the data.
+		if ($row['forum_id'])
+		{
+			$args[] = '[url=' . $board_url . 'viewtopic.' . $this->php_ext . '?p=' . $row['post_id'] . '#p' . $row['post_id'] . ']' . $data[functions::INDEX_POST_SUBJECT] . '[/url]';
+			$args[] = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . $data[functions::INDEX_FORUM_NAME] . '[/url]';
+		}
+
+		$row['message'] = vsprintf($this->user->lang($data[functions::INDEX_LANG_VAR]), $args);
+
+		// Quick'n'dirty check if BBCodes are in the message
+		if (strpos($row['message'], '[') !== false)
+		{
+			generate_text_for_storage($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'], true, true, true);
 		}
 	}
 

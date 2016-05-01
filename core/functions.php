@@ -509,19 +509,12 @@ class functions
 			$message_data[self::INDEX_FORUM_NAME] = $data['forum_name'];
 		}
 
-		$message = serialize($message_data);
-		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
-		generate_text_for_storage($message, $uid, $bitfield, $options, true, false, false);
-
 		$sql_ary = array(
 			'forum_id'			=> $data['forum_id'],
 			'post_id'			=> $data['post_id'],
 			'user_id'			=> $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
-			'message'			=> $message,
-			'bbcode_bitfield'	=> $bitfield,
-			'bbcode_uid'		=> $uid,
-			'bbcode_options'	=> $options,
+			'message'			=> serialize($message_data),
 			'message_time'		=> time(),
 		);
 
