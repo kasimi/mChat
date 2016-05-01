@@ -807,7 +807,7 @@ class mchat
 				'MCHAT_IS_POSTER'			=> $is_poster,
 				'MCHAT_IS_NOTIFICATION'		=> $is_notification,
 				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
-				'MCHAT_MESSAGE_EDIT'		=> $is_notification ? '' : $message_for_edit['text'],
+				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'		=> $username_full,
 				'MCHAT_USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
@@ -842,9 +842,9 @@ class mchat
 			return;
 		}
 
-		$args = array();
+		$args = array($data[functions::INDEX_LANG_VAR]);
 
-		// If forum_id is 0 it's a login notification, no data needed for that.
+		// If forum_id is 0 it's a login notification, no additional data needed for that.
 		// If forum_id is not 0 it's a post notification, we need to extract forum name and post subject from the data.
 		if ($row['forum_id'])
 		{
@@ -852,7 +852,7 @@ class mchat
 			$args[] = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . $data[functions::INDEX_FORUM_NAME] . '[/url]';
 		}
 
-		$row['message'] = vsprintf($this->user->lang($data[functions::INDEX_LANG_VAR]), $args);
+		$row['message'] = call_user_func_array(array($this->user, 'lang'), $args);
 
 		// Quick'n'dirty check if BBCodes are in the message
 		if (strpos($row['message'], '[') !== false)
