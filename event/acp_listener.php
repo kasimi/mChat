@@ -83,6 +83,8 @@ class acp_listener implements EventSubscriberInterface
 				'u_mchat_view',
 				'u_mchat_edit',
 				'u_mchat_delete',
+				'u_mchat_moderator_edit',
+				'u_mchat_moderator_delete',
 				'u_mchat_ip',
 				'u_mchat_pm',
 				'u_mchat_like',

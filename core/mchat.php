@@ -309,7 +309,7 @@ class mchat
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
-		if (!$author || $author['post_id'] || !$this->auth_message('u_mchat_edit', $author['user_id'], $author['message_time']))
+		if (!$author || $author['post_id'] || !$this->auth_message('edit', $author['user_id'], $author['message_time']))
 		{
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
@@ -357,7 +357,7 @@ class mchat
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
-		if (!$author || !$this->auth_message('u_mchat_delete', $author['user_id'], $author['message_time']))
+		if (!$author || !$this->auth_message('delete', $author['user_id'], $author['message_time']))
 		{
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
@@ -580,8 +580,8 @@ class mchat
 
 		// Get actions which the user is allowed to perform on the current page
 		$actions = array_keys(array_filter(array(
-			'edit'		=> $this->auth_message('u_mchat_edit', true, time()),
-			'del'		=> $this->auth_message('u_mchat_delete', true, time()),
+			'edit'		=> $this->auth_message('edit', true, time()),
+			'del'		=> $this->auth_message('delete', true, time()),
 			'refresh'	=> $page !== 'archive' && $this->auth->acl_get('u_mchat_view'),
 			'add'		=> $page !== 'archive' && $this->auth->acl_get('u_mchat_use'),
 			'whois'		=> $page !== 'archive' && $this->settings->cfg('mchat_whois'),
@@ -687,7 +687,7 @@ class mchat
 			'MCHAT_ALLOW_QUOTE'				=> $this->auth->acl_get('u_mchat_quote'),
 			'MCHAT_ALLOW_PERMISSIONS'		=> $this->auth->acl_get('a_authusers'),
 			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->settings->cfg('mchat_edit_delete_limit'),
-			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->settings->cfg('mchat_edit_delete_limit') && $this->auth->acl_get('m_'),
+			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->settings->cfg('mchat_edit_delete_limit') && ($this->auth->acl_get('u_mchat_moderator_edit') || $this->auth->acl_get('u_mchat_moderator_delete')),
 			'MCHAT_RELATIVE_TIME'			=> $this->settings->cfg('mchat_relative_time'),
 			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->settings->cfg('mchat_timeout'),
 			'S_MCHAT_AVATARS'				=> $this->display_avatars(),
@@ -800,8 +800,8 @@ class mchat
 			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
 
 			$this->template->assign_block_vars('mchatrow', array(
-				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('u_mchat_edit', $row['user_id'], $row['message_time']),
-				'MCHAT_ALLOW_DEL'			=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
+				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('edit', $row['user_id'], $row['message_time']),
+				'MCHAT_ALLOW_DEL'			=> $this->auth_message('delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'			=> $is_poster,
@@ -1026,25 +1026,24 @@ class mchat
 	/**
 	 * Checks whether an author has edit or delete permissions for a message
 	 *
-	 * @param string $permission One of u_mchat_edit|u_mchat_delete
+	 * @param string $mode One of edit|delete
 	 * @param int $author_id The user id of the message
 	 * @param int $message_time The message created time
 	 * @return bool
 	 */
-	protected function auth_message($permission, $author_id, $message_time)
+	protected function auth_message($mode, $author_id, $message_time)
 	{
-		if (!$this->auth->acl_get($permission))
-		{
-			return false;
-		}
-
-		if ($this->auth->acl_get('m_'))
+		if ($this->auth->acl_get('u_mchat_moderator_' . $mode))
 		{
 			return true;
 		}
 
-		$can_edit_delete = !$this->settings->cfg('mchat_edit_delete_limit') || $message_time >= time() - $this->settings->cfg('mchat_edit_delete_limit');
-		return $can_edit_delete && $this->user->data['user_id'] == $author_id && $this->user->data['is_registered'];
+		if (!$this->user->data['is_registered'] || $this->user->data['user_id'] != $author_id || !$this->auth->acl_get('u_mchat_' . $mode))
+		{
+			return false;
+		}
+
+		return !$this->settings->cfg('mchat_edit_delete_limit') || $message_time >= time() - $this->settings->cfg('mchat_edit_delete_limit');
 	}
 
 	/**
