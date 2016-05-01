@@ -47,7 +47,7 @@ $lang = array_merge($lang, array(
 	'ACL_U_MCHAT_ARCHIVE'					=> 'Can view the archive',
 	'ACL_U_MCHAT_BBCODE'					=> 'Can use BBCodes',
 	'ACL_U_MCHAT_SMILIES'					=> 'Can use smilies',
-	'ACL_U_MCHAT_URLS'						=> 'Can use [url] BBCode tag',
+	'ACL_U_MCHAT_URLS'						=> 'Can post automatically parsed URLs',
 
 	'ACL_U_MCHAT_AVATARS'					=> 'Can customise <em>Display avatars</em>',
 	'ACL_U_MCHAT_CAPITAL_LETTER'			=> 'Can customise <em>Capital first letter</em>',
