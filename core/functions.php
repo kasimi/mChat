@@ -337,7 +337,7 @@ class functions
 			// If the current user doesn't have permission to see hidden users, exclude their login posts
 			if (!$this->auth->acl_get('u_viewonline'))
 			{
-				$sql_where_ary[] = sprintf('(m.forum_id <> 0 OR m.post_id <> %d)', self::LOGIN_HIDDEN);
+				$sql_where_ary[] = sprintf('(m.forum_id <> 0 OR m.post_id <> %d OR m.user_id = %d)', self::LOGIN_HIDDEN, $this->user->data['user_id']);
 			}
 		}
 		else
