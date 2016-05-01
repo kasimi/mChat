@@ -25,9 +25,10 @@ class mchat_2_0_0_rc6 extends \phpbb\db\migration\migration
 		return array(
 			array('config.update', array('mchat_version', '2.0.0-RC6')),
 
-			array('config.add', array('mchat_prune_gc', strtotime('1 day', 0))),
-			array('config.add', array('mchat_prune_last_gc', 0, true)), // Dynamic, do not cache
+			array('config.add', array('mchat_navbar_link_count', 1)),
 			array('config.add', array('mchat_posts_login', 0)),
+			array('config.add', array('mchat_prune_gc', strtotime('1 day', 0))),
+			array('config.add', array('mchat_prune_last_gc', 0, true)), // true => value is dynamic, do not cache
 		);
 	}
 }

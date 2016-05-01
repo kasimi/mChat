@@ -36,6 +36,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'MCHAT_TITLE'					=> 'mChat',
+	'MCHAT_TITLE_COUNT'				=> 'mChat [<strong>%1$d</strong>]',
 
 	// Who is chatting
 	'MCHAT_WHO_IS_CHATTING'			=> 'Who is chatting',

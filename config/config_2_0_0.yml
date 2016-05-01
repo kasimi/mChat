@@ -67,6 +67,8 @@ parameters:
                 - 50
         mchat_navbar_link:
             default: 1
+        mchat_navbar_link_count:
+            default: 1
         mchat_override_min_post_chars:
             default: 0
         mchat_override_smilie_limit:

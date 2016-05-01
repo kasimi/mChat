@@ -267,6 +267,12 @@ jQuery(function($) {
 					mChat.cached('refresh-pending').hide();
 					mChat.cached('refresh-explain').show();
 				}
+				if (json.navlink) {
+					$('.mchat-nav-link').html(json.navlink);
+				}
+				if (json.navlink_title) {
+					$('.mchat-nav-link-title').prop('title', json.navlink_title);
+				}
 			});
 		},
 		updateMessages: function($messages) {

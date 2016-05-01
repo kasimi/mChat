@@ -37,10 +37,10 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function __construct(\dmzx\mchat\core\mchat $mchat, \phpbb\controller\helper $helper, \phpbb\user $user, $php_ext)
 	{
-		$this->mchat		= $mchat;
-		$this->helper		= $helper;
-		$this->user			= $user;
-		$this->php_ext		= $php_ext;
+		$this->mchat	= $mchat;
+		$this->helper	= $helper;
+		$this->user		= $user;
+		$this->php_ext	= $php_ext;
 	}
 
 	/**

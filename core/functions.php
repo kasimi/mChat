@@ -46,9 +46,6 @@ class functions
 	/** @var string */
 	protected $mchat_sessions_table;
 
-	/** @var array */
-	protected $foes = null;
-
 	/**
 	 * Value of the phpbb_mchat.post_id field for login notification
 	 * messages if the user session is visible at the time of login
@@ -161,8 +158,6 @@ class functions
 	 */
 	public function mchat_active_users()
 	{
-		$mchat_users = array();
-
 		$check_time = time() - $this->mchat_session_time();
 
 		$sql = 'SELECT m.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour
@@ -174,7 +169,9 @@ class functions
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
+		$mchat_users = array();
 		$can_view_hidden = $this->auth->acl_get('u_viewonline');
+
 		foreach ($rows as $row)
 		{
 			if (!$row['user_allow_viewonline'])
@@ -192,7 +189,8 @@ class functions
 
 		return array(
 			'online_userlist'	=> implode($this->user->lang('COMMA_SEPARATOR'), $mchat_users),
-			'mchat_users_count'	=> $this->user->lang('MCHAT_ONLINE_USERS_TOTAL', count($mchat_users)),
+			'users_count_title'	=> $this->user->lang('MCHAT_TITLE_COUNT', count($mchat_users)),
+			'users_total'		=> $this->user->lang('MCHAT_ONLINE_USERS_TOTAL', count($mchat_users)),
 			'refresh_message'	=> $this->mchat_format_seconds($this->mchat_session_time()),
 		);
 	}
@@ -200,7 +198,7 @@ class functions
 	/**
 	 * Inserts the current user into the mchat_sessions table
 	 *
-	 * @return bool
+	 * @return bool Returns true if a new session was created, otherwise false
 	 */
 	public function mchat_add_user_session()
 	{
@@ -210,35 +208,40 @@ class functions
 			WHERE user_lastupdate < ' . $check_time;
 		$this->db->sql_query($sql);
 
+		$user_id = (int) $this->user->data['user_id'];
+
+		if (!$this->user->data['is_registered'] || $this->user->data['is_bot'])
+		{
+			return false;
+		}
+
+		$sql = 'SELECT user_id
+			FROM ' . $this->mchat_sessions_table . '
+			WHERE user_id = ' . $user_id;
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
 		$is_new_session = false;
 
-		if ($this->user->data['user_type'] == USER_FOUNDER || $this->user->data['user_type'] == USER_NORMAL && $this->user->data['user_id'] != ANONYMOUS && !$this->user->data['is_bot'])
+		if ($row)
 		{
-			$sql = 'SELECT *
-				FROM ' . $this->mchat_sessions_table . '
-				WHERE user_id = ' . (int) $this->user->data['user_id'];
-			$result = $this->db->sql_query($sql);
-			$row = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
-
-			if ($row)
-			{
-				$sql = 'UPDATE ' . $this->mchat_sessions_table . '
-					SET user_lastupdate = ' . time() . '
-					WHERE user_id = ' . (int) $this->user->data['user_id'];
-			}
-			else
-			{
-				$is_new_session = true;
-				$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
-					'user_id'			=> $this->user->data['user_id'],
-					'user_ip'			=> $this->user->data['user_ip'],
-					'user_lastupdate'	=> time(),
-				));
-			}
-
-			$this->db->sql_query($sql);
+			$sql = 'UPDATE ' . $this->mchat_sessions_table . '
+				SET user_lastupdate = ' . time() . '
+				WHERE user_id = ' . $user_id;
 		}
+		else
+		{
+			$is_new_session = true;
+
+			$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
+				'user_id'			=> $user_id,
+				'user_ip'			=> $this->user->data['user_ip'],
+				'user_lastupdate'	=> time(),
+			));
+		}
+
+		$this->db->sql_query($sql);
 
 		return $is_new_session;
 	}
@@ -432,23 +435,21 @@ class functions
 	 */
 	public function mchat_foes()
 	{
-		if (is_null($this->foes))
-		{
-			$sql = 'SELECT *
-				FROM ' . ZEBRA_TABLE . '
-				WHERE foe = 1 AND user_id = ' . (int) $this->user->data['user_id'];
-			$result = $this->db->sql_query($sql);
-			$rows = $this->db->sql_fetchrowset($result);
-			$this->db->sql_freeresult($result);
+		$sql = 'SELECT zebra_id
+			FROM ' . ZEBRA_TABLE . '
+			WHERE foe = 1 AND user_id = ' . (int) $this->user->data['user_id'];
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
 
-			$this->foes = array();
-			foreach ($rows as $row)
-			{
-				$this->foes[] = $row['zebra_id'];
-			}
+		$foes = array();
+
+		foreach ($rows as $row)
+		{
+			$foes[] = $row['zebra_id'];
 		}
 
-		return $this->foes;
+		return $foes;
 	}
 
 	/**

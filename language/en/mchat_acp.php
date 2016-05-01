@@ -77,6 +77,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_PRUNE_NOW_CONFIRM'						=> 'Confirm pruning messages',
 	'MCHAT_PRUNED'									=> '%1$d mChat messages have been pruned',
 	'MCHAT_NAVBAR_LINK'								=> 'Display link to the custom page in the navbar',
+	'MCHAT_NAVBAR_LINK_COUNT'						=> 'Display number of active chat sessions in navbar link',
 	'MCHAT_MESSAGE_NUM_CUSTOM'						=> 'Initial number of messages to display on the custom page',
 	'MCHAT_MESSAGE_NUM_CUSTOM_EXPLAIN'				=> '<em>You are limited from 5 to 50. Default is 10.</em>',
 	'MCHAT_MESSAGE_NUM_INDEX'						=> 'Initial number of messages to display on the index page',

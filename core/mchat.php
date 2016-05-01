@@ -55,6 +55,12 @@ class mchat
 	/** @var boolean */
 	protected $remove_disallowed_bbcodes = false;
 
+	/** @var array */
+	protected $active_users = null;
+
+	/** @var array */
+	protected $foes = null;
+
 	/**
 	 * Constructor
 	 *
@@ -462,9 +468,22 @@ class mchat
 	 */
 	public function action_whois()
 	{
+		if (!$this->auth->acl_get('u_mchat_view'))
+		{
+			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+		}
+
 		$this->assign_whois();
 
-		return array('whois' => $this->render_template('mchat_whois.html'));
+		$data = array('whois' => $this->render_template('mchat_whois.html'));
+
+		if ($this->settings->cfg('mchat_navbar_link_count') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_custom_page'))
+		{
+			$data['navlink'] = $this->active_users['users_count_title'];
+			$data['navlink_title'] = strip_tags($this->active_users['users_total']);
+		}
+
+		return $data;
 	}
 
 	/**
@@ -472,12 +491,34 @@ class mchat
 	 */
 	public function render_page_header_link()
 	{
-		$this->template->assign_vars(array(
-			'MCHAT_ALLOW_VIEW'		=> $this->auth->acl_get('u_mchat_view'),
-			'MCHAT_NAVBAR_LINK'		=> $this->settings->cfg('mchat_navbar_link'),
-			'MCHAT_CUSTOM_PAGE'		=> $this->settings->cfg('mchat_custom_page'),
-			'U_MCHAT'				=> $this->helper->route('dmzx_mchat_controller'),
-		));
+		if (!$this->auth->acl_get('u_mchat_view'))
+		{
+			return;
+		}
+
+		$navbar_link = $this->settings->cfg('mchat_navbar_link');
+		$custom_page = $this->settings->cfg('mchat_custom_page');
+
+		$template_data = array(
+			'MCHAT_NAVBAR_LINK'	=> $navbar_link,
+			'MCHAT_CUSTOM_PAGE'	=> $custom_page,
+			'MCHAT_TITLE'		=> $this->user->lang('MCHAT_TITLE'),
+			'MCHAT_TITLE_HINT'	=> $this->user->lang('MCHAT_TITLE'),
+			'U_MCHAT'			=> $this->helper->route('dmzx_mchat_controller'),
+		);
+
+		if ($navbar_link && $custom_page && $this->settings->cfg('mchat_navbar_link_count'))
+		{
+			if ($this->active_users === null)
+			{
+				$this->active_users = $this->functions->mchat_active_users();
+			}
+
+			$template_data['MCHAT_TITLE'] = $this->active_users['users_count_title'];
+			$template_data['MCHAT_TITLE_HINT'] = strip_tags($this->active_users['users_total']);
+		}
+
+		$this->template->assign_vars($template_data);
 	}
 
 	/**
@@ -702,7 +743,10 @@ class mchat
 			$rows = array_reverse($rows);
 		}
 
-		$foes = $this->functions->mchat_foes();
+		if ($this->foes === null)
+		{
+			$this->foes = $this->functions->mchat_foes();
+		}
 
 		// Remove template data from previous render
 		$this->template->destroy_block_vars('mchatrow');
@@ -712,7 +756,6 @@ class mchat
 		// Cache avatars
 		foreach ($rows as $row)
 		{
-
 			if (!isset($user_avatars[$row['user_id']]))
 			{
 				$display_avatar = $this->display_avatars() && $row['user_avatar'];
@@ -741,7 +784,7 @@ class mchat
 				$username_full = preg_replace('#(?<=href=")[\./]+?/(?=\w)#', $board_url, $username_full);
 			}
 
-			if (in_array($row['user_id'], $foes))
+			if (in_array($row['user_id'], $this->foes))
 			{
 				$row['message'] = $this->user->lang('MCHAT_FOE', $username_full);
 			}
@@ -779,7 +822,6 @@ class mchat
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('u_mchat_delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
-				'IS_BOT_MESSAGE'			=> (bool) $row['post_id'],
 				'MCHAT_IS_POSTER'			=> $is_poster,
 				'MCHAT_IS_NOTIFICATION'		=> $is_notification,
 				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
@@ -803,8 +845,8 @@ class mchat
 	}
 
 	/**
-	 * Calculates the number of minutes that have passed since the message was posted. If relative time is disabled
-	 * or the message is older than 59 minutes or we render for the archive, -1 is returned.
+	 * Calculates the number of minutes that have passed since the message was posted.
+	 * If relative time is disabled or the message is older than 59 minutes, -1 is returned.
 	 *
 	 * @param int $message_age
 	 * @return int
@@ -950,12 +992,16 @@ class mchat
 	{
 		if ($this->settings->cfg('mchat_whois') || $this->settings->cfg('mchat_stats_index') && $this->settings->cfg('mchat_stats_index'))
 		{
-			$mchat_stats = $this->functions->mchat_active_users();
+			if ($this->active_users === null)
+			{
+				$this->active_users = $this->functions->mchat_active_users();
+			}
+
 			$this->template->assign_vars(array(
 				'MCHAT_STATS_INDEX'		=> $this->settings->cfg('mchat_stats_index') && $this->settings->cfg('mchat_stats_index'),
-				'MCHAT_USERS_COUNT'		=> $mchat_stats['mchat_users_count'],
-				'MCHAT_USERS_LIST'		=> $mchat_stats['online_userlist'] ?: '',
-				'MCHAT_ONLINE_EXPLAIN'	=> $mchat_stats['refresh_message'],
+				'MCHAT_USERS_TOTAL'		=> $this->active_users['users_total'],
+				'MCHAT_USERS_LIST'		=> $this->active_users['online_userlist'] ?: '',
+				'MCHAT_ONLINE_EXPLAIN'	=> $this->active_users['refresh_message'],
 			));
 		}
 	}
