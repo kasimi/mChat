@@ -337,7 +337,11 @@ class functions
 			// If the current user doesn't have permission to see hidden users, exclude their login posts
 			if (!$this->auth->acl_get('u_viewonline'))
 			{
-				$sql_where_ary[] = sprintf('(m.forum_id <> 0 OR m.post_id <> %d OR m.user_id = %d)', self::LOGIN_HIDDEN, $this->user->data['user_id']);
+				$sql_where_ary[] = implode(' OR ', array(
+					'm.post_id <> ' . self::LOGIN_HIDDEN,			// Exclude all notifications that were created by hidden users ...
+					'm.user_id = ' . $this->user->data['user_id'],	// ... but include all login notifications by myself
+					'm.forum_id <> 0',								// ... and include all post notifications
+				));
 			}
 		}
 		else
