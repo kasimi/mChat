@@ -713,24 +713,7 @@ class mchat
 	 */
 	protected function assign_messages($rows)
 	{
-		// Auth checks
-		foreach ($rows as $i => $row)
-		{
-			if ($row['forum_id'])
-			{
-				// No permission to read forum
-				if (!$this->auth->acl_get('f_read', $row['forum_id']))
-				{
-					unset($rows[$i]);
-				}
-
-				// Post is not approved and no approval permission
-				if ($row['post_visibility'] != ITEM_APPROVED && !$this->auth->acl_get('m_approve', $row['forum_id']))
-				{
-					unset($rows[$i]);
-				}
-			}
-		}
+		$rows = array_filter($rows, array($this, 'has_read_auth'));
 
 		if (!$rows)
 		{
@@ -806,7 +789,7 @@ class mchat
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'			=> $is_poster,
 				'MCHAT_IS_NOTIFICATION'		=> $is_notification,
-				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;mchat_pm_quote_message=' . (int) $row['message_id'] . '&amp;u=' . $row['user_id']) : '',
 				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'		=> $username_full,
@@ -824,6 +807,32 @@ class mchat
 				'MCHAT_EDIT_TIME'			=> $row['edit_time'],
 			));
 		}
+	}
+
+	/**
+	 * Returns true of the user is allowed to read the given message row
+	 *
+	 * @param array $row
+	 * @return bool
+	 */
+	protected function has_read_auth($row)
+	{
+		if ($row['forum_id'])
+		{
+			// No permission to read forum
+			if (!$this->auth->acl_get('f_read', $row['forum_id']))
+			{
+				return false;
+			}
+
+			// Post is not approved and no approval permission
+			if ($row['post_visibility'] != ITEM_APPROVED && !$this->auth->acl_get('m_approve', $row['forum_id']))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -1000,6 +1009,35 @@ class mchat
 	{
 		$is_hidden_login = $this->request->is_set_post('viewonline') || !$this->user->data['user_allow_viewonline'];
 		$this->functions->mchat_insert_posting($mode, $data, $is_hidden_login);
+	}
+
+	/**
+	 * Fetches the message text of the given ID, quotes it using the current user name and assigns it to the template
+	 *
+	 * @param int $mchat_message_id
+	 */
+	public function quote_message_text($mchat_message_id)
+	{
+		$mchat_message_id = (int) $mchat_message_id;
+
+		if (!$mchat_message_id || !$this->auth->acl_get('u_mchat_view'))
+		{
+			return;
+		}
+
+		$sql_where = 'm.message_id = ' . $mchat_message_id;
+		$rows = $this->functions->mchat_get_messages($sql_where);
+		$row = reset($rows);
+
+		if (!$row || !$this->has_read_auth($row))
+		{
+			return;
+		}
+
+		$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
+		$message = '[quote=&quot;' . $row['username'] . '&quot;]' . $message_for_edit['text'] . "[/quote]\n";
+
+		$this->template->assign_var('MESSAGE', $message);
 	}
 
 	/**

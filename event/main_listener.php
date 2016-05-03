@@ -24,8 +24,14 @@ class main_listener implements EventSubscriberInterface
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbb\request\request */
+	protected $request;
+
 	/** @var string */
 	protected $php_ext;
+
+	/** @var int The ID of the mChat message that is quoted when composing a PM */
+	private $mchat_pm_quote_message = 0;
 
 	/**
 	 * Constructor
@@ -33,13 +39,15 @@ class main_listener implements EventSubscriberInterface
 	 * @param \dmzx\mchat\core\mchat	$mchat
 	 * @param \phpbb\controller\helper	$helper
 	 * @param \phpbb\user				$user
+	 * @param \phpbb\request\request	$request
 	 * @param string					$php_ext
 	 */
-	public function __construct(\dmzx\mchat\core\mchat $mchat, \phpbb\controller\helper $helper, \phpbb\user $user, $php_ext)
+	public function __construct(\dmzx\mchat\core\mchat $mchat, \phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\request\request $request, $php_ext)
 	{
 		$this->mchat	= $mchat;
 		$this->helper	= $helper;
 		$this->user		= $user;
+		$this->request	= $request;
 		$this->php_ext	= $php_ext;
 	}
 
@@ -57,6 +65,8 @@ class main_listener implements EventSubscriberInterface
 			'core.display_custom_bbcodes_modify_sql'	=> 'display_custom_bbcodes_modify_sql',
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
 			'core.login_box_redirect'					=> 'user_login_success',
+			'core.ucp_pm_compose_modify_data'			=> 'pm_compose_before',
+			'core.display_custom_bbcodes_modify_sql'	=> 'pm_compose_add_quote',
 		);
 	}
 
@@ -143,5 +153,21 @@ class main_listener implements EventSubscriberInterface
 		{
 			$this->mchat->insert_posting('login');
 		}
+	}
+
+	/**
+	 * @param object $event The event object
+	 */
+	public function pm_compose_before($event)
+	{
+		$this->mchat_pm_quote_message = $this->request->variable('mchat_pm_quote_message', 0);
+	}
+
+	/**
+	 * @param object $event The event object
+	 */
+	public function pm_compose_add_quote($event)
+	{
+		$this->mchat->quote_message_text($this->mchat_pm_quote_message);
 	}
 }

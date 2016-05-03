@@ -90,6 +90,7 @@ services:
             - '@dmzx.mchat.core'
             - '@controller.helper'
             - '@user'
+            - '@request'
             - '%core.php_ext%'
         tags:
             - { name: event.listener }
