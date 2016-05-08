@@ -843,22 +843,22 @@ class mchat
 	 */
 	protected function process_notification(&$row, $board_url)
 	{
-		$data = @unserialize($row['message']);
+		$data = json_decode($row['message'], true);
 
-		// If unserializing failed the message content is plain text and we don't need to process it
-		if ($data === false)
+		// If unserializing failed the message content is plain text from previous mChat versions and we don't need to process it
+		if (!$data)
 		{
 			return;
 		}
 
-		$args = array($data[functions::INDEX_LANG_VAR]);
+		$args = array(array_shift($data));
 
 		// If forum_id is 0 it's a login notification, no additional data needed for that.
 		// If forum_id is not 0 it's a post notification, we need to extract forum name and post subject from the data.
 		if ($row['forum_id'])
 		{
-			$args[] = '[url=' . $board_url . 'viewtopic.' . $this->php_ext . '?p=' . $row['post_id'] . '#p' . $row['post_id'] . ']' . $data[functions::INDEX_POST_SUBJECT] . '[/url]';
-			$args[] = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . $data[functions::INDEX_FORUM_NAME] . '[/url]';
+			$args[] = '[url=' . $board_url . 'viewtopic.' . $this->php_ext . '?p=' . $row['post_id'] . '#p' . $row['post_id'] . ']' . array_shift($data) . '[/url]';
+			$args[] = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . array_shift($data) . '[/url]';
 		}
 
 		$row['message'] = call_user_func_array(array($this->user, 'lang'), $args);

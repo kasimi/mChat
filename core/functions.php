@@ -59,14 +59,6 @@ class functions
 	const LOGIN_HIDDEN	= 2;
 
 	/**
-	 * The message content of post notifications is a serialized array.
-	 * The values in this array can be accessed using these indices.
-	 */
-	const INDEX_LANG_VAR		= 0;
-	const INDEX_POST_SUBJECT	= 1;
-	const INDEX_FORUM_NAME		= 2;
-
-	/**
 	* Constructor
 	*
 	* @param \dmzx\mchat\core\settings				$settings
@@ -497,7 +489,7 @@ class functions
 		}
 
 		$message_data = array(
-			self::INDEX_LANG_VAR => 'MCHAT_NEW_' . strtoupper($mode),
+			'MCHAT_NEW_' . strtoupper($mode),
 		);
 
 		if ($mode === 'login')
@@ -509,8 +501,8 @@ class functions
 		}
 		else
 		{
-			$message_data[self::INDEX_POST_SUBJECT] = $data['post_subject'];
-			$message_data[self::INDEX_FORUM_NAME] = $data['forum_name'];
+			$message_data[] = $data['post_subject'];
+			$message_data[] = $data['forum_name'];
 		}
 
 		$sql_ary = array(
@@ -518,7 +510,7 @@ class functions
 			'post_id'			=> $data['post_id'],
 			'user_id'			=> $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
-			'message'			=> serialize($message_data),
+			'message'			=> json_encode($message_data),
 			'message_time'		=> time(),
 		);
 
