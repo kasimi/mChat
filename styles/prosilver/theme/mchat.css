@@ -148,7 +148,7 @@
 }
 
 .mchat-notification-message .mchat-text {
-    font-style: italic;
+	font-style: italic;
 }
 
 .mchat-text strong {
@@ -303,6 +303,20 @@
 
 .mchat-status-paused {
 	background-image: url("./images/paused.gif");
+}
+
+.mchat-footer li {
+	display: inline;
+	padding-left: .1em;
+	white-space: nowrap;
+}
+
+.mchat-footer li:before {
+	content: '\2022\A';
+}
+
+.mchat-footer li:first-child:before, .mchat-footer li:last-child:before {
+	content: '';
 }
 
 #mchat-legend {

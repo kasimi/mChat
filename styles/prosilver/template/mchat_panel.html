@@ -55,16 +55,20 @@
 			<!-- ENDIF -->
 			<!-- EVENT dmzx_mchat_body_smiley_after -->
 			<div id="mchat-status">
-				<div id="mchat-status-icons">
-					<i id="mchat-status-load" class="<!-- IF IS_PHPBB31 -->mchat-status-load<!-- ELSEIF IS_PHPBB32 -->fa fa-refresh fa-spin icon icon-blue<!-- ENDIF -->" title="{L_LOADING}"></i>
-					<i id="mchat-status-ok" class="<!-- IF IS_PHPBB31 -->mchat-status-ok<!-- ELSEIF IS_PHPBB32 -->fa fa-check icon icon-green<!-- ENDIF -->" title="{L_MCHAT_OK}"></i>
-					<i id="mchat-status-paused" class="<!-- IF IS_PHPBB31 -->mchat-status-paused<!-- ELSEIF IS_PHPBB32 -->fa fa-pause icon icon-orange<!-- ENDIF -->" title="{L_MCHAT_PAUSE}"></i>
-					<i id="mchat-status-error" class="<!-- IF IS_PHPBB31 -->mchat-status-error<!-- ELSEIF IS_PHPBB32 -->fa fa-times icon icon-red<!-- ENDIF -->" title="{L_ERROR}"></i>
-				</div>
-				<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
-				<!-- IF MCHAT_USER_TIMEOUT --> &bull; <span id="mchat-session">{MCHAT_SESSION_TIMELEFT}</span><!-- ENDIF -->
-				<!-- IF not MCHAT_SOUND_DISABLED --> &bull; <label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF MCHAT_SOUND --> checked="checked"<!-- ENDIF --> /></label><!-- ENDIF -->
-				<span class="mchat-copyright" title="{MCHAT_AUTHOR_NAMES}">&copy;</span>
+				<ul class="mchat-footer">
+					<li>
+						<span id="mchat-status-icons">
+							<i id="mchat-status-load" class="<!-- IF IS_PHPBB31 -->mchat-status-load<!-- ELSEIF IS_PHPBB32 -->fa fa-refresh fa-spin icon icon-blue<!-- ENDIF -->" title="{L_LOADING}"></i>
+							<i id="mchat-status-ok" class="<!-- IF IS_PHPBB31 -->mchat-status-ok<!-- ELSEIF IS_PHPBB32 -->fa fa-check icon icon-green<!-- ENDIF -->" title="{L_MCHAT_OK}"></i>
+							<i id="mchat-status-paused" class="<!-- IF IS_PHPBB31 -->mchat-status-paused<!-- ELSEIF IS_PHPBB32 -->fa fa-pause icon icon-orange<!-- ENDIF -->" title="{L_MCHAT_PAUSE}"></i>
+							<i id="mchat-status-error" class="<!-- IF IS_PHPBB31 -->mchat-status-error<!-- ELSEIF IS_PHPBB32 -->fa fa-times icon icon-red<!-- ENDIF -->" title="{L_ERROR}"></i>
+						</span>
+						<span id="mchat-refresh-text">{MCHAT_REFRESH_YES}</span>
+					</li>
+					<!-- IF MCHAT_USER_TIMEOUT --><li><span id="mchat-session">{MCHAT_SESSION_TIMELEFT}</span></li><!-- ENDIF -->
+					<!-- IF not MCHAT_SOUND_DISABLED --><li><label for="mchat-user-sound">{L_MCHAT_USESOUND} <input type="checkbox" id="mchat-user-sound"<!-- IF MCHAT_SOUND --> checked="checked"<!-- ENDIF --> /></label></li><!-- ENDIF -->
+					<li><span class="mchat-copyright" title="{MCHAT_AUTHOR_NAMES}">&copy;</span></li>
+				</ul>
 			</div>
 		<!-- ENDIF -->
 	</form>
