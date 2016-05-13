@@ -275,20 +275,26 @@ class mchat
 
 		$is_new_session = $this->functions->mchat_action('add', $sql_ary);
 
-		/**
-		 * Event render_helper_add
-		 *
-		 * @event dmzx.mchat.core.render_helper_add
-		 * @since 0.1.2
-		 */
-		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_add');
-
 		$response = $this->action_refresh();
 
 		if ($is_new_session)
 		{
 			$response = array_merge($response, $this->action_whois());
 		}
+
+		/**
+		 * @event dmzx.mchat.action_add_after
+		 * @var	string	message			The message that was added to the database
+		 * @var bool	is_new_session	Indicating whether the message triggered a new mChat session to be created for the user
+		 * @var array	response		The data that is sent back to the user
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'message',
+			'is_new_session',
+			'response',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_add_after', compact($vars)));
 
 		return $response;
 	}
@@ -324,21 +330,31 @@ class mchat
 
 		$this->functions->mchat_action('edit', $sql_ary, $message_id);
 
-		/**
-		 * Event render_helper_edit
-		 *
-		 * @event dmzx.mchat.core.render_helper_edit
-		 * @since 0.1.4
-		 */
-		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_edit');
-
 		$sql_where = 'm.message_id = ' . (int) $message_id;
 		$rows = $this->functions->mchat_get_messages($sql_where, 1);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows);
 
-		return array('edit' => $this->render_template('mchat_messages.html'));
+		$response = array('edit' => $this->render_template('mchat_messages.html'));
+
+		/**
+		 * @event dmzx.mchat.action_edit_after
+		 * @var int		message_id	The ID of the edited message
+		 * @var	string	message		The content of the edited message that was added to the database
+		 * @var array	author		Information about the message author
+		 * @var array	response	The data that is sent back to the user
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'message_id',
+			'message',
+			'author',
+			'response',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_edit_after', compact($vars)));
+
+		return $response;
 	}
 
 	/**
@@ -362,17 +378,25 @@ class mchat
 			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
 		}
 
-		/**
-		 * Event render_helper_delete
-		 *
-		 * @event dmzx.mchat.core.render_helper_delete
-		 * @since 0.1.4
-		 */
-		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_delete');
-
 		$this->functions->mchat_action('del', null, $message_id);
 
-		return array('del' => true);
+		$response = array('del' => true);
+
+		/**
+		 * @event dmzx.mchat.action_delete_after
+		 * @var int		message_id	The ID of the deleted message
+		 * @var array	author		Information about the message author
+		 * @var array	response	The data that is sent back to the user
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'message_id',
+			'author',
+			'response',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_delete_after', compact($vars)));
+
+		return $response;
 	}
 
 	/**
@@ -458,6 +482,16 @@ class mchat
 			}
 		}
 
+		/**
+		 * @event dmzx.mchat.action_refresh_after
+		 * @var array	response	The data that is sent back to the user
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'response',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_after', compact($vars)));
+
 		return $response;
 	}
 
@@ -482,6 +516,16 @@ class mchat
 			$response['navlink'] = $this->active_users['users_count_title'];
 			$response['navlink_title'] = strip_tags($this->active_users['users_total']);
 		}
+
+		/**
+		 * @event dmzx.mchat.action_whois_after
+		 * @var array	response	The data that is sent back to the user
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'response',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_whois_after', compact($vars)));
 
 		return $response;
 	}
@@ -641,12 +685,16 @@ class mchat
 		}
 
 		/**
-		* Event render_helper_aft
-		*
-		* @event dmzx.mchat.core.render_helper_aft
-		* @since 0.1.2
-		*/
-		$this->dispatcher->dispatch('dmzx.mchat.core.render_helper_aft');
+		 * @event dmzx.mchat.render_page_after
+		 * @var string	page	The page that was rendered, one of index|custom|archive
+		 * @var array	actions	Array containing URLs to actions the user is allowed to perform
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'page',
+			'actions'
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_after', compact($vars)));
 	}
 
 	/**
