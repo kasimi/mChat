@@ -25,12 +25,12 @@ class main_controller
 	protected $request;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\user				$user
-	* @param \dmzx\mchat\core\mchat		$mchat
-	* @param \phpbb\request\request		$request
-	*/
+	 * Constructor
+	 *
+	 * @param \phpbb\user				$user
+	 * @param \dmzx\mchat\core\mchat	$mchat
+	 * @param \phpbb\request\request	$request
+	 */
 	public function __construct(\phpbb\user $user, \dmzx\mchat\core\mchat $mchat, \phpbb\request\request $request)
 	{
 		$this->user		= $user;
@@ -39,11 +39,11 @@ class main_controller
 	}
 
 	/**
-	* Controller for mChat
-	*
-	* @param string $page The page to render, one of custom|archive|rules|whois
-	* @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Controller for mChat
+	 *
+	 * @param string $page The page to render, one of custom|archive|rules|whois
+	 * @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function page($page)
 	{
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
@@ -51,11 +51,11 @@ class main_controller
 	}
 
 	/**
-	* Controller for mChat actions called with Ajax requests
-	*
-	* @param string $action The action to perform, one of add|edit|del|refresh|whois
-	* @return \Symfony\Component\HttpFoundation\JsonResponse A Symfony JsonResponse object
-	*/
+	 * Controller for mChat actions called with Ajax requests
+	 *
+	 * @param string $action The action to perform, one of add|edit|del|refresh|whois
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse A Symfony JsonResponse object
+	 */
 	public function action($action)
 	{
 		if (!$this->request->is_ajax())
