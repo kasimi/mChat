@@ -60,6 +60,7 @@ services:
             - '@log'
             - '@dbal.conn'
             - '@cache.driver'
+            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%dmzx.mchat.table.mchat%'

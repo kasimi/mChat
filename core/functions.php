@@ -31,6 +31,9 @@ class functions
 	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
 
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $dispatcher;
+
 	/** @var string */
 	protected $root_path;
 
@@ -67,13 +70,14 @@ class functions
 	* @param \phpbb\log\log_interface				$log
 	* @param \phpbb\db\driver\driver_interface		$db
 	* @param \phpbb\cache\driver\driver_interface	$cache
+	 * @param \phpbb\event\dispatcher_interface 	$dispatcher
 	* @param string									$root_path
 	* @param string									$php_ext
 	* @param string									$mchat_table
 	* @param string									$mchat_deleted_messages_table
 	* @param string									$mchat_sessions_table
 	*/
-	function __construct(\dmzx\mchat\core\settings $settings, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $root_path, $php_ext, $mchat_table, $mchat_deleted_messages_table, $mchat_sessions_table)
+	function __construct(\dmzx\mchat\core\settings $settings, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, $root_path, $php_ext, $mchat_table, $mchat_deleted_messages_table, $mchat_sessions_table)
 	{
 		$this->settings						= $settings;
 		$this->user							= $user;
@@ -81,6 +85,7 @@ class functions
 		$this->log							= $log;
 		$this->db							= $db;
 		$this->cache						= $cache;
+		$this->dispatcher					= $dispatcher;
 		$this->root_path					= $root_path;
 		$this->php_ext						= $php_ext;
 		$this->mchat_table					= $mchat_table;
@@ -359,6 +364,20 @@ class functions
 			'ORDER_BY'	=> 'm.message_id DESC',
 		);
 
+		/**
+		 * @event dmzx.mchat.get_messages_modify_sql
+		 * @var	array	sql_array	Array containing the SQL query data
+		 * @var int		total		SQL limit
+		 * @var int		offset		SQL offset
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'sql_array',
+			'total',
+			'offset',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.get_messages_modify_sql', compact($vars)));
+
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query_limit($sql, $total, $offset);
 		$rows = $this->db->sql_fetchrowset($result);
@@ -385,23 +404,27 @@ class functions
 	{
 		// Grab group details for legend display for who is online on the custom page
 		$order_legend = $this->settings->cfg('legend_sort_groupname') ? 'group_name' : 'group_legend';
+
+		$sql_array = array(
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type',
+			'FROM'		=> array(GROUPS_TABLE => 'g'),
+			'WHERE'		=> 'group_legend <> 0',
+			'ORDER_BY'	=> 'g.' . $order_legend . ' ASC',
+		);
+
 		if ($this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 		{
-			$sql = 'SELECT group_id, group_name, group_colour, group_type
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_legend <> 0
-				ORDER BY ' . $order_legend . ' ASC';
+			$sql_array['LEFT_JOIN'] = array(
+				array(
+					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
+					'ON'	=> 'g.group_id = ug.group_id AND ug.user_id = ' . $this->user->data['user_id'] . ' AND ug.user_pending = 0',
+				),
+			);
+
+			$sql_array['WHERE'] .= ' AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . (int) $this->user->data['user_id'] . ')';
 		}
-		else
-		{
-			$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
-				FROM ' . GROUPS_TABLE . ' g
-				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (g.group_id = ug.group_id AND ug.user_id = ' . $this->user->data['user_id'] . ' AND ug.user_pending = 0)
-				WHERE g.group_legend <> 0
-					AND (g.group_type <> ' . GROUP_HIDDEN . '
-					OR ug.user_id = ' . (int) $this->user->data['user_id'] . ')
-				ORDER BY g.' . $order_legend . ' ASC';
-		}
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
@@ -588,7 +611,7 @@ class functions
 	/**
 	 * Performs AJAX actions
 	 *
-	 * @param string $action One of add|edit|del|prune
+	 * @param string $action One of add|edit|del
 	 * @param array $sql_ary
 	 * @param int $message_id
 	 * @return bool
@@ -596,6 +619,20 @@ class functions
 	public function mchat_action($action, $sql_ary = null, $message_id = 0)
 	{
 		$is_new_session = false;
+
+		/**
+		 * @event dmzx.mchat.action_before
+		 * @var	string	action		The action that is being performed, one of add|edit|del
+		 * @var bool	sql_ary		Array containing SQL data, or null if a message is deleted
+		 * @var int		message_id	The ID of the message that is being edited or deleted, or 0 if a message is added
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'action',
+			'sql_ary',
+			'message_id',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_before', compact($vars)));
 
 		switch ($action)
 		{
