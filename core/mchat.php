@@ -606,6 +606,7 @@ class mchat
 		$static_message = $lang_static_message ?: $this->settings->cfg('mchat_static_message');
 
 		$this->template->assign_vars(array(
+			'MCHAT_PAGE'					=> $page,
 			'MCHAT_ALLOW_SMILES'			=> $this->settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies'),
 			'MCHAT_INPUT_AREA'				=> $this->settings->cfg('mchat_input_area'),
 			'MCHAT_MESSAGE_TOP'				=> $this->settings->cfg('mchat_message_top'),
