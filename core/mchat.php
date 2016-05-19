@@ -434,7 +434,31 @@ class mchat
 			}
 		}
 
-		$rows = $this->functions->mchat_get_messages($sql_where);
+		$total = 0;
+		$offset = 0;
+
+		/**
+		 * @event dmzx.mchat.action_refresh_before
+		 * @var array	message_first_id	The earliest message that the user has
+		 * @var array	message_last_id		The latest message that the user has
+		 * @var array	message_edits		An array mapping edited message IDs to their latest edit time
+		 * @var array	sql_where			SQL where clause that is about to be used to query new messages
+		 * @var array	total				Limit the number of messages to fetch
+		 * @var array	offset				The number of messages to skip
+		 *
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'message_first_id',
+			'message_last_id',
+			'message_edits',
+			'sql_where',
+			'total',
+			'offset',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_after', compact($vars)));
+
+		$rows = $this->functions->mchat_get_messages($sql_where, $total, $offset);
 		$rows_refresh = array();
 		$rows_edit = array();
 
@@ -484,10 +508,12 @@ class mchat
 
 		/**
 		 * @event dmzx.mchat.action_refresh_after
+		 * @var array	rows		The rows that where fetched from the database
 		 * @var array	response	The data that is sent back to the user
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
+			'rows',
 			'response',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_after', compact($vars)));
@@ -724,7 +750,7 @@ class mchat
 	/**
 	 * Assigns common template data that is required for displaying messages
 	 */
-	protected function assign_global_template_data()
+	public function assign_global_template_data()
 	{
 		$this->template->assign_vars(array(
 			'S_BBCODE_ALLOWED'				=> $this->auth->acl_get('u_mchat_bbcode') && $this->settings->cfg('allow_bbcode'),
@@ -759,7 +785,7 @@ class mchat
 	 *
 	 * @param array $rows
 	 */
-	protected function assign_messages($rows)
+	public function assign_messages($rows)
 	{
 		$rows = array_filter($rows, array($this, 'has_read_auth'));
 
@@ -830,7 +856,7 @@ class mchat
 
 			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
 
-			$this->template->assign_block_vars('mchatrow', array(
+			$template_data = array(
 				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
@@ -853,7 +879,35 @@ class mchat
 				'MCHAT_RELATIVE_UPDATE'		=> 60 - $message_age % 60,
 				'MCHAT_MESSAGE_TIME'		=> $row['message_time'],
 				'MCHAT_EDIT_TIME'			=> $row['edit_time'],
-			));
+			);
+
+			/**
+			 * @event dmzx.mchat.message_modify_template_data
+			 * @var array	template_data		The page that was rendered, one of index|custom|archive
+			 * @var string	username_full		The link to the user profile, e.g. <a href="...">Username</a>
+			 * @var bool	is_notification		Whether or not this message is a notification
+			 * @var array	row					The raw message data as fetched from the database
+			 * @var int		message_age			The number of seconds that have passed since the message was posted
+			 * @var int		minutes_ago			The number of minutes that have passed since the message was posted, or -1
+			 * @var string	datetime			The full date in the user-specific date format
+			 * @var bool	is_poster			Whether or not the current user posted this message
+			 * @var array	message_for_edit	The data for editing the message
+			 * @since 2.0.0-RC6
+			 */
+			$vars = array(
+				'template_data',
+				'username_full',
+				'is_notification',
+				'row',
+				'message_age',
+				'minutes_ago',
+				'datetime',
+				'is_poster',
+				'message_for_edit',
+			);
+			extract($this->dispatcher->trigger_event('dmzx.mchat.message_modify_template_data', compact($vars)));
+
+			$this->template->assign_block_vars('mchatrow', $template_data);
 		}
 	}
 
@@ -1206,7 +1260,7 @@ class mchat
 	 * @param string $template_file
 	 * @return string
 	 */
-	protected function render_template($template_file)
+	public function render_template($template_file)
 	{
 		$this->template->set_filenames(array('body' => $template_file));
 		$content = $this->template->assign_display('body', '', true);
