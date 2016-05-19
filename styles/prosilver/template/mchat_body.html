@@ -40,7 +40,7 @@
 			</li>
 		</ul>
 
-		<div id="mchat-body" class="postbody<!-- IF MCHAT_IS_COLLAPSIBLE --> collapsible<!-- ENDIF -->">
+		<div id="mchat-body"<!-- IF MCHAT_IS_COLLAPSIBLE --> class="collapsible"<!-- ENDIF -->>
 			<!-- IF not MCHAT_SOUND_DISABLED -->
 				<audio id="mchat-sound-add" class="hidden" src="{EXT_URL}sounds/add.mp3" preload="auto"></audio>
 				<audio id="mchat-sound-edit" class="hidden" src="{EXT_URL}sounds/edit.mp3" preload="auto"></audio>
@@ -65,13 +65,17 @@
 					</ul>
 				<!-- ENDIF -->
 
-				<ul id="mchat-messages" class="topiclist forums"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
-					<!-- IF .mchatrow -->
-						<!-- INCLUDE mchat_messages.html -->
-					<!-- ELSE -->
-						<li class="row mchat-static mchat-no-messages">{L_MCHAT_NOMESSAGE}</li>
-					<!-- ENDIF -->
-				</ul>
+				<div class="mchat-messages-container">
+					<!-- EVENT dmzx_mchat_messages_container_before -->
+					<ul id="mchat-messages" class="topiclist forums"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
+						<!-- IF .mchatrow -->
+							<!-- INCLUDE mchat_messages.html -->
+						<!-- ELSE -->
+							<li class="row mchat-static mchat-no-messages">{L_MCHAT_NOMESSAGE}</li>
+						<!-- ENDIF -->
+					</ul>
+					<!-- EVENT dmzx_mchat_messages_container_after -->
+				</div>
 			</div>
 
 			<!-- INCLUDE mchat_panel.html -->

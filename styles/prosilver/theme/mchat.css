@@ -33,9 +33,12 @@
 	height: 100px;
 }
 
+.mchat-messages-container {
+	width: 100%;
+}
+
 #mchat-messages {
 	overflow: auto;
-	width: 100%;
 }
 
 .mchat-message-wrapper {
