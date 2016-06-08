@@ -37,7 +37,9 @@ if (!String.prototype.format) {
 		var type = typeof arguments[0];
 		var args = 'string' == type || 'number' == type ? arguments : arguments[0];
 		for (var arg in args) {
-			str = str.replace(RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
+			if (args.hasOwnProperty(arg)) {
+				str = str.replace(RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
+			}
 		}
 		return str;
 	};
@@ -170,7 +172,9 @@ jQuery(function($) {
 				}
 			}, 1);
 			phpbb.confirm(data.container.show(), function() {
-				data.confirm && data.confirm.apply(this, fields);
+				if (typeof data.confirm === 'function') {
+					data.confirm.apply(this, fields);
+				}
 			});
 		},
 		add: function() {
@@ -581,15 +585,14 @@ jQuery(function($) {
 			}
 		});
 
-		if (mChat.cached('input').is('input')) {
-			mChat.cached('form').keypress(function(e) {
-				if (e.which == 13) {
-					mChat.add();
-					e.preventDefault();
-					e.stopImmediatePropagation();
-				}
-			});
-		}
+		mChat.isTextarea = mChat.cached('input').is('textarea');
+		mChat.cached('form').keypress(function(e) {
+			if (((e.which == 10 || e.which == 13)) && (!mChat.isTextarea || e.ctrlKey) && mChat.cached('input').is(e.target)) {
+				mChat.add();
+				e.preventDefault();
+				e.stopImmediatePropagation();
+			}
+		});
 
 		if (mChat.pause) {
 			mChat.cached('form').keyup(function(e) {

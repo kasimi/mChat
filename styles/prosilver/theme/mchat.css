@@ -228,6 +228,8 @@
 	font-size: 1.1em;
 	padding: 5px 5px 4px;
 	margin: 5px 20px;
+	min-width: 100px;
+	max-width: 95%
 }
 
 #mchat-buttons {
