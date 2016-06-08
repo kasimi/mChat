@@ -336,7 +336,7 @@ class functions
 			{
 				$sql_where_ary[] = implode(' OR ', array(
 					'm.post_id <> ' . self::LOGIN_HIDDEN,			// Exclude all notifications that were created by hidden users ...
-					'm.user_id = ' . $this->user->data['user_id'],	// ... but include all login notifications by myself
+					'm.user_id = ' . $this->user->data['user_id'],	// ... but include all login notifications of the current user
 					'm.forum_id <> 0',								// ... and include all post notifications
 				));
 			}
@@ -360,7 +360,7 @@ class functions
 					'ON'	=> 'm.post_id = p.post_id',
 				)
 			),
-			'WHERE'		=> implode(' AND ', $sql_where_ary),
+			'WHERE'		=> $sql_where_ary ? '(' . implode(') AND (', $sql_where_ary) . ')' : '',
 			'ORDER_BY'	=> 'm.message_id DESC',
 		);
 

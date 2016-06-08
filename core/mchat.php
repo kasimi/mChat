@@ -417,46 +417,35 @@ class mchat
 			$this->user->update_session_infos();
 		}
 
-		$message_first_id = $this->request->variable('message_first_id', 0);
-		$message_last_id = $this->request->variable('message_last_id', 0);
-		$message_edits = $this->request->variable('message_edits', array(0));
+		$first_id = $this->request->variable('first', 0);
+		$last_id = $this->request->variable('last', 0);
+		$edits = $this->request->variable('edits', array(0));
 
-		// Request new messages
-		$sql_where = 'm.message_id > ' . (int) $message_last_id;
-
-		// Request edited messages
-		if ($this->settings->cfg('mchat_live_updates') && $message_last_id > 0)
-		{
-			$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0)', (int) $message_first_id , (int) $message_last_id);
-			if ($this->settings->cfg('mchat_edit_delete_limit'))
-			{
-				$sql_where .= sprintf(' AND m.message_time > %d', time() - $this->settings->cfg('mchat_edit_delete_limit'));
-			}
-		}
+		$sql_where = $this->refresh_sql_where($first_id, $last_id);
 
 		$total = 0;
 		$offset = 0;
 
 		/**
 		 * @event dmzx.mchat.action_refresh_before
-		 * @var array	message_first_id	The earliest message that the user has
-		 * @var array	message_last_id		The latest message that the user has
-		 * @var array	message_edits		An array mapping edited message IDs to their latest edit time
-		 * @var array	sql_where			SQL where clause that is about to be used to query new messages
-		 * @var array	total				Limit the number of messages to fetch
-		 * @var array	offset				The number of messages to skip
+		 * @var int		first_id	The earliest message that the user has
+		 * @var int		last_id		The latest message that the user has
+		 * @var array	edits		An array mapping edited message IDs to their latest edit time
+		 * @var string	sql_where	SQL where clause that is about to be used to query new messages
+		 * @var int		total		Limit the number of messages to fetch
+		 * @var int		offset		The number of messages to skip
 		 *
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
-			'message_first_id',
-			'message_last_id',
-			'message_edits',
+			'first_id',
+			'last_id',
+			'edits',
 			'sql_where',
 			'total',
 			'offset',
 		);
-		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_after', compact($vars)));
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_before', compact($vars)));
 
 		$rows = $this->functions->mchat_get_messages($sql_where, $total, $offset);
 		$rows_refresh = array();
@@ -465,11 +454,11 @@ class mchat
 		foreach ($rows as $row)
 		{
 			$message_id = $row['message_id'];
-			if ($message_id > $message_last_id)
+			if ($message_id > $last_id)
 			{
 				$rows_refresh[] = $row;
 			}
-			else if (!isset($message_edits[$message_id]) || $message_edits[$message_id] < $row['edit_time'])
+			else if (!isset($edits[$message_id]) || $edits[$message_id] < $row['edit_time'])
 			{
 				$rows_edit[] = $row;
 			}
@@ -497,9 +486,9 @@ class mchat
 		}
 
 		// Assign deleted messages
-		if ($this->settings->cfg('mchat_live_updates') && $message_last_id > 0)
+		if ($this->settings->cfg('mchat_live_updates') && $last_id > 0)
 		{
-			$deleted_message_ids = $this->functions->mchat_deleted_ids($message_first_id);
+			$deleted_message_ids = $this->functions->mchat_deleted_ids($first_id);
 			if ($deleted_message_ids)
 			{
 				$response['del'] = $deleted_message_ids;
@@ -598,6 +587,16 @@ class mchat
 	 */
 	protected function render_page($page)
 	{
+		/**
+		 * @event dmzx.mchat.render_page_before
+		 * @var string	page	The page that was rendered, one of index|custom|archive
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'page',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_before', compact($vars)));
+
 		// Add lang file
 		$this->user->add_lang('posting');
 
@@ -753,22 +752,42 @@ class mchat
 	 */
 	public function assign_global_template_data()
 	{
-		$this->template->assign_vars(array(
-			'S_BBCODE_ALLOWED'				=> $this->auth->acl_get('u_mchat_bbcode') && $this->settings->cfg('allow_bbcode'),
-			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
-			'MCHAT_ALLOW_IP'				=> $this->auth->acl_get('u_mchat_ip'),
-			'MCHAT_ALLOW_PM'				=> $this->auth->acl_get('u_mchat_pm'),
-			'MCHAT_ALLOW_LIKE'				=> $this->auth->acl_get('u_mchat_like'),
-			'MCHAT_ALLOW_QUOTE'				=> $this->auth->acl_get('u_mchat_quote'),
-			'MCHAT_ALLOW_PERMISSIONS'		=> $this->auth->acl_get('a_authusers'),
-			'MCHAT_EDIT_DELETE_LIMIT'		=> 1000 * $this->settings->cfg('mchat_edit_delete_limit'),
-			'MCHAT_EDIT_DELETE_IGNORE'		=> $this->settings->cfg('mchat_edit_delete_limit') && ($this->auth->acl_get('u_mchat_moderator_edit') || $this->auth->acl_get('u_mchat_moderator_delete')),
-			'MCHAT_RELATIVE_TIME'			=> $this->settings->cfg('mchat_relative_time'),
-			'MCHAT_USER_TIMEOUT'			=> 1000 * $this->settings->cfg('mchat_timeout'),
-			'S_MCHAT_AVATARS'				=> $this->display_avatars(),
-			'EXT_URL'						=> generate_board_url() . '/ext/dmzx/mchat/',
-			'STYLE_PATH'					=> generate_board_url() . '/styles/' . rawurlencode($this->user->style['style_path']),
-		));
+		$template_data = array(
+			'S_BBCODE_ALLOWED'			=> $this->auth->acl_get('u_mchat_bbcode') && $this->settings->cfg('allow_bbcode'),
+			'MCHAT_ALLOW_USE'			=> $this->auth->acl_get('u_mchat_use'),
+			'MCHAT_ALLOW_IP'			=> $this->auth->acl_get('u_mchat_ip'),
+			'MCHAT_ALLOW_PM'			=> $this->auth->acl_get('u_mchat_pm'),
+			'MCHAT_ALLOW_LIKE'			=> $this->auth->acl_get('u_mchat_like'),
+			'MCHAT_ALLOW_QUOTE'			=> $this->auth->acl_get('u_mchat_quote'),
+			'MCHAT_ALLOW_PERMISSIONS'	=> $this->auth->acl_get('a_authusers'),
+			'MCHAT_EDIT_DELETE_LIMIT'	=> 1000 * $this->settings->cfg('mchat_edit_delete_limit'),
+			'MCHAT_EDIT_DELETE_IGNORE'	=> $this->settings->cfg('mchat_edit_delete_limit') && ($this->auth->acl_get('u_mchat_moderator_edit') || $this->auth->acl_get('u_mchat_moderator_delete')),
+			'MCHAT_RELATIVE_TIME'		=> $this->settings->cfg('mchat_relative_time'),
+			'MCHAT_USER_TIMEOUT'		=> 1000 * $this->settings->cfg('mchat_timeout'),
+			'S_MCHAT_AVATARS'			=> $this->display_avatars(),
+			'EXT_URL'					=> generate_board_url() . '/ext/dmzx/mchat/',
+			'STYLE_PATH'				=> generate_board_url() . '/styles/' . rawurlencode($this->user->style['style_path']),
+		);
+
+		/**
+		 * @event dmzx.mchat.global_modify_template_data
+		 * @var array	template_data		The data that is about to be assigned to the template
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'template_data',
+			'username_full',
+			'is_notification',
+			'row',
+			'message_age',
+			'minutes_ago',
+			'datetime',
+			'is_poster',
+			'message_for_edit',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.global_modify_template_data', compact($vars)));
+
+		$this->template->assign_vars($template_data);
 	}
 
 	/**
@@ -884,7 +903,7 @@ class mchat
 
 			/**
 			 * @event dmzx.mchat.message_modify_template_data
-			 * @var array	template_data		The page that was rendered, one of index|custom|archive
+			 * @var array	template_data		The data that is about to be assigned to the template
 			 * @var string	username_full		The link to the user profile, e.g. <a href="...">Username</a>
 			 * @var bool	is_notification		Whether or not this message is a notification
 			 * @var array	row					The raw message data as fetched from the database
@@ -1185,6 +1204,29 @@ class mchat
 		}
 
 		return !$this->settings->cfg('mchat_edit_delete_limit') || $message_time >= time() - $this->settings->cfg('mchat_edit_delete_limit');
+	}
+
+	/**
+	 * @param int $first_id
+	 * @param int $last_id
+	 * @return string
+	 */
+	public function refresh_sql_where($first_id, $last_id)
+	{
+		// Request new messages
+		$sql_where = 'm.message_id > ' . (int) $last_id;
+
+		// Request edited messages
+		if ($this->settings->cfg('mchat_live_updates') && $last_id > 0)
+		{
+			$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0)', (int) $first_id , (int) $last_id);
+			if ($this->settings->cfg('mchat_edit_delete_limit'))
+			{
+				$sql_where .= sprintf(' AND m.message_time > %d', time() - $this->settings->cfg('mchat_edit_delete_limit'));
+			}
+		}
+
+		return $sql_where;
 	}
 
 	/**
