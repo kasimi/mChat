@@ -314,6 +314,7 @@ jQuery(function($) {
 			}
 		},
 		addMessages: function($messages) {
+			var soundPlayed = false;
 			mChat.cached('messages').find('.mchat-no-messages').remove();
 			$messages.reverse(mChat.messageTop).hide().each(function(i) {
 				var $message = $(this);
@@ -325,6 +326,11 @@ jQuery(function($) {
 				$(mChat).trigger("mchat_add_message_before", [data]);
 				if (data.abort || $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1) {
 					return;
+				}
+				if (!soundPlayed) {
+					soundPlayed = true;
+					mChat.sound('add');
+					mChat.titleAlert();
 				}
 				mChat.messageIds.push($message.data('mchat-id'));
 				setTimeout(function() {
@@ -364,8 +370,6 @@ jQuery(function($) {
 				}
 				mChat.startRelativeTimeUpdate($message);
 			});
-			mChat.sound('add');
-			mChat.titleAlert();
 		},
 		updateMessages: function($messages) {
 			var soundPlayed = false;
