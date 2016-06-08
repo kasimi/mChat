@@ -137,4 +137,6 @@ $lang = array_merge($lang, array(
 	'TOO_LARGE_MCHAT_TIMEOUT'						=> 'The user timeout value is too large.',
 	'TOO_SMALL_MCHAT_WHOIS_REFRESH'					=> 'The whois refresh value is too small.',
 	'TOO_LARGE_MCHAT_WHOIS_REFRESH'					=> 'The whois refresh value is too large.',
+
+	'MCHAT_30X_REMNANTS'							=> 'The installation as been aborted.<br />There are remnant modules from the mChat MOD for phpBB 3.0.x in the database. The mChat extension does not work correctly with these modules present.<br />You need to entirely uninstall the mChat MOD before being able to install the mChat extension. Specifically, the modules with the following IDs need to be deleted from the %1$smodules table: %2$s',
 ));
