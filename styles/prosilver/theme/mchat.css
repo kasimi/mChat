@@ -78,15 +78,15 @@
 	display: block;
 }
 
-.mchat-message .mchat-buttons li {
+#mchat-body .mchat-buttons li {
 	opacity: .3;
 }
 
-.mchat-message:hover .mchat-buttons li {
+#mchat-body li:hover .mchat-buttons li {
 	opacity: .6;
 }
 
-.mchat-message .mchat-buttons li:hover {
+#mchat-body li:hover .mchat-buttons li:hover {
 	opacity: 1;
 }
 
@@ -96,7 +96,7 @@
 	margin-top: 1px;
 }
 
-.mchat-message-wrapper .mchat-buttons > li {
+.mchat-buttons > li {
 	float: left;
 	margin: 0 3px;
 }
