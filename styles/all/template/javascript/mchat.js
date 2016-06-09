@@ -339,6 +339,7 @@ jQuery(function($) {
 				mChat.messageIds.push($message.data('mchat-id'));
 				setTimeout(function() {
 					var $container = mChat.cached('messages');
+					var scrollHeight = $container.get(0).scrollHeight;
 					var data = {
 						container: $container,
 						message: $message,
@@ -351,18 +352,21 @@ jQuery(function($) {
 						},
 						show: function($message) {
 							$message.css('opacity', 0).slideDown().animate({opacity: 1}, {queue: false});
+						},
+						scroll: function() {
+							if (!mChat.messageTop && $container.scrollTop() >= scrollHeight - $container.height()) {
+								$container.animate({
+									scrollTop: scrollHeight,
+									easing: 'swing',
+									duration: 'slow'
+								});
+							}
 						}
 					};
 					$(mChat).trigger("mchat_add_message_animate_before", [data]);
 					data.add($message);
 					data.show($message);
-					if (!mChat.messageTop) {
-						$container.animate({
-							scrollTop: $container.get(0).scrollHeight,
-							easing: 'swing',
-							duration: 'slow'
-						});
-					}
+					data.scroll();
 				}, i * data.delay);
 				if (mChat.editDeleteLimit && $message.data('mchat-edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
 					var id = $message.prop('id');
