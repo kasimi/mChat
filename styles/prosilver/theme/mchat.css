@@ -69,7 +69,6 @@
 	#mchat-input {
 		width: 95% !important;
 		margin: 5px 0 !important;
-		max-width: 100%;
 	}
 
 }
@@ -225,11 +224,15 @@
 #mchat-input {
 	cursor: text;
 	width: 50%;
+	min-width: 50%;
+	max-width: 95%;
 	font-size: 1.1em;
 	padding: 5px 5px 4px;
 	margin: 5px 20px;
-	min-width: 100px;
-	max-width: 95%
+}
+
+textarea#mchat-input {
+	height: 8em;
 }
 
 #mchat-buttons {

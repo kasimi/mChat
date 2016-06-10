@@ -198,11 +198,11 @@ jQuery(function($) {
 			if (color && inputValue.indexOf('[color=') === -1) {
 				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
 			}
-			mChat.cached('input').val('').keyup().trigger('autogrow');
+			mChat.cached('input').val('');
 			mChat.refresh(inputValue).done(function() {
 				mChat.resetSession();
 			}).fail(function() {
-				mChat.cached('input').val(originalInputValue).keyup().trigger('autogrow');
+				mChat.cached('input').val(originalInputValue);
 			}).always(function() {
 				mChat.cached('add').prop('disabled', false);
 				setTimeout(function() {
@@ -619,8 +619,7 @@ jQuery(function($) {
 		if (mChat.showCharCount) {
 			mChat.cached('form').keyup(function(e) {
 				var count = mChat.inputMessageLength();
-				var $elem = mChat.cached('character-count');
-				$elem.html(mChat.charCount.format({current: count, max: mChat.mssgLngth})).css('visibility', count > 0 ? 'visible' : 'hidden');
+				var $elem = mChat.cached('character-count').html(mChat.charCount.format({current: count, max: mChat.mssgLngth})).css('visibility', count > 0 ? 'visible' : 'hidden');
 				if (mChat.mssgLngth) {
 					$elem.toggleClass('error', count > mChat.mssgLngth);
 				}
@@ -628,9 +627,9 @@ jQuery(function($) {
 		}
 
 		mChat.cached('form').one('keypress', function() {
-			mChat.cached('input').autoGrowInput({
-				minWidth: mChat.cached('input').width(),
-				maxWidth: mChat.cached('form').width() - (mChat.cached('input').outerWidth(true) - mChat.cached('input').width())
+			mChat.cached('input').autogrow({
+				vertical: false,
+				horizontal: true
 			});
 		});
 	}
