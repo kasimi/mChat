@@ -192,12 +192,17 @@ jQuery(function($) {
 			}
 			mChat.cached('add').prop('disabled', true);
 			mChat.pauseSession();
-			mChat.lastInputValue = mChat.cached('input').val();
+			var inputValue = mChat.cached('input').val();
+			var originalInputValue = inputValue;
+			var color = Cookies.get('mchat_color');
+			if (color && inputValue.indexOf('[color=') === -1) {
+				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
+			}
 			mChat.cached('input').val('').keyup().trigger('autogrow');
-			mChat.refresh(mChat.lastInputValue).done(function() {
+			mChat.refresh(inputValue).done(function() {
 				mChat.resetSession();
 			}).fail(function() {
-				mChat.cached('input').val(mChat.lastInputValue).keyup().trigger('autogrow');
+				mChat.cached('input').val(originalInputValue).keyup().trigger('autogrow');
 			}).always(function() {
 				mChat.cached('add').prop('disabled', false);
 				setTimeout(function() {
@@ -635,6 +640,27 @@ jQuery(function($) {
 	$(window).on('beforeunload', function() {
 		mChat.pageIsUnloading = true;
 	});
+
+	mChat.cached('colour').find('.colour-palette').on('click', 'a', function(e) {
+		if (e.ctrlKey) {
+			var $this = $(this);
+			var newColor = $this.data('color');
+			if (Cookies.get('mchat_color') === newColor) {
+				Cookies.remove('mchat_color');
+			} else {
+				Cookies.set('mchat_color', newColor);
+				mChat.cached('colour').find('.colour-palette a').removeClass('remember-color');
+			}
+			$this.toggleClass('remember-color');
+			e.preventDefault();
+			e.stopImmediatePropagation();
+		}
+	});
+
+	var color = Cookies.get('mchat_color');
+	if (color) {
+		mChat.cached('colour').find('.colour-palette a[data-color="' + color + '"]').addClass('remember-color');
+	}
 
 	$('#phpbb').on('click', '[data-mchat-action]', function(e) {
 		var action = $(this).data('mchat-action');

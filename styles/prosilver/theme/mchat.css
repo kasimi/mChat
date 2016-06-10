@@ -253,6 +253,10 @@
 	margin: 0 auto 5px;
 }
 
+#mchat-bbcodes #colour_palette td a.remember-color {
+	box-shadow: 0 0 0 1px #F00;
+}
+
 #mchat-smilies {
 	padding: 0;
 }
