@@ -95,20 +95,16 @@
 	margin-top: 1px;
 }
 
-.mchat-buttons > li {
+#mchat-main .mchat-buttons > li {
 	float: left;
-	margin: 0 3px;
+	margin: 0 4px;
 }
 
-.mchat-button {
-	margin-left: 3px;
-}
-
-.mchat-button.fa {
+.mchat-buttons .fa {
 	font-size: 12pt;
 }
 
-.mchat-button span {
+.mchat-buttons span {
 	display: block;
 	height: 0;
 	overflow: hidden;
