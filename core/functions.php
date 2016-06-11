@@ -160,7 +160,7 @@ class functions
 		$sql = 'SELECT m.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour
 			FROM ' . $this->mchat_sessions_table . ' m
 			LEFT JOIN ' . USERS_TABLE . ' u ON m.user_id = u.user_id
-			WHERE m.user_lastupdate >= ' . (int) $check_time . '
+			WHERE m.user_lastupdate > ' . (int) $check_time . '
 			ORDER BY u.username ASC';
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
