@@ -173,7 +173,7 @@ class functions
 		{
 			if (!$row['user_allow_viewonline'])
 			{
-				if (!$can_view_hidden)
+				if (!$can_view_hidden && $row['user_id'] !== $this->user->data['user_id'])
 				{
 					continue;
 				}
