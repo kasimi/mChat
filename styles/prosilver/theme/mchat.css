@@ -63,7 +63,7 @@
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
 
 	.mchat-buttons > li {
-		padding: 0 8px !important;
+		padding: 0 6px !important;
 	}
 
 	#mchat-input {
@@ -97,7 +97,7 @@
 
 #mchat-main .mchat-buttons > li {
 	float: left;
-	margin: 0 4px;
+	margin: 0 3px;
 }
 
 .mchat-buttons .fa {
@@ -129,14 +129,14 @@
 	float: right;
 }
 
-.mchat-icon-mention:before      { background-position: -2px -2px; }
-.mchat-icon-edit:before         { background-position: -22px -2px; }
-.mchat-icon-pm:before           { background-position: -42px -2px; }
-.mchat-icon-quote:before        { background-position: -62px -2px; }
-.mchat-icon-like:before         { background-position: -82px -2px; }
-.mchat-icon-delete:before       { background-position: -102px -2px; }
-.mchat-icon-permissions:before  { background-position: -122px -2px; }
-.mchat-icon-ip:before           { background-position: -142px -2px; }
+.mchat-icon-mention:before		{ background-position: -2px -2px; }
+.mchat-icon-edit:before			{ background-position: -22px -2px; }
+.mchat-icon-pm:before			{ background-position: -42px -2px; }
+.mchat-icon-quote:before		{ background-position: -62px -2px; }
+.mchat-icon-like:before			{ background-position: -82px -2px; }
+.mchat-icon-delete:before		{ background-position: -102px -2px; }
+.mchat-icon-permissions:before	{ background-position: -122px -2px; }
+.mchat-icon-ip:before			{ background-position: -142px -2px; }
 
 .mchat-text {
 	clear: both;
