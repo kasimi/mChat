@@ -603,7 +603,7 @@ jQuery(function($) {
 
 		mChat.isTextarea = mChat.cached('input').is('textarea');
 		mChat.cached('form').keypress(function(e) {
-			if (((e.which == 10 || e.which == 13)) && (!mChat.isTextarea || e.ctrlKey) && mChat.cached('input').is(e.target)) {
+			if (((e.which == 10 || e.which == 13)) && (!mChat.isTextarea || e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
 				mChat.add();
 				e.preventDefault();
 				e.stopImmediatePropagation();
@@ -648,7 +648,7 @@ jQuery(function($) {
 	});
 
 	mChat.cached('colour').find('.colour-palette').on('click', 'a', function(e) {
-		if (e.ctrlKey) {
+		if (e.ctrlKey || e.metaKey) {
 			var $this = $(this);
 			var newColor = $this.data('color');
 			if (Cookies.get('mchat_color') === newColor) {
