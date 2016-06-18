@@ -629,6 +629,7 @@ class mchat
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'A_MCHAT_MESS_LONG'				=> addslashes($this->user->lang('MCHAT_MESS_LONG', $this->settings->cfg('mchat_max_message_lngth'))),
 			'A_MCHAT_REFRESH_YES'			=> addslashes($this->user->lang('MCHAT_REFRESH_YES', $this->settings->cfg('mchat_refresh'))),
+			'A_COOKIE_NAME'					=> addslashes($this->settings->cfg('cookie_name', true) . '_'),
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_controller'),
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'rules')),
 			'U_MCHAT_ARCHIVE_URL'			=> $this->helper->route('dmzx_mchat_page_controller', array('page' => 'archive')),
@@ -1217,9 +1218,10 @@ class mchat
 		$sql_where = 'm.message_id > ' . (int) $last_id;
 
 		// Request edited messages
-		if ($this->settings->cfg('mchat_live_updates') && $last_id > 0)
+		if ($last_id > 0 && $this->settings->cfg('mchat_live_updates'))
 		{
 			$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0)', (int) $first_id , (int) $last_id);
+
 			if ($this->settings->cfg('mchat_edit_delete_limit'))
 			{
 				$sql_where .= sprintf(' AND m.message_time > %d', time() - $this->settings->cfg('mchat_edit_delete_limit'));
