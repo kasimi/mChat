@@ -59,7 +59,7 @@ jQuery(function($) {
 			if (sendHiddenFields) {
 				$.extend(data, mChat.hiddenFields);
 			}
-			$(mChat).trigger("mchat_send_request_before", [mode, data]);
+			$(mChat).trigger('mchat_send_request_before', [mode, data]);
 			$.ajax({
 				url: mChat.actionUrls[mode],
 				timeout: Math.min(mChat.refreshTime, 10000),
@@ -74,7 +74,7 @@ jQuery(function($) {
 					xhr: xhr,
 					handle: true
 				};
-				$(mChat).trigger("mchat_ajax_done_before", [data]);
+				$(mChat).trigger('mchat_ajax_done_before', [data]);
 				if (data.handle) {
 					if (json[mode]) {
 						deferred.resolve(data.json, data.status, data.xhr);
@@ -90,7 +90,7 @@ jQuery(function($) {
 					error: error,
 					handle: true
 				};
-				$(mChat).trigger("mchat_ajax_fail_before", [data]);
+				$(mChat).trigger('mchat_ajax_fail_before', [data]);
 				if (data.handle) {
 					deferred.reject(data.xhr, data.status, data.error);
 				}
@@ -126,7 +126,7 @@ jQuery(function($) {
 					file: file,
 					play: true
 				};
-				$(mChat).trigger("mchat_sound_before", [data]);
+				$(mChat).trigger('mchat_sound_before', [data]);
 				if (data.play && data.audio.duration) {
 					data.audio.pause();
 					data.audio.currentTime = 0;
@@ -139,7 +139,7 @@ jQuery(function($) {
 				doAlert: !document.hasFocus(),
 				interval: 1000
 			};
-			$(mChat).trigger("mchat_titlealert_before", [data]);
+			$(mChat).trigger('mchat_titlealert_before', [data]);
 			if (data.doAlert) {
 				$.titleAlert(mChat.newMessageAlert, data);
 			}
@@ -275,7 +275,7 @@ jQuery(function($) {
 			mChat.cached('status-ok', 'status-error', 'status-paused').hide();
 			mChat.cached('status-load').show();
 			return mChat.ajaxRequest(message ? 'add' : 'refresh', !!message, data).done(function(json) {
-				$(mChat).trigger("mchat_response_handle_data_before", [json]);
+				$(mChat).trigger('mchat_response_handle_data_before', [json]);
 				if (json.add) {
 					mChat.addMessages($(json.add));
 				}
@@ -292,7 +292,7 @@ jQuery(function($) {
 					mChat.cached('status-load', 'status-error', 'status-paused').hide();
 					mChat.cached('status-ok').show();
 				}
-				$(mChat).trigger("mchat_response_handle_data_after", [json]);
+				$(mChat).trigger('mchat_response_handle_data_after', [json]);
 			});
 		},
 		whois: function() {
@@ -330,10 +330,10 @@ jQuery(function($) {
 				var data = {
 					message: $message,
 					delay: 400,
-					abort: false
+					abort: $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1
 				};
-				$(mChat).trigger("mchat_add_message_before", [data]);
-				if (data.abort || $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1) {
+				$(mChat).trigger('mchat_add_message_before', [data]);
+				if (data.abort) {
 					return;
 				}
 				if (!soundPlayed) {
@@ -368,7 +368,7 @@ jQuery(function($) {
 							}
 						}
 					};
-					$(mChat).trigger("mchat_add_message_animate_before", [data]);
+					$(mChat).trigger('mchat_add_message_animate_before', [data]);
 					data.add($message);
 					data.show($message);
 					data.scroll();
@@ -403,17 +403,24 @@ jQuery(function($) {
 		removeMessages: function(ids) {
 			var soundPlayed = false;
 			$.each(ids, function(i, id) {
-				var index = 0;
+				var index;
 				while ((index = $.inArray(id, mChat.messageIds, index)) !== -1) {
+					var data = {
+						id: id,
+						message: $('#mchat-message-' + id),
+						playSound: !soundPlayed
+					};
+					$(mChat).trigger('mchat_delete_message_before', [data]);
 					mChat.messageIds.splice(index, 1);
-					var $message = $('#mchat-message-' + id);
-					mChat.stopRelativeTimeUpdate($message);
-					$message.fadeOut(function() {
-						$message.remove();
-					});
-					if (!soundPlayed) {
-						soundPlayed = true;
+					(function($message) {
+						$message.fadeOut(function() {
+							$message.remove();
+						});
+					})(data.message);
+					mChat.stopRelativeTimeUpdate(data.message);
+					if (data.playSound) {
 						mChat.sound('del');
+						soundPlayed = true;
 					}
 				}
 			});
