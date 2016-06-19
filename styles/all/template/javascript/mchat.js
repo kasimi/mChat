@@ -323,23 +323,24 @@ jQuery(function($) {
 			}
 		},
 		addMessages: function($messages) {
-			var soundPlayed = false;
+			var playSound = true;
 			mChat.cached('messages').find('.mchat-no-messages').remove();
 			$messages.reverse(mChat.messageTop).hide().each(function(i) {
 				var $message = $(this);
 				var data = {
 					message: $message,
 					delay: 400,
-					abort: $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1
+					abort: $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1,
+					playSound: playSound
 				};
 				$(mChat).trigger('mchat_add_message_before', [data]);
 				if (data.abort) {
 					return;
 				}
-				if (!soundPlayed) {
-					soundPlayed = true;
+				if (data.playSound) {
 					mChat.sound('add');
 					mChat.titleAlert();
+					playSound = false;
 				}
 				mChat.messageIds.push($message.data('mchat-id'));
 				setTimeout(function() {
@@ -348,7 +349,7 @@ jQuery(function($) {
 					var data = {
 						container: $container,
 						message: $message,
-						add: function($message) {
+						add: function($container, $message) {
 							if (mChat.messageTop) {
 								$container.prepend($message);
 							} else {
@@ -369,8 +370,8 @@ jQuery(function($) {
 						}
 					};
 					$(mChat).trigger('mchat_add_message_animate_before', [data]);
-					data.add($message);
-					data.show($message);
+					data.add(data.container, data.message);
+					data.show(data.message);
 					data.scroll();
 				}, i * data.delay);
 				if (mChat.editDeleteLimit && $message.data('mchat-edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
@@ -385,30 +386,35 @@ jQuery(function($) {
 			});
 		},
 		updateMessages: function($messages) {
-			var soundPlayed = false;
+			var playSound = true;
 			$messages.each(function() {
 				var $newMessage = $(this);
-				var $oldMessage = $('#mchat-message-' + $newMessage.data('mchat-id'));
-				mChat.stopRelativeTimeUpdate($oldMessage);
-				mChat.startRelativeTimeUpdate($newMessage);
-				$oldMessage.fadeOut(function() {
-					$oldMessage.replaceWith($newMessage.hide().fadeIn());
+				var data = {
+					newMessage: $newMessage,
+					oldMessage: $('#mchat-message-' + $newMessage.data('mchat-id')),
+					playSound: playSound
+				};
+				$(mChat).trigger('mchat_edit_message_before', [data]);
+				mChat.stopRelativeTimeUpdate(data.oldMessage);
+				mChat.startRelativeTimeUpdate(data.newMessage);
+				data.oldMessage.fadeOut(function() {
+					data.oldMessage.replaceWith(data.newMessage.hide().fadeIn());
 				});
-				if (!soundPlayed) {
-					soundPlayed = true;
+				if (data.playSound) {
 					mChat.sound('edit');
+					playSound = false;
 				}
 			});
 		},
 		removeMessages: function(ids) {
-			var soundPlayed = false;
+			var playSound = true;
 			$.each(ids, function(i, id) {
 				var index;
 				while ((index = $.inArray(id, mChat.messageIds, index)) !== -1) {
 					var data = {
 						id: id,
 						message: $('#mchat-message-' + id),
-						playSound: !soundPlayed
+						playSound: playSound
 					};
 					$(mChat).trigger('mchat_delete_message_before', [data]);
 					mChat.messageIds.splice(index, 1);
@@ -420,7 +426,7 @@ jQuery(function($) {
 					mChat.stopRelativeTimeUpdate(data.message);
 					if (data.playSound) {
 						mChat.sound('del');
-						soundPlayed = true;
+						playSound = false;
 					}
 				}
 			});
