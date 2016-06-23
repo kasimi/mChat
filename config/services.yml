@@ -29,12 +29,6 @@ services:
             - '@dmzx.mchat.settings'
             - '%core.root_path%'
             - '%core.php_ext%'
-    dmzx.mchat.main.controller:
-        class: dmzx\mchat\controller\main_controller
-        arguments:
-            - '@user'
-            - '@dmzx.mchat.core'
-            - '@request'
     dmzx.mchat.core:
         class: dmzx\mchat\core\mchat
         arguments:

@@ -202,10 +202,10 @@ class functions
 		// Remove expired sessions from the database
 		$check_time = time() - $this->mchat_session_time();
 		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
-			WHERE user_lastupdate < ' . $check_time;
+			WHERE user_lastupdate < ' . (int) $check_time;
 		$this->db->sql_query($sql);
 
-		$user_id = (int) $this->user->data['user_id'];
+		$user_id = $this->user->data['user_id'];
 
 		if (!$this->user->data['is_registered'] || $this->user->data['is_bot'])
 		{
@@ -214,7 +214,7 @@ class functions
 
 		$sql = 'SELECT user_id
 			FROM ' . $this->mchat_sessions_table . '
-			WHERE user_id = ' . $user_id;
+			WHERE user_id = ' . (int) $user_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -225,14 +225,14 @@ class functions
 		{
 			$sql = 'UPDATE ' . $this->mchat_sessions_table . '
 				SET user_lastupdate = ' . time() . '
-				WHERE user_id = ' . $user_id;
+				WHERE user_id = ' . (int) $user_id;
 		}
 		else
 		{
 			$is_new_session = true;
 
 			$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
-				'user_id'			=> $user_id,
+				'user_id'			=> (int) $user_id,
 				'user_ip'			=> $this->user->data['user_ip'],
 				'user_lastupdate'	=> time(),
 			));
@@ -322,12 +322,7 @@ class functions
 	 */
 	public function mchat_get_messages($sql_where, $total = 0, $offset = 0)
 	{
-		$sql_where_ary = array();
-
-		if (!empty($sql_where))
-		{
-			$sql_where_ary[] = '(' . $sql_where . ')';
-		}
+		$sql_where_ary = empty($sql_where) ? array() : array($sql_where);
 
 		if ($this->settings->cfg('mchat_posts'))
 		{
@@ -360,7 +355,7 @@ class functions
 					'ON'	=> 'm.post_id = p.post_id',
 				)
 			),
-			'WHERE'		=> $sql_where_ary ? '(' . implode(') AND (', $sql_where_ary) . ')' : '',
+			'WHERE'		=> $sql_where_ary ? $this->db->sql_escape('(' . implode(') AND (', $sql_where_ary) . ')') : '',
 			'ORDER_BY'	=> 'm.message_id DESC',
 		);
 
@@ -417,7 +412,7 @@ class functions
 			$sql_array['LEFT_JOIN'] = array(
 				array(
 					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
-					'ON'	=> 'g.group_id = ug.group_id AND ug.user_id = ' . $this->user->data['user_id'] . ' AND ug.user_pending = 0',
+					'ON'	=> 'g.group_id = ug.group_id AND ug.user_id = ' . (int) $this->user->data['user_id'] . ' AND ug.user_pending = 0',
 				),
 			);
 
@@ -456,7 +451,8 @@ class functions
 	{
 		$sql = 'SELECT zebra_id
 			FROM ' . ZEBRA_TABLE . '
-			WHERE foe = 1 AND user_id = ' . (int) $this->user->data['user_id'];
+			WHERE foe = 1
+				AND user_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);

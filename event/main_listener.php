@@ -78,7 +78,7 @@ class main_listener implements EventSubscriberInterface
 		if (strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/mchat') === 0)
 		{
 			$event['location'] = $this->user->lang('MCHAT_TITLE');
-			$event['location_url'] = $this->helper->route('dmzx_mchat_controller');
+			$event['location_url'] = $this->helper->route('dmzx_mchat_page_custom_controller');
 		}
 	}
 

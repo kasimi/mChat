@@ -92,6 +92,8 @@ class acp_controller
 
 		$error = array();
 
+		$is_founder = $this->user->data['user_type'] == USER_FOUNDER;
+
 		if ($this->request->is_set_post('submit'))
 		{
 			$mchat_new_config = array();
@@ -108,7 +110,7 @@ class acp_controller
 			}
 
 			// Don't allow changing pruning settings for non founders
-			if ($this->user->data['user_type'] != USER_FOUNDER)
+			if (!$is_founder)
 			{
 				unset($mchat_new_config['mchat_prune']);
 				unset($mchat_new_config['mchat_prune_num']);
@@ -146,7 +148,7 @@ class acp_controller
 
 		if (!$error)
 		{
-			if ($this->request->is_set_post('mchat_purge') && $this->request->variable('mchat_purge_confirm', false) && check_form_key('acp_mchat') && $this->user->data['user_type'] == USER_FOUNDER)
+			if ($is_founder && $this->request->is_set_post('mchat_purge') && $this->request->variable('mchat_purge_confirm', false) && check_form_key('acp_mchat'))
 			{
 				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
 				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_deleted_messages_table);
@@ -154,7 +156,7 @@ class acp_controller
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
 				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
 			}
-			else if ($this->request->is_set_post('mchat_prune_now') && $this->request->variable('mchat_prune_now_confirm', false) && check_form_key('acp_mchat') && $this->user->data['user_type'] == USER_FOUNDER)
+			else if ($is_founder && $this->request->is_set_post('mchat_prune_now') && $this->request->variable('mchat_prune_now_confirm', false) && check_form_key('acp_mchat'))
 			{
 				$num_pruned_messages = count($this->functions->mchat_prune());
 				trigger_error($this->user->lang('MCHAT_PRUNED', $num_pruned_messages) . adm_back_link($u_action));
@@ -167,9 +169,9 @@ class acp_controller
 		}
 
 		$this->template->assign_vars(array(
-			'MCHAT_ERROR'							=> $error ? implode('<br />', $error) : '',
+			'MCHAT_ERROR'							=> implode('<br />', $error),
 			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
-			'MCHAT_FOUNDER'							=> $this->user->data['user_type'] == USER_FOUNDER,
+			'MCHAT_FOUNDER'							=> $is_founder,
 			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
 			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
 			'U_ACTION'								=> $u_action,
@@ -259,9 +261,9 @@ class acp_controller
 		$this->template->assign_var('MCHAT_POSTS_ENABLED_LANG', $notifications_template_data);
 
 		$this->template->assign_vars(array(
-			'MCHAT_ERROR'							=> $error ? implode('<br />', $error) : '',
-			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
-			'U_ACTION'								=> $u_action,
+			'MCHAT_ERROR'		=> implode('<br />', $error),
+			'MCHAT_VERSION'		=> $this->settings->cfg('mchat_version'),
+			'U_ACTION'			=> $u_action,
 		));
 	}
 }
