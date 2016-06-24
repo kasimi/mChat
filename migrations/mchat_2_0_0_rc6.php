@@ -34,4 +34,32 @@ class mchat_2_0_0_rc6 extends \phpbb\db\migration\migration
 			array('permission.add', array('u_mchat_moderator_delete', true)),
 		);
 	}
+
+	public function update_schema()
+	{
+		return array(
+			'add_tables'	=> array(
+				$this->table_prefix . 'mchat_log' => array(
+					'COLUMNS'		=> array(
+						'log_id'				=> array('UINT', null, 'auto_increment'),
+						'log_type'				=> array('TINT:4', 0),
+						'user_id'				=> array('UINT', 0),
+						'message_id'			=> array('UINT', 0),
+						'log_ip'				=> array('VCHAR:40', ''),
+						'log_time'				=> array('INT:11', 0),
+					),
+					'PRIMARY_KEY'	=> 'log_id',
+				),
+			),
+			'drop_tables'	=> array(
+				$this->table_prefix . 'mchat_deleted_messages',
+			),
+
+			'drop_columns'	=> array(
+				$this->table_prefix . 'mchat' => array(
+					'edit_time',
+				),
+			),
+		);
+	}
 }

@@ -15,7 +15,7 @@ services:
             - '@request'
             - '@dmzx.mchat.settings'
             - '%dmzx.mchat.table.mchat%'
-            - '%dmzx.mchat.table.mchat_deleted_messages%'
+            - '%dmzx.mchat.table.mchat_log%'
             - '%core.root_path%'
             - '%core.php_ext%'
     dmzx.mchat.ucp.controller:
@@ -58,7 +58,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%dmzx.mchat.table.mchat%'
-            - '%dmzx.mchat.table.mchat_deleted_messages%'
+            - '%dmzx.mchat.table.mchat_log%'
             - '%dmzx.mchat.table.mchat_sessions%'
     dmzx.mchat.settings:
         class: dmzx\mchat\core\settings

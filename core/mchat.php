@@ -397,15 +397,10 @@ class mchat
 		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', $this->request->variable('archive', false));
 
 		$message = $this->request->variable('message', '', true);
-
-		$sql_ary = array_merge($this->process_message($message), array(
-			'edit_time' => time(),
-		));
-
+		$sql_ary = $this->process_message($message);
 		$this->functions->mchat_action('edit', $sql_ary, $message_id);
 
-		$sql_where = 'm.message_id = ' . (int) $message_id;
-		$rows = $this->functions->mchat_get_messages($sql_where, 1);
+		$rows = $this->functions->mchat_get_messages($message_id);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows);
@@ -530,48 +525,54 @@ class mchat
 			$this->user->update_session_infos();
 		}
 
-		$first_id = $this->request->variable('first', 0);
+		$response = array('refresh' => true);
+		$edit_ids = array();
+		$del_ids = array();
+
+		if ($this->settings->cfg('mchat_live_updates'))
+		{
+			$log_id = $this->request->variable('log', 0);
+			$rows_log = $this->functions->mchat_get_logs($log_id);
+
+			$response['log'] = $rows_log['id'];
+			$edit_ids = $rows_log['edit'];
+			$del_ids = $rows_log['del'];
+		}
+
 		$last_id = $this->request->variable('last', 0);
-		$edits = $this->request->variable('edits', array(0));
-
-		$sql_where = $this->refresh_sql_where($first_id, $last_id);
-
 		$total = 0;
 		$offset = 0;
 
 		/**
 		 * @event dmzx.mchat.action_refresh_before
-		 * @var int		first_id	The earliest message that the user has
 		 * @var int		last_id		The latest message that the user has
-		 * @var array	edits		An array mapping edited message IDs to their latest edit time
-		 * @var string	sql_where	SQL where clause that is about to be used to query new messages
+		 * @var array	edit_ids	An array containing IDs of message that have been edited since the user's last refresh
+		 * @var array	del_ids		An array containing IDs of message that have been deleted since the user's last refresh
 		 * @var int		total		Limit the number of messages to fetch
 		 * @var int		offset		The number of messages to skip
 		 *
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
-			'first_id',
 			'last_id',
-			'edits',
-			'sql_where',
+			'edit_ids',
+			'del_ids',
 			'total',
 			'offset',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_before', compact($vars)));
 
-		$rows = $this->functions->mchat_get_messages($sql_where, $total, $offset);
+		$rows = $this->functions->mchat_get_messages($edit_ids, $last_id, $total, $offset);
 		$rows_refresh = array();
 		$rows_edit = array();
 
 		foreach ($rows as $row)
 		{
-			$message_id = $row['message_id'];
-			if ($message_id > $last_id)
+			if ($row['message_id'] > $last_id)
 			{
 				$rows_refresh[] = $row;
 			}
-			else if (!isset($edits[$message_id]) || $edits[$message_id] < $row['edit_time'])
+			else if (in_array($row['message_id'], $edit_ids))
 			{
 				$rows_edit[] = $row;
 			}
@@ -581,8 +582,6 @@ class mchat
 		{
 			$this->assign_global_template_data();
 		}
-
-		$response = array('refresh' => true);
 
 		// Assign new messages
 		if ($rows_refresh)
@@ -599,13 +598,9 @@ class mchat
 		}
 
 		// Assign deleted messages
-		if ($this->settings->cfg('mchat_live_updates') && $last_id > 0)
+		if ($del_ids)
 		{
-			$deleted_message_ids = $this->functions->mchat_deleted_ids($first_id);
-			if ($deleted_message_ids)
-			{
-				$response['del'] = $deleted_message_ids;
-			}
+			$response['del'] = $del_ids;
 		}
 
 		/**
@@ -753,6 +748,7 @@ class mchat
 			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules'),
 			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> $this->user->lang('MCHAT_WHO_IS_REFRESH_EXPLAIN', $this->settings->cfg('mchat_whois_refresh')),
 			'MCHAT_SESSION_TIMELEFT'		=> $this->user->lang('MCHAT_SESSION_ENDS', gmdate('H:i:s', (int) $this->settings->cfg('mchat_timeout'))),
+			'MCHAT_LOG_ID'					=> $this->functions->get_latest_log_id(),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'A_MCHAT_MESS_LONG'				=> addslashes($this->user->lang('MCHAT_MESS_LONG', $this->settings->cfg('mchat_max_message_lngth'))),
 			'A_MCHAT_REFRESH_YES'			=> addslashes($this->user->lang('MCHAT_REFRESH_YES', $this->settings->cfg('mchat_refresh'))),
@@ -796,7 +792,7 @@ class mchat
 
 		$limit = $this->settings->cfg('mchat_message_num_' . $page);
 		$start = $page === 'archive' ? $this->request->variable('start', 0) : 0;
-		$rows = $this->functions->mchat_get_messages('', $limit, $start);
+		$rows = $this->functions->mchat_get_messages(array(), 0, $limit, $start);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows);
@@ -1026,7 +1022,6 @@ class mchat
 				'MCHAT_MINUTES_AGO'			=> $minutes_ago,
 				'MCHAT_RELATIVE_UPDATE'		=> 60 - $message_age % 60,
 				'MCHAT_MESSAGE_TIME'		=> $row['message_time'],
-				'MCHAT_EDIT_TIME'			=> $row['edit_time'],
 			);
 
 			/**
@@ -1275,8 +1270,7 @@ class mchat
 			return;
 		}
 
-		$sql_where = 'm.message_id = ' . $mchat_message_id;
-		$rows = $this->functions->mchat_get_messages($sql_where);
+		$rows = $this->functions->mchat_get_messages($mchat_message_id);
 		$row = reset($rows);
 
 		if (!$row || !$this->has_read_auth($row))
@@ -1332,30 +1326,6 @@ class mchat
 		}
 
 		return !$this->settings->cfg('mchat_edit_delete_limit') || $message_time >= time() - $this->settings->cfg('mchat_edit_delete_limit');
-	}
-
-	/**
-	 * @param int $first_id
-	 * @param int $last_id
-	 * @return string
-	 */
-	public function refresh_sql_where($first_id, $last_id)
-	{
-		// Request new messages
-		$sql_where = 'm.message_id > ' . (int) $last_id;
-
-		// Request edited messages
-		if ($last_id > 0 && $this->settings->cfg('mchat_live_updates'))
-		{
-			$sql_where .= sprintf(' OR (m.message_id BETWEEN %d AND %d AND m.edit_time > 0)', (int) $first_id , (int) $last_id);
-
-			if ($this->settings->cfg('mchat_edit_delete_limit'))
-			{
-				$sql_where .= sprintf(' AND m.message_time > %d', time() - $this->settings->cfg('mchat_edit_delete_limit'));
-			}
-		}
-
-		return $sql_where;
 	}
 
 	/**

@@ -262,15 +262,7 @@ jQuery(function($) {
 				data.message = message;
 			}
 			if (mChat.liveUpdates) {
-				data.first = mChat.messageIds.length ? mChat.messageIds.min() : 0;
-				data.edits = {};
-				var now = Math.floor(Date.now() / 1000);
-				$('.mchat-message').each(function() {
-					var msgData = $(this).data();
-					if (msgData.mchatEditTime && (!mChat.editDeleteLimit || msgData.mchatMessageTime >= now - mChat.editDeleteLimit / 1000)) {
-						data.edits[msgData.mchatId] = msgData.mchatEditTime;
-					}
-				});
+				data.log = mChat.logId;
 			}
 			mChat.cached('status-ok', 'status-error', 'status-paused').hide();
 			mChat.cached('status-load').show();
@@ -287,6 +279,9 @@ jQuery(function($) {
 				}
 				if (json.whois) {
 					mChat.handleWhoisResponse(json);
+				}
+				if (json.log) {
+					mChat.logId = json.log;
 				}
 				if (mChat.refreshInterval) {
 					mChat.cached('status-load', 'status-error', 'status-paused').hide();
@@ -418,12 +413,12 @@ jQuery(function($) {
 					};
 					$(mChat).trigger('mchat_delete_message_before', [data]);
 					mChat.messageIds.splice(index, 1);
+					mChat.stopRelativeTimeUpdate(data.message);
 					(function($message) {
 						$message.fadeOut(function() {
 							$message.remove();
 						});
 					})(data.message);
-					mChat.stopRelativeTimeUpdate(data.message);
 					if (data.playSound) {
 						mChat.sound('del');
 						playSound = false;
