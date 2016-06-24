@@ -1,6 +1,5 @@
 imports:
     - { resource: tables.yml }
-    - { resource: config_2_0_0.yml }
 
 services:
     dmzx.mchat.acp.controller:
@@ -66,8 +65,6 @@ services:
             - '@user'
             - '@config'
             - '@auth'
-            - '%dmzx.mchat.config_global%'
-            - '%dmzx.mchat.config_ucp%'
     dmzx.mchat.acp.listener:
         class: dmzx\mchat\event\acp_listener
         arguments:

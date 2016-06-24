@@ -13,11 +13,6 @@ namespace dmzx\mchat\core;
 
 class settings
 {
-	const VALIDATE_TYPE = 0;
-	const VALIDATE_IS_OPTIONAL = 1;
-	const VALIDATE_MIN_VALUE = 2;
-	const VALIDATE_MAX_VALUE = 3;
-
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -27,10 +22,23 @@ class settings
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var array */
+	/**
+	 * Keys for global settings that only the administrator is allowed to modify.
+     * The values are stored in the phpbb_config table.
+	 *
+	 * @var array
+	 */
 	public $global;
 
-	/** @var array */
+	/**
+	 * Keys for user-specific settings for which the administrator can set default
+     * values as well as adjust permissions to allow users to customize them.
+	 * The values are stored in the phpbb_users table as well as the phpbb_config table.
+	 * If a user has permission to customize a setting, the value in the phpbb_users
+	 * table is used, otherwise the value in the phpbb_config table is used.
+	 *
+	 * @var array
+	 */
 	public $ucp;
 
 	/** @var bool */
@@ -45,30 +53,63 @@ class settings
 	 * @param \phpbb\user			$user
 	 * @param \phpbb\config\config	$config
 	 * @param \phpbb\auth\auth		$auth
-	 * @param array					$global
-	 * @param array					$ucp
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, $global, $ucp)
+	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth)
 	{
 		$this->user			= $user;
 		$this->config		= $config;
 		$this->auth			= $auth;
-		$this->global		= $global;
-		$this->ucp			= $ucp;
+
+		$this->global = array(
+			'mchat_bbcode_disallowed'		=> array('default' => '',	'validation' => array('string', false, 0, 255)),
+			'mchat_custom_height'			=> array('default' => 350,	'validation' => array('num', false, 50, 1000)),
+			'mchat_custom_page'				=> array('default' => 1),
+			'mchat_edit_delete_limit'		=> array('default' => 1),
+			'mchat_flood_time'				=> array('default' => 1,	'validation' => array('num', false, 0, 60)),
+			'mchat_index_height'			=> array('default' => 250,	'validation' => array('num', false, 50, 1000)),
+			'mchat_live_updates'			=> array('default' => 1),
+			'mchat_max_message_lngth'		=> array('default' => 500,	'validation' => array('num', false, 0, 1000)),
+			'mchat_message_num_archive'		=> array('default' => 25,	'validation' => array('num', false, 10, 100)),
+			'mchat_message_num_custom'		=> array('default' => 10,	'validation' => array('num', false, 5, 50)),
+			'mchat_message_num_index'		=> array('default' => 10,	'validation' => array('num', false, 5, 50)),
+			'mchat_navbar_link'				=> array('default' => 1),
+			'mchat_navbar_link_count'		=> array('default' => 1),
+			'mchat_override_min_post_chars' => array('default' => 1),
+			'mchat_override_smilie_limit'	=> array('default' => 1),
+			'mchat_posts_edit'				=> array('default' => 1),
+			'mchat_posts_quote'				=> array('default' => 1),
+			'mchat_posts_reply'				=> array('default' => 1),
+			'mchat_posts_topic'				=> array('default' => 1),
+			'mchat_posts_login'				=> array('default' => 1),
+			'mchat_prune'					=> array('default' => 1),
+			'mchat_prune_num'				=> array('default' => '0'),
+			'mchat_refresh'					=> array('default' => 10,	'validation' => array('num', false, 5, 60)),
+			'mchat_rules'					=> array('default' => '',	'validation' => array('string', false, 0, 255)),
+			'mchat_static_message'			=> array('default' => '',	'validation' => array('string', false, 0, 255)),
+			'mchat_timeout'					=> array('default' => 1,	'validation' => array('num', false, 0, (int) $this->cfg('session_length'))),
+			'mchat_whois'					=> array('default' => 1),
+			'mchat_whois_refresh'			=> array('default' => 60,	'validation' => array('num', false, 10, 300)),
+		);
+
+		$this->ucp = array(
+			'mchat_avatars'					=> array('default' => 1),
+			'mchat_capital_letter'			=> array('default' => 1),
+			'mchat_character_count'			=> array('default' => 1),
+			'mchat_date'					=> array('default' => 'D M d, Y g:i a', 'validation' => array('string', false, 0, 64)),
+			'mchat_index'					=> array('default' => 1),
+			'mchat_input_area'				=> array('default' => 1),
+			'mchat_location'				=> array('default' => 1),
+			'mchat_message_top'				=> array('default' => 1),
+			'mchat_pause_on_input'			=> array('default' => 0),
+			'mchat_posts'					=> array('default' => 1),
+			'mchat_relative_time'			=> array('default' => 1),
+			'mchat_sound'					=> array('default' => 1),
+			'mchat_stats_index'				=> array('default' => 0),
+			'mchat_whois_index'				=> array('default' => 1),
+		);
 
 		$this->is_phpbb31	= phpbb_version_compare($config['version'], '3.1.0@dev', '>=') && phpbb_version_compare($config['version'], '3.2.0@dev', '<');
 		$this->is_phpbb32	= phpbb_version_compare($config['version'], '3.2.0@dev', '>=') && phpbb_version_compare($config['version'], '3.3.0@dev', '<');
-
-		$this->inject_core_config_values();
-	}
-
-	/**
-	 * Writes phpBB config values into the mChat config for validating input data
-	 */
-	protected function inject_core_config_values()
-	{
-		// Limit mChat session timeout to phpBB session length
-		$this->global['mchat_timeout']['validation'][self::VALIDATE_MAX_VALUE] = (int) $this->cfg('session_length');
 	}
 
 	/**

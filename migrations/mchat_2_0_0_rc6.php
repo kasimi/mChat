@@ -62,4 +62,13 @@ class mchat_2_0_0_rc6 extends \phpbb\db\migration\migration
 			),
 		);
 	}
+
+	public function revert_schema()
+	{
+		return array(
+			'drop_tables'	=> array(
+				$this->table_prefix . 'mchat_log',
+			),
+		);
+	}
 }
