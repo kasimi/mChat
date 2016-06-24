@@ -428,13 +428,8 @@ class functions
 			'WHERE'		=> 'ml.log_id > ' . (int) $log_id,
 		);
 
-		if ($this->settings->cfg('mchat_edit_delete_limit'))
-		{
-			$sql_array['WHERE'] .= ' AND ml.log_time > ' . (int) (time() - $this->settings->cfg('mchat_edit_delete_limit'));
-		}
-
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 3600);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
@@ -447,11 +442,14 @@ class functions
 			$logs[$log_type] = array();
 		}
 
+		$edit_delete_limit = $this->settings->cfg('mchat_edit_delete_limit');
+		$time_limit = $edit_delete_limit ? time() - $edit_delete_limit : 0;
+
 		foreach ($rows as $row)
 		{
 			$logs['id'] = max((int) $logs['id'], (int) $row['log_id']);
 
-			if ($row['user_id'] != $this->user->data['user_id'])
+			if ($row['user_id'] != $this->user->data['user_id'] && $row['log_time'] > $time_limit)
 			{
 				$logs[$this->log_types[$row['log_type']]][] = (int) $row['message_id'];
 			}
