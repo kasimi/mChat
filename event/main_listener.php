@@ -61,7 +61,7 @@ class main_listener implements EventSubscriberInterface
 			'core.user_setup'							=> 'load_language_on_setup',
 			'core.page_header'							=> 'add_page_header_link',
 			'core.index_modify_page_title'				=> 'display_mchat_on_index',
-			'core.posting_modify_submit_post_after'		=> 'posting_modify_submit_post_after',
+			'core.submit_post_end'						=> 'submit_post_end',
 			'core.display_custom_bbcodes_modify_sql'	=> 'display_custom_bbcodes_modify_sql',
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
 			'core.login_box_redirect'					=> 'user_login_success',
@@ -118,13 +118,13 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param object $event The event object
 	 */
-	public function posting_modify_submit_post_after($event)
+	public function submit_post_end($event)
 	{
 		$this->mchat->insert_posting($event['mode'], array(
-			'forum_id'		=> $event['forum_id'],
-			'forum_name'	=> $event['post_data']['forum_name'],
+			'forum_id'		=> $event['data']['forum_id'],
+			'forum_name'	=> $event['data']['forum_name'],
 			'post_id'		=> $event['data']['post_id'],
-			'post_subject'	=> $event['post_data']['post_subject'],
+			'post_subject'	=> $event['subject'],
 		));
 	}
 
