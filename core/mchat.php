@@ -1278,6 +1278,11 @@ class mchat
 			return;
 		}
 
+		if ($row['post_id'])
+		{
+			$this->process_notification($row, generate_board_url() . '/');
+		}
+
 		$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
 		$message = '[quote=&quot;' . $row['username'] . '&quot;]' . $message_for_edit['text'] . "[/quote]\n";
 
