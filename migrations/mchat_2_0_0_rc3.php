@@ -27,7 +27,7 @@ class mchat_2_0_0_rc3 extends \phpbb\db\migration\migration
 			array('config.add', array('mchat_bbcode_disallowed', '')),
 			array('config.add', array('mchat_custom_height', 350)),
 			array('config.add', array('mchat_custom_page', 1)),
-			array('config.add', array('mchat_edit_delete_limit', 1)),
+			array('config.add', array('mchat_edit_delete_limit', 0)),
 			array('config.add', array('mchat_flood_time', 0)),
 			array('config.add', array('mchat_index_height', 250)),
 			array('config.add', array('mchat_live_updates', 1)),
