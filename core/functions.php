@@ -321,7 +321,7 @@ class functions
 	/**
 	 * Fetch messages from the database
 	 *
-	 * @param array $message_ids IDs of specific messages to fetch, e.g. for fetching  edited messages
+	 * @param array $message_ids IDs of specific messages to fetch, e.g. for fetching edited messages
 	 * @param int $last_id The ID of the latest message that the user has, for fetching new messages
 	 * @param int $total
 	 * @param int $offset
@@ -385,15 +385,19 @@ class functions
 
 		/**
 		 * @event dmzx.mchat.get_messages_modify_sql
-		 * @var	array	sql_array	Array containing the SQL query data
+		 * @var array	message_ids	IDs of specific messages to fetch, e.g. for fetching edited messages
+		 * @var int		last_id		The ID of the latest message that the user has, for fetching new messages
 		 * @var int		total		SQL limit
 		 * @var int		offset		SQL offset
+		 * @var	array	sql_array	Array containing the SQL query data
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
-			'sql_array',
+			'message_ids',
+			'last_id',
 			'total',
 			'offset',
+			'sql_array',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.get_messages_modify_sql', compact($vars)));
 

@@ -173,7 +173,7 @@ class acp_controller
 			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
 			'MCHAT_FOUNDER'							=> $is_founder,
 			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_USER_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
+			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
 			'U_ACTION'								=> $u_action,
 		));
 	}

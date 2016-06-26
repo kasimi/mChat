@@ -149,7 +149,7 @@ class mchat
 
 		if (!$this->settings->cfg('mchat_custom_page'))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NO_CUSTOM_PAGE');
+			throw new \phpbb\exception\http_exception(404, 'MCHAT_NO_CUSTOM_PAGE');
 		}
 
 		$this->functions->mchat_add_user_session();
@@ -303,7 +303,7 @@ class mchat
 
 		if ($this->functions->mchat_is_user_flooding())
 		{
-			throw new \phpbb\exception\http_exception(400, 'MCHAT_NOACCESS');
+			throw new \phpbb\exception\http_exception(400, 'MCHAT_FLOOD');
 		}
 
 		$message = $this->request->variable('message', '', true);
@@ -501,25 +501,14 @@ class mchat
 			define('PHPBB_USE_BOARD_URL_PATH', true);
 		}
 
-		if (!$this->request->is_ajax())
-		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
-		}
-
-		// Fix avatars & smilies
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
 
 		if (!$this->auth->acl_get('u_mchat_view'))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
-		// Keep the session alive forever if there is no user session timeout
+		// Keep the session alive forever if there is no session timeout
 		if (!$this->settings->cfg('mchat_timeout'))
 		{
 			$this->user->update_session_infos();
@@ -887,7 +876,7 @@ class mchat
 			'MCHAT_EDIT_DELETE_LIMIT'	=> 1000 * $this->settings->cfg('mchat_edit_delete_limit'),
 			'MCHAT_EDIT_DELETE_IGNORE'	=> $this->settings->cfg('mchat_edit_delete_limit') && ($this->auth->acl_get('u_mchat_moderator_edit') || $this->auth->acl_get('u_mchat_moderator_delete')),
 			'MCHAT_RELATIVE_TIME'		=> $this->settings->cfg('mchat_relative_time'),
-			'MCHAT_USER_TIMEOUT'		=> 1000 * $this->settings->cfg('mchat_timeout'),
+			'MCHAT_TIMEOUT'				=> 1000 * $this->settings->cfg('mchat_timeout'),
 			'S_MCHAT_AVATARS'			=> $this->display_avatars(),
 			'EXT_URL'					=> generate_board_url() . '/ext/dmzx/mchat/',
 			'STYLE_PATH'				=> generate_board_url() . '/styles/' . rawurlencode($this->user->style['style_path']),
@@ -900,14 +889,6 @@ class mchat
 		 */
 		$vars = array(
 			'template_data',
-			'username_full',
-			'is_notification',
-			'row',
-			'message_age',
-			'minutes_ago',
-			'datetime',
-			'is_poster',
-			'message_for_edit',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.global_modify_template_data', compact($vars)));
 
@@ -1346,7 +1327,7 @@ class mchat
 		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
 		if (!utf8_strlen($message_chars))
 		{
-			throw new \phpbb\exception\http_exception(501, 'MCHAT_NOACCESS');
+			throw new \phpbb\exception\http_exception(400, 'MCHAT_NOMESSAGEINPUT');
 		}
 
 		// Must not exceed character limit
@@ -1354,7 +1335,7 @@ class mchat
 		{
 			if (utf8_strlen($message_chars) > $this->settings->cfg('mchat_max_message_lngth'))
 			{
-				throw new \phpbb\exception\http_exception(413, 'MCHAT_MESS_LONG', array($this->settings->cfg('mchat_max_message_lngth')));
+				throw new \phpbb\exception\http_exception(400, 'MCHAT_MESS_LONG', array($this->settings->cfg('mchat_max_message_lngth')));
 			}
 		}
 

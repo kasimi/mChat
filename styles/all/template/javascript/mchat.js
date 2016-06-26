@@ -79,44 +79,40 @@ jQuery(function($) {
 					if (json[mode]) {
 						deferred.resolve(data.json, data.status, data.xhr);
 					} else {
-						deferred.reject(data.xhr, data.status, data.xhr.responseJSON ? 'session' : 'unexpected format');
+						deferred.reject(data.xhr, data.status, mChat.parserErr);
 					}
 				}
 			}).fail(function(xhr, status, error) {
-				var data = {
-					mode: mode,
-					xhr: xhr,
-					status: status,
-					error: error,
-					handle: true
-				};
-				$(mChat).trigger('mchat_ajax_fail_before', [data]);
-				if (data.handle) {
-					deferred.reject(data.xhr, data.status, data.error);
-				}
+				deferred.reject(xhr, status, error);
 			});
 			return deferred.promise().fail(function(xhr, textStatus, errorThrown) {
+				if (typeof console !== 'undefined' && console.log) {
+					console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown + ' (' + xhr.responseText + ')');
+				}
+				var data = {
+					xhr: xhr,
+					textStatus: textStatus,
+					errorThrown: errorThrown,
+					updateSession: function(xhr) {
+						if (xhr.status == 403) {
+							mChat.endSession(true);
+						} else if (xhr.status == 400) {
+							mChat.resetSession();
+						}
+					}
+				};
+				$(mChat).trigger('mchat_ajax_fail_before', [data]);
 				mChat.sound('error');
 				mChat.cached('status-load', 'status-ok', 'status-paused').hide();
 				mChat.cached('status-error').show();
-				if (errorThrown == 'session') {
-					mChat.endSession(true);
-					phpbb.alert(mChat.err, mChat.sessOut);
-				} else if (xhr.status == 400) {
-					mChat.resetSession();
-					phpbb.alert(mChat.err, mChat.flood);
-				} else if (xhr.status == 403) {
-					mChat.endSession(true);
-					phpbb.alert(mChat.err, mChat.noAccess);
-				} else if (xhr.status == 413) {
-					mChat.resetSession();
-					phpbb.alert(mChat.err, mChat.mssgLngthLong);
-				} else if (xhr.status == 501) {
-					mChat.resetSession();
-					phpbb.alert(mChat.err, mChat.noMessageInput);
-				} else if (typeof console !== 'undefined' && console.log) {
-					console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
+				var responseText;
+				try {
+					responseText = xhr.responseJSON.message || errorThrown;
+				} catch (e) {
+					responseText = errorThrown;
 				}
+				phpbb.alert(mChat.err, responseText);
+				data.updateSession(data.xhr);
 			});
 		},
 		sound: function(file) {
@@ -465,7 +461,7 @@ jQuery(function($) {
 		},
 		pauseSession: function() {
 			clearInterval(mChat.refreshInterval);
-			if (mChat.userTimeout) {
+			if (mChat.timeout) {
 				clearInterval(mChat.sessionCountdown);
 			}
 			if (mChat.whoisRefresh) {
@@ -476,8 +472,8 @@ jQuery(function($) {
 			if (!mChat.archivePage) {
 				clearInterval(mChat.refreshInterval);
 				mChat.refreshInterval = setInterval(mChat.refresh, mChat.refreshTime);
-				if (mChat.userTimeout) {
-					mChat.sessionTime = mChat.userTimeout / 1000;
+				if (mChat.timeout) {
+					mChat.sessionTime = mChat.timeout / 1000;
 					clearInterval(mChat.sessionCountdown);
 					mChat.cached('session').html(mChat.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
 					mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
@@ -494,7 +490,7 @@ jQuery(function($) {
 		endSession: function(skipUpdateWhois) {
 			clearInterval(mChat.refreshInterval);
 			mChat.refreshInterval = false;
-			if (mChat.userTimeout) {
+			if (mChat.timeout) {
 				clearInterval(mChat.sessionCountdown);
 				mChat.cached('session').html(mChat.sessOut);
 			}
