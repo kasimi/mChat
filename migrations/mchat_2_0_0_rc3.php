@@ -182,7 +182,7 @@ class mchat_2_0_0_rc3 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'mchat_deleted_messages'	=> array(
 					'COLUMNS'		=> array(
-						'message_id'			=> array('UINT', null),
+						'message_id'			=> array('UINT', 0),
 					),
 					'PRIMARY_KEY'	=> 'message_id',
 				),
