@@ -954,6 +954,13 @@ class mchat
 
 		foreach ($rows as $row)
 		{
+			$is_notification = (bool) $row['post_id'];
+
+			if ($is_notification)
+			{
+				$this->process_notification($row, $board_url);
+			}
+
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 
 			// Fix profile link root path by replacing relative paths with absolute board URL
@@ -962,15 +969,9 @@ class mchat
 				$username_full = preg_replace('#(?<=href=")[\./]+?/(?=\w)#', $board_url, $username_full);
 			}
 
-			$is_notification = (bool) $row['post_id'];
-
 			if (in_array($row['user_id'], $this->foes))
 			{
 				$row['message'] = $this->user->lang('MCHAT_FOE', $username_full);
-			}
-			else if ($is_notification)
-			{
-				$this->process_notification($row, $board_url);
 			}
 
 			$message_age = time() - $row['message_time'];
@@ -1085,6 +1086,10 @@ class mchat
 		{
 			$args[] = '[url=' . $board_url . 'viewtopic.' . $this->php_ext . '?p=' . $row['post_id'] . '#p' . $row['post_id'] . ']' . array_shift($data) . '[/url]';
 			$args[] = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . array_shift($data) . '[/url]';
+		}
+		else if ($row['post_id'] == \dmzx\mchat\core\functions::LOGIN_HIDDEN)
+		{
+			$row['username'] = '<em>' . $row['username'] . '</em>';
 		}
 
 		$row['message'] = call_user_func_array(array($this->user, 'lang'), $args);
