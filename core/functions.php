@@ -161,13 +161,23 @@ class functions
 	 */
 	public function mchat_active_users()
 	{
-		$check_time = time() - $this->mchat_session_time();
+		$sql_array = array(
+			'SELECT'	=> 'u.user_id, u.username, u.user_colour, s.session_viewonline',
+			'FROM'		=> array(
+				$this->mchat_sessions_table		=> 'ms',
+				SESSIONS_TABLE					=> 's',
+			),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'ms.user_id = u.user_id',
+				),
+			),
+			'WHERE'		=> 'u.user_id <> ' . ANONYMOUS . ' AND u.user_id = s.session_user_id AND ms.user_lastupdate > ' . (int) (time() - $this->mchat_session_time()),
+			'ORDER_BY'	=> 'u.username ASC',
+		);
 
-		$sql = 'SELECT m.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour
-			FROM ' . $this->mchat_sessions_table . ' m
-			LEFT JOIN ' . USERS_TABLE . ' u ON m.user_id = u.user_id
-			WHERE m.user_lastupdate > ' . (int) $check_time . '
-			ORDER BY u.username ASC';
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
@@ -177,7 +187,12 @@ class functions
 
 		foreach ($rows as $row)
 		{
-			if (!$row['user_allow_viewonline'])
+			if (isset($mchat_users[$row['user_id']]))
+			{
+				continue;
+			}
+
+			if (!$row['session_viewonline'])
 			{
 				if (!$can_view_hidden && $row['user_id'] !== $this->user->data['user_id'])
 				{
@@ -187,7 +202,7 @@ class functions
 				$row['username'] = '<em>' . $row['username'] . '</em>';
 			}
 
-			$mchat_users[] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
+			$mchat_users[$row['user_id']] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 		}
 
 		return array(
@@ -211,8 +226,6 @@ class functions
 			WHERE user_lastupdate < ' . (int) $check_time;
 		$this->db->sql_query($sql);
 
-		$user_id = $this->user->data['user_id'];
-
 		if (!$this->user->data['is_registered'] || $this->user->data['is_bot'])
 		{
 			return false;
@@ -220,7 +233,7 @@ class functions
 
 		$sql = 'SELECT user_id
 			FROM ' . $this->mchat_sessions_table . '
-			WHERE user_id = ' . (int) $user_id;
+			WHERE user_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -231,14 +244,14 @@ class functions
 		{
 			$sql = 'UPDATE ' . $this->mchat_sessions_table . '
 				SET user_lastupdate = ' . time() . '
-				WHERE user_id = ' . (int) $user_id;
+				WHERE user_id = ' . (int) $this->user->data['user_id'];
 		}
 		else
 		{
 			$is_new_session = true;
 
 			$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
-				'user_id'			=> (int) $user_id,
+				'user_id'			=> (int) $this->user->data['user_id'],
 				'user_ip'			=> $this->user->data['user_ip'],
 				'user_lastupdate'	=> time(),
 			));
@@ -377,7 +390,7 @@ class functions
 				array(
 					'FROM'	=> array(POSTS_TABLE => 'p'),
 					'ON'	=> 'm.post_id = p.post_id',
-				)
+				),
 			),
 			'WHERE'		=> $sql_where_ary ? $this->db->sql_escape('(' . implode(') AND (', $sql_where_ary) . ')') : '',
 			'ORDER_BY'	=> 'm.message_id DESC',
