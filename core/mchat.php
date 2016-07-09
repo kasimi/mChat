@@ -1084,8 +1084,17 @@ class mchat
 		// If forum_id is not 0 it's a post notification, we need to extract forum name and post subject from the data.
 		if ($row['forum_id'])
 		{
-			$args[] = '[url=' . $board_url . 'viewtopic.' . $this->php_ext . '?p=' . $row['post_id'] . '#p' . $row['post_id'] . ']' . array_shift($data) . '[/url]';
-			$args[] = '[url=' . $board_url . 'viewforum.' . $this->php_ext . '?f=' . $row['forum_id'] . ']' . array_shift($data) . '[/url]';
+			$viewtopic_url = append_sid($board_url . 'viewtopic.' . $this->php_ext, array(
+				'p' => $row['post_id'],
+				'#' => 'p' . $row['post_id'],
+			));
+
+			$viewforum_url = append_sid($board_url . 'viewforum.' . $this->php_ext, array(
+				'f' => $row['forum_id'],
+			));
+
+			$args[] = '[url=' . $viewtopic_url . ']' . array_shift($data) . '[/url]';
+			$args[] = '[url=' . $viewforum_url . ']' . array_shift($data) . '[/url]';
 		}
 		else if ($row['post_id'] == \dmzx\mchat\core\functions::LOGIN_HIDDEN)
 		{
