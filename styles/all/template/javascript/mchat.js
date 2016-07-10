@@ -542,8 +542,9 @@ jQuery(function($) {
 		ip: function() {
 			popup(this.href, 750, 500);
 		},
+		bbCodeRegex: /\[\/?[^\[\]]+\]/g,
 		inputMessageLength: function() {
-			return $.trim(mChat.cached('input').val()).replace(/\[\/?[^\[\]]+\]/g, '').length;
+			return $.trim(mChat.cached('input').val()).replace(mChat.bbCodeRegex, '').length;
 		},
 		cached: function() {
 			return $($.map(arguments, function(name) {
@@ -603,11 +604,13 @@ jQuery(function($) {
 		});
 
 		mChat.isTextarea = mChat.cached('input').is('textarea');
-		mChat.cached('form').keypress(function(e) {
-			if (((e.which == 10 || e.which == 13)) && (!mChat.isTextarea || e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
-				mChat.add();
+		mChat.cached('form').keydown(function(e) {
+			if ((e.which == 10 || e.which == 13) && (!mChat.isTextarea || e.ctrlKey || e.metaKey)) {
 				e.preventDefault();
 				e.stopImmediatePropagation();
+				if (mChat.cached('input').is(e.target)) {
+					mChat.add();
+				}
 			}
 		});
 
@@ -634,11 +637,9 @@ jQuery(function($) {
 			});
 		}
 
-		mChat.cached('form').one('keypress', function() {
-			mChat.cached('input').autogrow({
-				vertical: false,
-				horizontal: true
-			});
+		mChat.cached('input').autogrow({
+			vertical: false,
+			horizontal: true
 		});
 	}
 
@@ -650,6 +651,8 @@ jQuery(function($) {
 
 	mChat.cached('colour').find('.colour-palette').on('click', 'a', function(e) {
 		if (e.ctrlKey || e.metaKey) {
+			e.preventDefault();
+			e.stopImmediatePropagation();
 			var $this = $(this);
 			var newColor = $this.data('color');
 			if (Cookies.get(mChat.cookie + 'mchat_color') === newColor) {
@@ -659,8 +662,6 @@ jQuery(function($) {
 				mChat.cached('colour').find('.colour-palette a').removeClass('remember-color');
 			}
 			$this.toggleClass('remember-color');
-			e.preventDefault();
-			e.stopImmediatePropagation();
 		}
 	});
 
@@ -670,12 +671,12 @@ jQuery(function($) {
 	}
 
 	$('#phpbb').on('click', '[data-mchat-action]', function(e) {
+		e.preventDefault();
 		var action = $(this).data('mchat-action');
 		mChat[action].call(this);
-		e.preventDefault();
 	}).on('click', '[data-mchat-toggle]', function(e) {
+		e.preventDefault();
 		var elem = $(this).data('mchat-toggle');
 		mChat.toggle(elem);
-		e.preventDefault();
 	});
 });
