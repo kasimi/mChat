@@ -585,7 +585,11 @@ jQuery(function($) {
 		}).change();
 
 		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
-			$('#format-buttons').find('.bbcode-' + bbcode).remove();
+			var bbCodeMapping = {
+				'=': '-',
+				'*': 'asterisk'
+			};
+			$('#format-buttons').find('.bbcode-' + bbCodeMapping[bbcode] || bbcode).remove();
 		});
 
 		var $colourPalette = $('#colour_palette');

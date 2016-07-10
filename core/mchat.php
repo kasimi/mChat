@@ -1183,7 +1183,7 @@ class mchat
 				$this->template->assign_var($option['template_var'], !$is_disallowed);
 			}
 
-			$this->template->assign_var('A_MCHAT_DISALLOWED_BBCODES', addslashes(str_replace('=', '-', $this->settings->cfg('mchat_bbcode_disallowed'))));
+			$this->template->assign_var('A_MCHAT_DISALLOWED_BBCODES', addslashes($this->settings->cfg('mchat_bbcode_disallowed')));
 
 			if (!function_exists('display_custom_bbcodes'))
 			{
@@ -1381,8 +1381,8 @@ class mchat
 		if ($this->settings->cfg('mchat_bbcode_disallowed'))
 		{
 			$bbcode_replace = array(
-				'#\[(' . $this->settings->cfg('mchat_bbcode_disallowed') . ')[^\[\]]+\]#Usi',
-				'#\[/(' . $this->settings->cfg('mchat_bbcode_disallowed') . ')[^\[\]]+\]#Usi',
+				'#\[(' . str_replace('*', '\*', $this->settings->cfg('mchat_bbcode_disallowed')) . ')[^\[\]]+\]#Usi',
+				'#\[/(' . str_replace('*', '\*', $this->settings->cfg('mchat_bbcode_disallowed')) . ')[^\[\]]+\]#Usi',
 			);
 
 			$message = preg_replace($bbcode_replace, '', $message);
