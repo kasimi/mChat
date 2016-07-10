@@ -200,8 +200,11 @@
 
 #mchat-character-count {
 	float: right;
-	visibility: hidden;
 	padding: 5px 0 0;
+}
+
+#mchat-character-count.hidden {
+	visibility: hidden;
 }
 
 #mchat-panel {

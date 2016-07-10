@@ -14,6 +14,7 @@ dmzx_mchat_page_whois_controller:
     path: /mchat/whois/{ip}
     methods: [GET]
     defaults: { _controller: dmzx.mchat.core:page_whois }
+
 dmzx_mchat_action_add_controller:
     path: /mchat/action/add
     methods: [POST]

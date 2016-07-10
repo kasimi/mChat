@@ -623,7 +623,7 @@ jQuery(function($) {
 		if (mChat.showCharCount) {
 			mChat.cached('form').keyup(function(e) {
 				var count = mChat.inputMessageLength();
-				var $elem = mChat.cached('character-count').html(mChat.charCount.format({current: count, max: mChat.mssgLngth})).css('visibility', count > 0 ? 'visible' : 'hidden');
+				var $elem = mChat.cached('character-count').html(mChat.charCount.format({current: count, max: mChat.mssgLngth})).toggleClass('hidden', count === 0);
 				if (mChat.mssgLngth) {
 					$elem.toggleClass('error', count > mChat.mssgLngth);
 				}
