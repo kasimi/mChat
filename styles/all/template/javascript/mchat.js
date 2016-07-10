@@ -86,6 +86,9 @@ jQuery(function($) {
 				deferred.reject(xhr, status, error);
 			});
 			return deferred.promise().fail(function(xhr, textStatus, errorThrown) {
+				if (mChat.pageIsUnloading) {
+					return;
+				}
 				if (typeof console !== 'undefined' && console.log) {
 					console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown + ' (' + xhr.responseText + ')');
 				}
