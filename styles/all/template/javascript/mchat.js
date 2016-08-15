@@ -38,7 +38,7 @@ if (!String.prototype.format) {
 		var args = 'string' == type || 'number' == type ? arguments : arguments[0];
 		for (var arg in args) {
 			if (args.hasOwnProperty(arg)) {
-				str = str.replace(RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
+				str = str.replace(new RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
 			}
 		}
 		return str;
@@ -162,12 +162,10 @@ jQuery(function($) {
 				$(this).show();
 			});
 			setTimeout(function() {
-				var $input = $confirmFields.find(':input:first:visible:enabled').focus();
+				var $input = $confirmFields.find(':input:first:visible:enabled');
 				if ($input.length) {
 					var value = $input.val();
-					if (value !== '') {
-						$input.focus().val('').val(value);
-					}
+					$input.focus().val('').val(value);
 				}
 			}, 1);
 			phpbb.confirm(data.container.show(), function() {
