@@ -345,14 +345,18 @@ class mchat
 		/**
 		 * @event dmzx.mchat.action_add_after
 		 * @var	string	message			The message that was added to the database
+		 * @var array	message_data	Array containing additional information that was added to the database
 		 * @var bool	is_new_session	Indicating whether the message triggered a new mChat session to be created for the user
 		 * @var array	response		The data that is sent back to the user
+		 * @var boolean	return_raw		Whether to return a raw array or a JsonResponse object
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
 			'message',
+			'message_data',
 			'is_new_session',
 			'response',
+			'return_raw',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_add_after', compact($vars)));
 
@@ -413,6 +417,7 @@ class mchat
 		 * @var	string	message		The content of the edited message that was added to the database
 		 * @var array	author		Information about the message author
 		 * @var array	response	The data that is sent back to the user
+		 * @var boolean	return_raw	Whether to return a raw array or a JsonResponse object
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
@@ -420,6 +425,7 @@ class mchat
 			'message',
 			'author',
 			'response',
+			'return_raw',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_edit_after', compact($vars)));
 
@@ -470,12 +476,14 @@ class mchat
 		 * @var int		message_id	The ID of the deleted message
 		 * @var array	author		Information about the message author
 		 * @var array	response	The data that is sent back to the user
+		 * @var boolean	return_raw	Whether to return a raw array or a JsonResponse object
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
 			'message_id',
 			'author',
 			'response',
+			'return_raw',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_delete_after', compact($vars)));
 
@@ -596,11 +604,13 @@ class mchat
 		 * @event dmzx.mchat.action_refresh_after
 		 * @var array	rows		The rows that where fetched from the database
 		 * @var array	response	The data that is sent back to the user
+		 * @var boolean	return_raw	Whether to return a raw array or a JsonResponse object
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
 			'rows',
 			'response',
+			'return_raw',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_after', compact($vars)));
 
@@ -646,10 +656,12 @@ class mchat
 		/**
 		 * @event dmzx.mchat.action_whois_after
 		 * @var array	response	The data that is sent back to the user
+		 * @var boolean	return_raw	Whether to return a raw array or a JsonResponse object
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
 			'response',
+			'return_raw',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_whois_after', compact($vars)));
 
@@ -952,15 +964,10 @@ class mchat
 
 		$board_url = generate_board_url() . '/';
 
+		$this->process_notifications($rows, $board_url);
+
 		foreach ($rows as $row)
 		{
-			$is_notification = (bool) $row['post_id'];
-
-			if ($is_notification)
-			{
-				$this->process_notification($row, $board_url);
-			}
-
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 
 			// Fix profile link root path by replacing relative paths with absolute board URL
@@ -988,7 +995,7 @@ class mchat
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'			=> $is_poster,
-				'MCHAT_IS_NOTIFICATION'		=> $is_notification,
+				'MCHAT_IS_NOTIFICATION'		=> (bool) $row['post_id'],
 				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;mchat_pm_quote_message=' . (int) $row['message_id'] . '&amp;u=' . $row['user_id']) : '',
 				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
@@ -1063,25 +1070,62 @@ class mchat
 	}
 
 	/**
-	 * Converts the serialized data in a post notification row so that it can be passed to generate_text_for_display()
+	 * Checks the post rows for notifications and converts their language keys
 	 *
-	 * @param array $row The row to modify
+	 * @param array $rows The rows to modify
 	 * @param string $board_url
 	 */
-	protected function process_notification(&$row, $board_url)
+	protected function process_notifications(&$rows, $board_url)
 	{
-		$data = json_decode($row['message'], true);
+		$notification_post_ids = array();
 
-		// If unserializing failed the message content is plain text from previous mChat versions and we don't need to process it
-		if (!$data)
+		// All language keys of valid notifications. We need to check for them here because
+		// notifications in < 2.0.0-RC6 are plain text and don't need to be processed here.
+		$notification_lang = array(
+			'MCHAT_NEW_POST',
+			'MCHAT_NEW_QUOTE',
+			'MCHAT_NEW_EDIT',
+			'MCHAT_NEW_REPLY',
+			'MCHAT_NEW_LOGIN',
+		);
+
+		foreach ($rows as $row)
 		{
-			return;
+			// If post_id is 0 it's not a notification.
+			if ($row['post_id'] && in_array($row['message'], $notification_lang))
+			{
+				$notification_post_ids[] = $row['post_id'];
+			}
 		}
 
-		$args = array(array_shift($data));
+		$notification_post_data = $this->functions->mchat_get_post_data($notification_post_ids);
 
-		// If forum_id is 0 it's a login notification, no additional data needed for that.
-		// If forum_id is not 0 it's a post notification, we need to extract forum name and post subject from the data.
+		if ($notification_post_data)
+		{
+			foreach ($rows as $i => $row)
+			{
+				if (in_array($row['post_id'], $notification_post_ids))
+				{
+					$rows[$i] = $this->process_notification($row, $board_url, $notification_post_data[$row['post_id']]);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Converts the message field of the post row so that it can be passed to generate_text_for_display()
+	 *
+	 * @param array $row
+	 * @param string $board_url
+	 * @param array $post_data
+	 * @return array
+	 */
+	protected function process_notification($row, $board_url, $post_data)
+	{
+		$args = array($row['message']);
+
+		// If forum_id is 0 it's a login notification.
+		// If forum_id is not 0 it's a post notification, we need to fetch forum name and post subject.
 		if ($row['forum_id'])
 		{
 			$viewtopic_url = append_sid($board_url . 'viewtopic.' . $this->php_ext, array(
@@ -1093,10 +1137,10 @@ class mchat
 				'f' => $row['forum_id'],
 			));
 
-			$args[] = '[url=' . $viewtopic_url . ']' . array_shift($data) . '[/url]';
-			$args[] = '[url=' . $viewforum_url . ']' . array_shift($data) . '[/url]';
+			$args[] = '[url=' . $viewtopic_url . ']' . $post_data['post_subject'] . '[/url]';
+			$args[] = '[url=' . $viewforum_url . ']' . $post_data['forum_name'] . '[/url]';
 		}
-		else if ($row['post_id'] == \dmzx\mchat\core\functions::LOGIN_HIDDEN)
+		else if ($row['post_id'] == functions::LOGIN_HIDDEN)
 		{
 			$row['username'] = '<em>' . $row['username'] . '</em>';
 		}
@@ -1108,6 +1152,8 @@ class mchat
 		{
 			generate_text_for_storage($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'], true, true, true);
 		}
+
+		return $row;
 	}
 
 	/**
@@ -1243,12 +1289,13 @@ class mchat
 	 * Inserts a message with posting information into the database
 	 *
 	 * @param string $mode One of post|quote|edit|reply|login
-	 * @param $data The post data. Can be null if mode is login.
+	 * @param int $forum_id Can be 0 if mode is login.
+	 * @param int $post_id Can be 0 if mode is login.
 	 */
-	public function insert_posting($mode, $data = null)
+	public function insert_posting($mode, $forum_id = 0, $post_id= 0)
 	{
 		$is_hidden_login = $this->request->is_set_post('viewonline') || !$this->user->data['user_allow_viewonline'];
-		$this->functions->mchat_insert_posting($mode, $data, $is_hidden_login);
+		$this->functions->mchat_insert_posting($mode, $forum_id, $post_id, $is_hidden_login);
 	}
 
 	/**
@@ -1275,7 +1322,9 @@ class mchat
 
 		if ($row['post_id'])
 		{
-			$this->process_notification($row, generate_board_url() . '/');
+			$rows = array($row);
+			$this->process_notifications($rows, generate_board_url() . '/');
+			$row = reset($rows);
 		}
 
 		$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);

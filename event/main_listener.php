@@ -61,12 +61,11 @@ class main_listener implements EventSubscriberInterface
 			'core.user_setup'							=> 'load_language_on_setup',
 			'core.page_header'							=> 'add_page_header_link',
 			'core.index_modify_page_title'				=> 'display_mchat_on_index',
-			'core.submit_post_end'						=> 'submit_post_end',
-			'core.display_custom_bbcodes_modify_sql'	=> 'display_custom_bbcodes_modify_sql',
+			'core.submit_post_end'						=> 'insert_posting',
+			'core.display_custom_bbcodes_modify_sql'	=> array(array('remove_disallowed_bbcodes'), array('pm_compose_add_quote')),
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
 			'core.login_box_redirect'					=> 'user_login_success',
 			'core.ucp_pm_compose_modify_data'			=> 'pm_compose_before',
-			'core.display_custom_bbcodes_modify_sql'	=> 'pm_compose_add_quote',
 		);
 	}
 
@@ -118,20 +117,15 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param object $event The event object
 	 */
-	public function submit_post_end($event)
+	public function insert_posting($event)
 	{
-		$this->mchat->insert_posting($event['mode'], array(
-			'forum_id'		=> $event['data']['forum_id'],
-			'forum_name'	=> $event['data']['forum_name'],
-			'post_id'		=> $event['data']['post_id'],
-			'post_subject'	=> $event['subject'],
-		));
+		$this->mchat->insert_posting($event['mode'], $event['data']['forum_id'], $event['data']['post_id']);
 	}
 
 	/**
 	 * @param object $event The event object
 	 */
-	public function display_custom_bbcodes_modify_sql($event)
+	public function remove_disallowed_bbcodes($event)
 	{
 		$event['sql_ary'] = $this->mchat->remove_disallowed_bbcodes($event['sql_ary']);
 	}

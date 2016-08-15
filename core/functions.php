@@ -164,18 +164,31 @@ class functions
 		$sql_array = array(
 			'SELECT'	=> 'u.user_id, u.username, u.user_colour, s.session_viewonline',
 			'FROM'		=> array(
-				$this->mchat_sessions_table		=> 'ms',
-				SESSIONS_TABLE					=> 's',
+				$this->mchat_sessions_table => 'ms'
 			),
 			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(SESSIONS_TABLE => 's'),
+					'ON'	=> 'ms.user_id = s.session_user_id',
+				),
 				array(
 					'FROM'	=> array(USERS_TABLE => 'u'),
 					'ON'	=> 'ms.user_id = u.user_id',
 				),
 			),
-			'WHERE'		=> 'u.user_id <> ' . ANONYMOUS . ' AND u.user_id = s.session_user_id AND ms.user_lastupdate > ' . (int) (time() - $this->mchat_session_time()),
+			'WHERE'		=> 'u.user_id <> ' . ANONYMOUS . ' AND s.session_viewonline IS NOT NULL AND ms.user_lastupdate > ' . (int) (time() - $this->mchat_session_time()),
 			'ORDER_BY'	=> 'u.username ASC',
 		);
+
+		/**
+		 * @event dmzx.mchat.active_users_sql_before
+		 * @var array	$sql_array	Array with SQL query data to fetch the current active sessions
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'sql_array',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.active_users_sql_before', compact($vars)));
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
@@ -187,11 +200,6 @@ class functions
 
 		foreach ($rows as $row)
 		{
-			if (isset($mchat_users[$row['user_id']]))
-			{
-				continue;
-			}
-
 			if (!$row['session_viewonline'])
 			{
 				if (!$can_view_hidden && $row['user_id'] !== $this->user->data['user_id'])
@@ -204,6 +212,16 @@ class functions
 
 			$mchat_users[$row['user_id']] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 		}
+
+		/**
+		 * @event dmzx.mchat.active_users_after
+		 * @var array	$mchat_users	Array containing all currently active mChat sessions, mapping from user ID to full username
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'mchat_users',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.active_users_after', compact($vars)));
 
 		return array(
 			'online_userlist'	=> implode($this->user->lang('COMMA_SEPARATOR'), $mchat_users),
@@ -334,7 +352,7 @@ class functions
 	/**
 	 * Fetch messages from the database
 	 *
-	 * @param array $message_ids IDs of specific messages to fetch, e.g. for fetching edited messages
+	 * @param int|array $message_ids IDs of specific messages to fetch, e.g. for fetching edited messages
 	 * @param int $last_id The ID of the latest message that the user has, for fetching new messages
 	 * @param int $total
 	 * @param int $offset
@@ -574,6 +592,45 @@ class functions
 	}
 
 	/**
+	 * Fetches post subjects and their forum names
+	 *
+	 * @param array $post_ids
+	 * @return array
+	 */
+	public function mchat_get_post_data($post_ids)
+	{
+		if (!$post_ids)
+		{
+			return array();
+		}
+
+		$sql = 'SELECT p.post_id, p.post_subject, f.forum_name
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+				WHERE p.forum_id = f.forum_id
+					AND ' . $this->db->sql_in_set('p.post_id', $post_ids);
+
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$post_subjects = array();
+
+		foreach ($rows as $row)
+		{
+			// Skip deleted posts
+			if (isset($row['post_subject']))
+			{
+				$post_subjects[$row['post_id']] = array(
+					'post_subject'	=> $row['post_subject'],
+					'forum_name'	=> $row['forum_name'],
+				);
+			}
+		}
+
+		return $post_subjects;
+	}
+
+	/**
 	 * Adds forbidden BBCodes to the passed SQL where statement
 	 *
 	 * @param string $sql_where
@@ -595,10 +652,11 @@ class functions
 	 * Inserts a message with posting information into the database
 	 *
 	 * @param string $mode One of post|quote|edit|reply|login
-	 * @param array $data The post data
+	 * @param int $forum_id
+	 * @param int $post_id
 	 * @param bool $is_hidden_login
 	 */
-	public function mchat_insert_posting($mode, $data, $is_hidden_login)
+	public function mchat_insert_posting($mode, $forum_id, $post_id, $is_hidden_login)
 	{
 		$mode_config = array(
 			'post'	=> 'mchat_posts_topic',
@@ -613,29 +671,19 @@ class functions
 			return;
 		}
 
-		$message_data = array(
-			'MCHAT_NEW_' . strtoupper($mode),
-		);
-
+		// Special treatment for login notifications
 		if ($mode === 'login')
 		{
-			$data = array(
-				'forum_id'	=> 0,
-				'post_id'	=> $is_hidden_login ? self::LOGIN_HIDDEN : self::LOGIN_VISIBLE,
-			);
-		}
-		else
-		{
-			$message_data[] = $data['post_subject'];
-			$message_data[] = $data['forum_name'];
+			$forum_id = 0;
+			$post_id = $is_hidden_login ? self::LOGIN_HIDDEN : self::LOGIN_VISIBLE;
 		}
 
 		$sql_ary = array(
-			'forum_id'			=> $data['forum_id'],
-			'post_id'			=> $data['post_id'],
-			'user_id'			=> $this->user->data['user_id'],
+			'forum_id'			=> (int) $forum_id,
+			'post_id'			=> (int) $post_id,
+			'user_id'			=> (int) $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
-			'message'			=> json_encode($message_data),
+			'message'			=> 'MCHAT_NEW_' . strtoupper($mode),
 			'message_time'		=> time(),
 		);
 
