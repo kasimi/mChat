@@ -12,6 +12,7 @@
 namespace dmzx\mchat\core;
 
 use \Symfony\Component\HttpFoundation\JsonResponse;
+use \phpbb\exception\http_exception;
 
 class mchat
 {
@@ -142,14 +143,14 @@ class mchat
 				login_box();
 			}
 
-			throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
+			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
 
 		if (!$this->settings->cfg('mchat_custom_page'))
 		{
-			throw new \phpbb\exception\http_exception(404, 'MCHAT_NO_CUSTOM_PAGE');
+			throw new http_exception(404, 'MCHAT_NO_CUSTOM_PAGE');
 		}
 
 		$this->functions->mchat_add_user_session();
@@ -187,7 +188,7 @@ class mchat
 				login_box();
 			}
 
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS_ARCHIVE');
+			throw new http_exception(403, 'MCHAT_NOACCESS_ARCHIVE');
 		}
 
 		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', true);
@@ -224,7 +225,7 @@ class mchat
 				login_box();
 			}
 
-			throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
+			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
@@ -253,7 +254,7 @@ class mchat
 				login_box();
 			}
 
-			throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
+			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
@@ -262,7 +263,7 @@ class mchat
 
 		if (!$this->settings->cfg('mchat_rules') && !$lang_rules)
 		{
-			throw new \phpbb\exception\http_exception(404, 'MCHAT_NO_RULES');
+			throw new http_exception(404, 'MCHAT_NO_RULES');
 		}
 
 		// If the rules are defined in the language file use them, else just use the entry in the database
@@ -285,7 +286,7 @@ class mchat
 	{
 		if (!$this->request->is_ajax())
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		// Fix avatars & smilies
@@ -298,12 +299,12 @@ class mchat
 
 		if (!$this->auth->acl_get('u_mchat_use') || !check_form_key('mchat', -1))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'MCHAT_NOACCESS');
 		}
 
 		if ($this->functions->mchat_is_user_flooding())
 		{
-			throw new \phpbb\exception\http_exception(400, 'MCHAT_FLOOD');
+			throw new http_exception(400, 'MCHAT_FLOOD');
 		}
 
 		$message = $this->request->variable('message', '', true);
@@ -373,7 +374,7 @@ class mchat
 	{
 		if (!$this->request->is_ajax())
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		// Fix avatars & smilies
@@ -388,14 +389,14 @@ class mchat
 
 		if (!$message_id || !check_form_key('mchat', -1))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'MCHAT_NOACCESS');
 		}
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
 		if (!$author || $author['post_id'] || !$this->auth_message('edit', $author['user_id'], $author['message_time']))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'MCHAT_NOACCESS');
 		}
 
 		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', $this->request->variable('archive', false));
@@ -442,7 +443,7 @@ class mchat
 	{
 		if (!$this->request->is_ajax())
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		// Fix avatars & smilies
@@ -457,14 +458,14 @@ class mchat
 
 		if (!$message_id || !check_form_key('mchat', -1))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'MCHAT_NOACCESS');
 		}
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
 		if (!$author || !$this->auth_message('delete', $author['user_id'], $author['message_time']))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'MCHAT_NOACCESS');
 		}
 
 		$this->functions->mchat_action('del', null, $message_id);
@@ -500,7 +501,7 @@ class mchat
 	{
 		if (!$this->request->is_ajax())
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		// Fix avatars & smilies
@@ -513,7 +514,7 @@ class mchat
 
 		if (!$this->auth->acl_get('u_mchat_view'))
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		// Keep the session alive forever if there is no session timeout
@@ -627,7 +628,7 @@ class mchat
 	{
 		if (!$this->request->is_ajax())
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_AUTH_OPERATION');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		// Fix avatars & smilies
@@ -640,7 +641,7 @@ class mchat
 
 		if (!$this->auth->acl_get('u_mchat_view'))
 		{
-			throw new \phpbb\exception\http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'MCHAT_NOACCESS');
 		}
 
 		$this->assign_whois();
@@ -1390,7 +1391,7 @@ class mchat
 		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
 		if (!utf8_strlen($message_chars))
 		{
-			throw new \phpbb\exception\http_exception(400, 'MCHAT_NOMESSAGEINPUT');
+			throw new http_exception(400, 'MCHAT_NOMESSAGEINPUT');
 		}
 
 		// Must not exceed character limit
@@ -1398,7 +1399,7 @@ class mchat
 		{
 			if (utf8_strlen($message_chars) > $this->settings->cfg('mchat_max_message_lngth'))
 			{
-				throw new \phpbb\exception\http_exception(400, 'MCHAT_MESS_LONG', array($this->settings->cfg('mchat_max_message_lngth')));
+				throw new http_exception(400, 'MCHAT_MESS_LONG', array($this->settings->cfg('mchat_max_message_lngth')));
 			}
 		}
 
