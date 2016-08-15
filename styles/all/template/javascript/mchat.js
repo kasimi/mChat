@@ -655,7 +655,7 @@ jQuery(function($) {
 			var $this = $(this);
 			var newColor = $this.data('color');
 			if (Cookies.get(mChat.cookie + 'mchat_color') === newColor) {
-				Cookies.remove('mchat_color');
+				Cookies.remove(mChat.cookie + 'mchat_color');
 			} else {
 				Cookies.set(mChat.cookie + 'mchat_color', newColor);
 				mChat.cached('colour').find('.colour-palette a').removeClass('remember-color');
