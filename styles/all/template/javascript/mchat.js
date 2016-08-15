@@ -605,13 +605,11 @@ jQuery(function($) {
 		});
 
 		mChat.isTextarea = mChat.cached('input').is('textarea');
-		mChat.cached('form').keydown(function(e) {
-			if ((e.which == 10 || e.which == 13) && (!mChat.isTextarea || e.ctrlKey || e.metaKey)) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				if (mChat.cached('input').is(e.target)) {
-					mChat.add();
-				}
+		mChat.cached('form').submit(function(e){
+			e.preventDefault();
+		}).keypress(function(e) {
+			if ((e.which == 10 || e.which == 13) && (!mChat.isTextarea || e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
+				mChat.add();
 			}
 		});
 
