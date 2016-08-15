@@ -321,7 +321,7 @@ jQuery(function($) {
 				var $message = $(this);
 				var data = {
 					message: $message,
-					delay: 400,
+					delay: mChat.refreshInterval ? 400 : 0,
 					abort: $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1,
 					playSound: playSound
 				};
