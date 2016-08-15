@@ -45,6 +45,25 @@ if (!String.prototype.format) {
 	};
 }
 
+if (!String.prototype.replaceMany) {
+	String.prototype.replaceMany = function() {
+		var result = this;
+		var args = arguments[0];
+		for (var arg in args) {
+			if (args.hasOwnProperty(arg)) {
+				result = result.replace(new RegExp(RegExp.escape(arg), "g"), args[arg]);
+			}
+		}
+		return result;
+	};
+}
+
+if (!RegExp.escape) {
+	RegExp.escape = function(s) {
+		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+	};
+}
+
 jQuery.fn.reverse = function(reverse) {
 	return reverse === 'undefined' || reverse ? jQuery(this.toArray().reverse()) : this;
 };
@@ -587,11 +606,11 @@ jQuery(function($) {
 		}).change();
 
 		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
-			var bbCodeMapping = {
+			var bbCodeClass = '.bbcode-' + bbcode.replaceMany({
 				'=': '-',
 				'*': 'asterisk'
-			};
-			$('#format-buttons').find('.bbcode-' + bbCodeMapping[bbcode] || bbcode).remove();
+			});
+			$('#format-buttons').find(bbCodeClass).remove();
 		});
 
 		var $colourPalette = $('#colour_palette');
