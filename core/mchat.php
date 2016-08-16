@@ -1306,9 +1306,7 @@ class mchat
 	 */
 	public function quote_message_text($mchat_message_id)
 	{
-		$mchat_message_id = (int) $mchat_message_id;
-
-		if (!$mchat_message_id || !$this->auth->acl_get('u_mchat_view'))
+		if (!$this->auth->acl_get('u_mchat_view'))
 		{
 			return;
 		}

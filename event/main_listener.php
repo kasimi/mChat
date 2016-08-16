@@ -30,9 +30,6 @@ class main_listener implements EventSubscriberInterface
 	/** @var string */
 	protected $php_ext;
 
-	/** @var int The ID of the mChat message that is quoted when composing a PM */
-	private $mchat_pm_quote_message = 0;
-
 	/**
 	 * Constructor
 	 *
@@ -65,7 +62,6 @@ class main_listener implements EventSubscriberInterface
 			'core.display_custom_bbcodes_modify_sql'	=> array(array('remove_disallowed_bbcodes'), array('pm_compose_add_quote')),
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
 			'core.login_box_redirect'					=> 'user_login_success',
-			'core.ucp_pm_compose_modify_data'			=> 'pm_compose_before',
 		);
 	}
 
@@ -152,16 +148,13 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param object $event The event object
 	 */
-	public function pm_compose_before($event)
-	{
-		$this->mchat_pm_quote_message = $this->request->variable('mchat_pm_quote_message', 0);
-	}
-
-	/**
-	 * @param object $event The event object
-	 */
 	public function pm_compose_add_quote($event)
 	{
-		$this->mchat->quote_message_text($this->mchat_pm_quote_message);
+		$mchat_message_id = $this->request->variable('mchat_pm_quote_message', 0);
+
+		if ($mchat_message_id)
+		{
+			$this->mchat->quote_message_text($mchat_message_id);
+		}
 	}
 }
