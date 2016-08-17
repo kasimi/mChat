@@ -417,7 +417,7 @@ class functions
 				),
 				array(
 					'FROM'	=> array(POSTS_TABLE => 'p'),
-					'ON'	=> 'm.post_id = p.post_id',
+					'ON'	=> 'm.post_id = p.post_id AND m.forum_id <> 0',
 				),
 			),
 			'WHERE'		=> $sql_where_ary ? $this->db->sql_escape('(' . implode(') AND (', $sql_where_ary) . ')') : '',
