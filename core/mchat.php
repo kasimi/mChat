@@ -11,8 +11,8 @@
 
 namespace dmzx\mchat\core;
 
-use \Symfony\Component\HttpFoundation\JsonResponse;
-use \phpbb\exception\http_exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use phpbb\exception\http_exception;
 
 class mchat
 {
@@ -1005,7 +1005,7 @@ class mchat
 				'MCHAT_USERNAME_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_WHOIS_USER'			=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
 				'MCHAT_U_IP'				=> $this->helper->route('dmzx_mchat_page_whois_controller', array('ip' => $row['user_ip'])),
-				'MCHAT_U_PERMISSIONS'		=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[0]=' . $row['user_id'], true, $this->user->session_id),
+				'MCHAT_U_PERMISSIONS'		=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}", 'i=permissions&amp;mode=setting_user_global&amp;user_id%5B0%5D=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'				=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
 				'MCHAT_TIME'				=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
 				'MCHAT_DATETIME'			=> $datetime,
