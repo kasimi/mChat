@@ -327,6 +327,16 @@ class functions
 			$prune_ids[] = (int) $row['message_id'];
 		}
 
+		/**
+		 * @event dmzx.mchat.prune_before
+		 * @var array	prune_ids	Array of message IDs that are about to be pruned
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'prune_ids',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.prune_before', compact($vars)));
+
 		if ($prune_ids)
 		{
 			$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
