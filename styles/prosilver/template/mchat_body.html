@@ -17,7 +17,7 @@
 </div>
 <!-- ENDIF -->
 
-<!-- EVENT dmzx_mchat_body_before -->
+<!-- EVENT dmzx_mchat_before -->
 
 <!-- IF MCHAT_IS_COLLAPSIBLE -->
 	<a class="category<!-- IF S_MCHAT_HIDDEN --> hidden-category<!-- ENDIF --> mchat-category"></a>
@@ -39,6 +39,8 @@
 				<!-- ENDIF -->
 			</li>
 		</ul>
+
+		<!-- EVENT dmzx_mchat_body_before -->
 
 		<div id="mchat-body"<!-- IF MCHAT_IS_COLLAPSIBLE --> class="collapsible"<!-- ENDIF -->>
 			<!-- IF not MCHAT_SOUND_DISABLED -->
@@ -77,13 +79,17 @@
 					<!-- ENDIF -->
 				</ul>
 
-					<!-- EVENT dmzx_mchat_messages_container_after -->
+				<!-- EVENT dmzx_mchat_messages_after -->
 			</div>
 
 			<!-- INCLUDE mchat_panel.html -->
 		</div>
+
+		<!-- EVENT dmzx_mchat_body_after -->
 	</div>
 </div>
+
+<!-- EVENT dmzx_mchat_after -->
 
 <!-- IF MCHAT_IS_ARCHIVE_PAGE -->
 <div class="action-bar bottom">
