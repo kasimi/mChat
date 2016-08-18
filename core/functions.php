@@ -50,7 +50,7 @@ class functions
 	protected $mchat_sessions_table;
 
 	/** @var array */
-	private $log_types = array(
+	public $log_types = array(
 		1 => 'edit',
 		2 => 'del',
 	);
@@ -482,22 +482,10 @@ class functions
 			'id' => $log_id,
 		);
 
-		foreach ($this->log_types as $log_type_id => $log_type)
-		{
-			$logs[$log_type] = array();
-		}
-
-		$edit_delete_limit = $this->settings->cfg('mchat_edit_delete_limit');
-		$time_limit = $edit_delete_limit ? time() - $edit_delete_limit : 0;
-
 		foreach ($rows as $row)
 		{
 			$logs['id'] = max((int) $logs['id'], (int) $row['log_id']);
-
-			if ($row['user_id'] != $this->user->data['user_id'] && $row['log_time'] > $time_limit)
-			{
-				$logs[$this->log_types[$row['log_type']]][] = (int) $row['message_id'];
-			}
+			$logs[] = $row;
 		}
 
 		return $logs;
@@ -802,10 +790,10 @@ class functions
 
 	/**
 	 * @param string $log_type The log type, one of edit|del
-	 * @param $message_id
-	 * @return int
+	 * @param int $message_id The ID of the message to which this log entry belongs
+	 * @return int The ID of the newly added log row
 	 */
-	private function mchat_insert_log($log_type, $message_id)
+	public function mchat_insert_log($log_type, $message_id)
 	{
 		$this->db->sql_query('INSERT INTO ' . $this->mchat_log_table . ' ' . $this->db->sql_build_array('INSERT', array(
 			'log_type'		=> array_search($log_type, $this->log_types),

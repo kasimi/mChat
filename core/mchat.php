@@ -518,23 +518,70 @@ class mchat
 		}
 
 		// Keep the session alive forever if there is no session timeout
-		if (!$this->settings->cfg('mchat_timeout'))
+		$keep_session_alive = !$this->settings->cfg('mchat_timeout');
+
+		// Whether to check the log table for new entries
+		$need_log_update = $this->settings->cfg('mchat_live_updates');
+
+		/**
+		 * @event dmzx.mchat.action_refresh_before
+		 * @var bool	need_session_update	Whether to the user's phpBB session
+		 * @var bool	need_log_update		Whether to check the log table for new entries
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'keep_session_alive',
+			'need_log_update',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_before', compact($vars)));
+
+		if ($keep_session_alive)
 		{
 			$this->user->update_session_infos();
 		}
 
 		$response = array('refresh' => true);
-		$edit_ids = array();
-		$del_ids = array();
+		$log_edit_del_ids = array(
+			'edit'	=> array(),
+			'del'	=> array(),
+		);
 
-		if ($this->settings->cfg('mchat_live_updates'))
+		if ($need_log_update)
 		{
 			$log_id = $this->request->variable('log', 0);
-			$rows_log = $this->functions->mchat_get_logs($log_id);
+			$log_rows = $this->functions->mchat_get_logs($log_id);
 
-			$response['log'] = $rows_log['id'];
-			$edit_ids = $rows_log['edit'];
-			$del_ids = $rows_log['del'];
+			$response['log'] = $log_rows['id'];
+			unset($log_rows['id']);
+
+			$edit_delete_limit = $this->settings->cfg('mchat_edit_delete_limit');
+			$time_limit = $edit_delete_limit ? time() - $edit_delete_limit : 0;
+
+			foreach ($log_rows as $log_row)
+			{
+				$log_type = $log_row['log_type'];
+
+				if (isset($this->functions->log_types[$log_type]))
+				{
+					if ($log_row['user_id'] != $this->user->data['user_id'] && $log_row['log_time'] > $time_limit)
+					{
+						$log_type_name = $this->functions->log_types[$log_type];
+						$log_edit_del_ids[$log_type_name][] = (int) $log_row['message_id'];
+					}
+				}
+
+				/**
+				 * @event dmzx.mchat.action_refresh_process_log_row
+				 * @var array	response	The data that is sent back to the user (still incomplete at this point)
+				 * @var array	log_row		The log data
+				 * @since 2.0.0-RC6
+				 */
+				$vars = array(
+					'response',
+					'log_row',
+				);
+				extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_process_log_row', compact($vars)));
+			}
 		}
 
 		$last_id = $this->request->variable('last', 0);
@@ -542,25 +589,24 @@ class mchat
 		$offset = 0;
 
 		/**
-		 * @event dmzx.mchat.action_refresh_before
-		 * @var int		last_id		The latest message that the user has
-		 * @var array	edit_ids	An array containing IDs of message that have been edited since the user's last refresh
-		 * @var array	del_ids		An array containing IDs of message that have been deleted since the user's last refresh
-		 * @var int		total		Limit the number of messages to fetch
-		 * @var int		offset		The number of messages to skip
-		 *
+		 * @event dmzx.mchat.action_refresh_sql_before
+		 * @var array	response			The data that is sent back to the user (still incomplete at this point)
+		 * @var array	log_edit_del_ids	An array containing IDs of messages that have been edited or deleted since the user's last refresh
+		 * @var int		last_id				The latest message that the user has
+		 * @var int		total				Limit the number of messages to fetch
+		 * @var int		offset				The number of messages to skip
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
+			'response',
+			'log_edit_del_ids',
 			'last_id',
-			'edit_ids',
-			'del_ids',
 			'total',
 			'offset',
 		);
-		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_before', compact($vars)));
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_sql_before', compact($vars)));
 
-		$rows = $this->functions->mchat_get_messages($edit_ids, $last_id, $total, $offset);
+		$rows = $this->functions->mchat_get_messages($log_edit_del_ids['edit'], $last_id, $total, $offset);
 		$rows_refresh = array();
 		$rows_edit = array();
 
@@ -570,7 +616,7 @@ class mchat
 			{
 				$rows_refresh[] = $row;
 			}
-			else if (in_array($row['message_id'], $edit_ids))
+			else if (in_array($row['message_id'], $log_edit_del_ids['edit']))
 			{
 				$rows_edit[] = $row;
 			}
@@ -596,9 +642,9 @@ class mchat
 		}
 
 		// Assign deleted messages
-		if ($del_ids)
+		if ($log_edit_del_ids['del'])
 		{
-			$response['del'] = $del_ids;
+			$response['del'] = $log_edit_del_ids['del'];
 		}
 
 		/**
