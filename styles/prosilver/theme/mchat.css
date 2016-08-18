@@ -16,6 +16,10 @@
 	width: 0;
 }
 
+#mchat-body {
+	overflow: hidden;
+}
+
 .icon-mchat {
 	background-image: url("./images/icon_mchat.png");
 }
@@ -24,17 +28,9 @@
 	display: none;
 }
 
-#mchat-body {
-	width: 100% !important;
-}
-
 #mchat-confirm textarea {
 	width: 100%;
 	height: 100px;
-}
-
-.mchat-messages-container {
-	width: 100%;
 }
 
 #mchat-messages {
@@ -62,6 +58,10 @@
 
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
 
+	#mchat-body {
+		overflow: visible;
+	}
+
 	.mchat-buttons > li {
 		padding: 0 6px !important;
 	}
@@ -77,34 +77,34 @@
 	display: block;
 }
 
-#mchat-body .mchat-buttons li {
+.mchat-wrapper .mchat-buttons li {
 	opacity: .3;
 }
 
-#mchat-body li:hover .mchat-buttons li {
+.mchat-wrapper li:hover .mchat-buttons li {
 	opacity: .6;
 }
 
-#mchat-body li:hover .mchat-buttons li:hover {
+.mchat-wrapper li:hover .mchat-buttons li:hover {
 	opacity: 1;
 }
 
-.mchat-buttons {
+.mchat-wrapper .mchat-buttons {
 	float: right;
 	list-style: none;
 	margin-top: 1px;
 }
 
-#mchat-main .mchat-buttons > li {
+.mchat-wrapper .mchat-buttons > li {
 	float: left;
 	margin: 0 3px;
 }
 
-.mchat-buttons .fa {
+.mchat-wrapper .mchat-buttons .fa {
 	font-size: 12pt;
 }
 
-.mchat-buttons span {
+.mchat-wrapper .mchat-buttons span {
 	display: block;
 	height: 0;
 	overflow: hidden;
@@ -224,7 +224,7 @@
 	cursor: text;
 	width: 50%;
 	min-width: 50%;
-	max-width: 95%;
+	max-width: 90%;
 	font-size: 1.1em;
 	padding: 5px 5px 4px;
 	margin: 5px 20px;

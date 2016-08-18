@@ -23,7 +23,7 @@
 	<a class="category<!-- IF S_MCHAT_HIDDEN --> hidden-category<!-- ENDIF --> mchat-category"></a>
 <!-- ENDIF -->
 
-<div class="forabg">
+<div class="forabg mchat-wrapper">
 	<a id="mChat"></a>
 	<div class="inner">
 		<ul class="topiclist">
@@ -67,17 +67,17 @@
 					</ul>
 				<!-- ENDIF -->
 
-				<div class="mchat-messages-container">
-					<!-- EVENT dmzx_mchat_messages_container_before -->
-					<ul id="mchat-messages" class="topiclist forums"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
-						<!-- IF .mchatrow -->
-							<!-- INCLUDE mchat_messages.html -->
-						<!-- ELSE -->
-							<li class="row mchat-static mchat-no-messages">{L_MCHAT_NOMESSAGE}</li>
-						<!-- ENDIF -->
-					</ul>
+				<!-- EVENT dmzx_mchat_messages_before -->
+
+				<ul id="mchat-messages" class="topiclist forums"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
+					<!-- IF .mchatrow -->
+						<!-- INCLUDE mchat_messages.html -->
+					<!-- ELSE -->
+						<li class="row mchat-static mchat-no-messages">{L_MCHAT_NOMESSAGE}</li>
+					<!-- ENDIF -->
+				</ul>
+
 					<!-- EVENT dmzx_mchat_messages_container_after -->
-				</div>
 			</div>
 
 			<!-- INCLUDE mchat_panel.html -->
