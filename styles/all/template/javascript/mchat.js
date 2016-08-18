@@ -181,7 +181,7 @@ jQuery(function($) {
 				$(this).show();
 			});
 			setTimeout(function() {
-				var $input = $confirmFields.find(':input:first:visible:enabled');
+				var $input = $confirmFields.find(':input:visible:enabled:first');
 				if ($input.length) {
 					var value = $input.val();
 					$input.focus().val('').val(value);
@@ -370,7 +370,7 @@ jQuery(function($) {
 						show: function($message) {
 							$message.css('opacity', 0).slideDown().animate({opacity: 1}, {queue: false});
 						},
-						scroll: function() {
+						scroll: function($container) {
 							if (!mChat.messageTop && $container.scrollTop() >= scrollHeight - $container.height()) {
 								$container.animate({
 									scrollTop: scrollHeight,
@@ -383,7 +383,7 @@ jQuery(function($) {
 					$(mChat).trigger('mchat_add_message_animate_before', [data]);
 					data.add(data.container, data.message);
 					data.show(data.message);
-					data.scroll();
+					data.scroll(data.container);
 				}, i * data.delay);
 				if (mChat.editDeleteLimit && $message.data('mchat-edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
 					var id = $message.prop('id');
