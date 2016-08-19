@@ -28,53 +28,45 @@ if (!Array.prototype.min) {
 	};
 }
 
-if (!Array.prototype.removeValue) {
-	Array.prototype.removeValue = function(value) {
-		var index = -1;
-		var elementsRemoved = 0;
-		while ((index = this.indexOf(value)) !== -1) {
-    		this.splice(index, 1);
-			elementsRemoved++;
-		}
-		return elementsRemoved;
-	};
-}
+Array.prototype.removeValue = function(value) {
+	var index = -1;
+	var elementsRemoved = 0;
+	while ((index = this.indexOf(value)) !== -1) {
+		this.splice(index, 1);
+		elementsRemoved++;
+	}
+	return elementsRemoved;
+};
 
-if (!String.prototype.format) {
-	String.prototype.format = function() {
-		var str = this.toString();
-		if (!arguments.length) {
-			return str;
-		}
-		var type = typeof arguments[0];
-		var args = 'string' == type || 'number' == type ? arguments : arguments[0];
-		for (var arg in args) {
-			if (args.hasOwnProperty(arg)) {
-				str = str.replace(new RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
-			}
-		}
+String.prototype.format = function() {
+	var str = this.toString();
+	if (!arguments.length) {
 		return str;
-	};
-}
-
-if (!String.prototype.replaceMany) {
-	String.prototype.replaceMany = function() {
-		var result = this;
-		var args = arguments[0];
-		for (var arg in args) {
-			if (args.hasOwnProperty(arg)) {
-				result = result.replace(new RegExp(RegExp.escape(arg), "g"), args[arg]);
-			}
+	}
+	var type = typeof arguments[0];
+	var args = 'string' == type || 'number' == type ? arguments : arguments[0];
+	for (var arg in args) {
+		if (args.hasOwnProperty(arg)) {
+			str = str.replace(new RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
 		}
-		return result;
-	};
-}
+	}
+	return str;
+};
 
-if (!RegExp.escape) {
-	RegExp.escape = function(s) {
-		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-	};
-}
+String.prototype.replaceMany = function() {
+	var result = this;
+	var args = arguments[0];
+	for (var arg in args) {
+		if (args.hasOwnProperty(arg)) {
+			result = result.replace(new RegExp(RegExp.escape(arg), "g"), args[arg]);
+		}
+	}
+	return result;
+};
+
+RegExp.escape = function(s) {
+	return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
 
 jQuery.fn.reverse = function(reverse) {
 	return reverse === 'undefined' || reverse ? jQuery(this.toArray().reverse()) : this;
@@ -150,7 +142,7 @@ jQuery(function($) {
 			});
 		},
 		sound: function(file) {
-			if (!mChat.pageIsUnloading && !Cookies.get(mChat.cookie + 'mchat_no_sound')) {
+			if (!mChat.pageIsUnloading && !localStorage.getItem(mChat.cookie + 'mchat_no_sound')) {
 				var data = {
 					audio: mChat.cached('sound-' + file).get(0),
 					file: file,
@@ -177,11 +169,10 @@ jQuery(function($) {
 		toggle: function(name) {
 			var $elem = mChat.cached(name);
 			$elem.stop().slideToggle(function() {
-				var cookieName = mChat.cookie + 'mchat_show_' + name;
 				if ($elem.is(':visible')) {
-					Cookies.set(cookieName, 'yes');
+					localStorage.setItem(mChat.cookie + 'mchat_show_' + name, 'yes');
 				} else {
-					Cookies.remove(cookieName);
+					localStorage.removeItem(mChat.cookie + 'mchat_show_' + name);
 				}
 			});
 		},
@@ -222,7 +213,7 @@ jQuery(function($) {
 			mChat.pauseSession();
 			var inputValue = mChat.cached('input').val();
 			var originalInputValue = inputValue;
-			var color = Cookies.get(mChat.cookie + 'mchat_color');
+			var color = localStorage.getItem(mChat.cookie + 'mchat_color');
 			if (color && inputValue.indexOf('[color=') === -1) {
 				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
 			}
@@ -328,7 +319,7 @@ jQuery(function($) {
 		handleWhoisResponse: function(json) {
 			var $whois = $(json.whois);
 			var $userlist = $whois.find('#mchat-userlist');
-			if (Cookies.get(mChat.cookie + 'mchat_show_userlist')) {
+			if (localStorage.getItem(mChat.cookie + 'mchat_show_userlist')) {
 				$userlist.show();
 			}
 			mChat.cached('whois').replaceWith($whois);
@@ -607,11 +598,11 @@ jQuery(function($) {
 			mChat.cached('messages').animate({scrollTop: mChat.cached('messages')[0].scrollHeight, easing: 'swing', duration: 'slow'});
 		}
 
-		mChat.cached('user-sound').prop('checked', mChat.playSound && !Cookies.get(mChat.cookie + 'mchat_no_sound')).change(function() {
+		mChat.cached('user-sound').prop('checked', mChat.playSound && !localStorage.getItem(mChat.cookie + 'mchat_no_sound')).change(function() {
 			if (this.checked) {
-				Cookies.remove(mChat.cookie + 'mchat_no_sound');
+				localStorage.removeItem(mChat.cookie + 'mchat_no_sound');
 			} else {
-				Cookies.set(mChat.cookie + 'mchat_no_sound', 'yes');
+				localStorage.setItem(mChat.cookie + 'mchat_no_sound', 'yes');
 			}
 		}).change();
 
@@ -628,7 +619,7 @@ jQuery(function($) {
 		$('#bbpalette,#abbc3_bbpalette').prop('onclick', null).attr('data-mchat-toggle', 'colour');
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
-			if (Cookies.get(mChat.cookie + 'mchat_show_' + elem)) {
+			if (localStorage.getItem(mChat.cookie + 'mchat_show_' + elem)) {
 				mChat.cached(elem).toggle();
 			}
 		});
@@ -683,17 +674,17 @@ jQuery(function($) {
 			e.stopImmediatePropagation();
 			var $this = $(this);
 			var newColor = $this.data('color');
-			if (Cookies.get(mChat.cookie + 'mchat_color') === newColor) {
-				Cookies.remove(mChat.cookie + 'mchat_color');
+			if (localStorage.getItem(mChat.cookie + 'mchat_color') === newColor) {
+				localStorage.removeItem(mChat.cookie + 'mchat_color');
 			} else {
-				Cookies.set(mChat.cookie + 'mchat_color', newColor);
+				localStorage.setItem(mChat.cookie + 'mchat_color', newColor);
 				mChat.cached('colour').find('.colour-palette a').removeClass('remember-color');
 			}
 			$this.toggleClass('remember-color');
 		}
 	});
 
-	var color = Cookies.get(mChat.cookie + 'mchat_color');
+	var color = localStorage.getItem(mChat.cookie + 'mchat_color');
 	if (color) {
 		mChat.cached('colour').find('.colour-palette a[data-color="' + color + '"]').addClass('remember-color');
 	}
