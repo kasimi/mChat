@@ -28,6 +28,18 @@ if (!Array.prototype.min) {
 	};
 }
 
+if (!Array.prototype.removeValue) {
+	Array.prototype.removeValue = function(value) {
+		var index = -1;
+		var elementsRemoved = 0;
+		while ((index = this.indexOf(value)) !== -1) {
+    		this.splice(index, 1);
+			elementsRemoved++;
+		}
+		return elementsRemoved;
+	};
+}
+
 if (!String.prototype.format) {
 	String.prototype.format = function() {
 		var str = this.toString();
@@ -420,15 +432,13 @@ jQuery(function($) {
 		removeMessages: function(ids) {
 			var playSound = true;
 			$.each(ids, function(i, id) {
-				var index;
-				while ((index = $.inArray(id, mChat.messageIds, index)) !== -1) {
+				if (mChat.messageIds.removeValue(id)) {
 					var data = {
 						id: id,
 						message: $('#mchat-message-' + id),
 						playSound: playSound
 					};
 					$(mChat).trigger('mchat_delete_message_before', [data]);
-					mChat.messageIds.splice(index, 1);
 					mChat.stopRelativeTimeUpdate(data.message);
 					(function($message) {
 						$message.fadeOut(function() {
