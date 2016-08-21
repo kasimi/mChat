@@ -116,6 +116,7 @@ jQuery(function($) {
 					console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown + ' (' + xhr.responseText + ')');
 				}
 				var data = {
+					mode: mode,
 					xhr: xhr,
 					textStatus: textStatus,
 					errorThrown: errorThrown,
