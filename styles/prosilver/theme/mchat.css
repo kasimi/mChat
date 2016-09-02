@@ -18,6 +18,7 @@
 
 #mchat-body {
 	overflow: hidden;
+	width: 100%;
 }
 
 .icon-mchat {
