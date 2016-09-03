@@ -182,7 +182,7 @@ class functions
 
 		/**
 		 * @event dmzx.mchat.active_users_sql_before
-		 * @var array	$sql_array	Array with SQL query data to fetch the current active sessions
+		 * @var array	sql_array	Array with SQL query data to fetch the current active sessions
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
@@ -215,7 +215,7 @@ class functions
 
 		/**
 		 * @event dmzx.mchat.active_users_after
-		 * @var array	$mchat_users	Array containing all currently active mChat sessions, mapping from user ID to full username
+		 * @var array	mchat_users		Array containing all currently active mChat sessions, mapping from user ID to full username
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
@@ -356,7 +356,27 @@ class functions
 	 */
 	public function mchat_total_message_count()
 	{
-		return $this->db->get_row_count($this->mchat_table);
+		$sql_array = array(
+			'SELECT'	=> 'COUNT(*) AS rows_total',
+			'FROM'		=> array($this->mchat_table => 'm'),
+		);
+
+		/**
+		 * @event dmzx.mchat.total_message_count_modify_sql
+		 * @var array	sql_array	Array with SQL query data to fetch the total message count
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'sql_array',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.total_message_count_modify_sql', compact($vars)));
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql);
+		$rows_total = $this->db->sql_fetchfield('rows_total');
+		$this->db->sql_freeresult($result);
+
+		return (int) $rows_total;
 	}
 
 	/**
