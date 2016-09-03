@@ -6,6 +6,7 @@
 
 <!-- IF MCHAT_IS_ARCHIVE_PAGE and (.pagination or MCHAT_TOTAL_MESSAGES) -->
 <div class="action-bar bar-top">
+	<!-- EVENT dmzx_mchat_action_bar_top_before -->
 	<div class="pagination">
 		{MCHAT_TOTAL_MESSAGES}
 		<!-- IF .pagination -->
@@ -14,6 +15,7 @@
 			&bull; {PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>
+	<!-- EVENT dmzx_mchat_action_bar_top_after -->
 </div>
 <!-- ENDIF -->
 
@@ -93,6 +95,7 @@
 
 <!-- IF MCHAT_IS_ARCHIVE_PAGE -->
 <div class="action-bar bottom">
+	<!-- EVENT dmzx_mchat_action_bar_bottom_before -->
 	<div class="pagination">
 		{MCHAT_TOTAL_MESSAGES}
 		<!-- IF .pagination -->
@@ -101,6 +104,7 @@
 			&bull; {PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>
+	<!-- EVENT dmzx_mchat_action_bar_top_after -->
 </div>
 <!-- ENDIF -->
 
