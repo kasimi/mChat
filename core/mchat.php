@@ -850,6 +850,23 @@ class mchat
 		{
 			$archive_url = $this->helper->route('dmzx_mchat_page_archive_controller');
 			$total_messages = $this->functions->mchat_total_message_count();
+
+			/**
+			 * @event dmzx.mchat.render_page_pagination_before
+			 * @var string	archive_url		Pagination base URL
+			 * @var int		total_messages	Total number of messages
+			 * @var int		limit			Number of messages to display per page
+			 * @var int		start			The message which should be considered currently active, used to determine the page we're on
+			 * @since 2.0.0-RC6
+			 */
+			$vars = array(
+				'archive_url',
+				'total_messages',
+				'limit',
+				'start',
+			);
+			extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_pagination_before', compact($vars)));
+
 			$this->pagination->generate_template_pagination($archive_url, 'pagination', 'start', $total_messages, $limit, $start);
 			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', $this->user->lang('MCHAT_TOTALMESSAGES', $total_messages));
 		}
