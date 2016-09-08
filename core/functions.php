@@ -761,34 +761,44 @@ class functions
 	 */
 	public function mchat_action($action, $sql_ary = null, $message_id = 0)
 	{
-		$is_new_session = false;
+		$update_session_infos = true;
 
 		/**
 		 * @event dmzx.mchat.action_before
-		 * @var	string	action		The action that is being performed, one of add|edit|del
-		 * @var bool	sql_ary		Array containing SQL data, or null if a message is deleted
-		 * @var int		message_id	The ID of the message that is being edited or deleted, or 0 if a message is added
+		 * @var	string	action					The action that is being performed, one of add|edit|del
+		 * @var bool	sql_ary					Array containing SQL data, or null if a message is deleted
+		 * @var int		message_id				The ID of the message that is being edited or deleted, or 0 if a message is added
+		 * @var bool	update_session_infos	Whether or not to update the user session
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
 			'action',
 			'sql_ary',
 			'message_id',
+			'update_session_infos',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_before', compact($vars)));
+
+		$is_new_session = false;
 
 		switch ($action)
 		{
 			// User adds a message
 			case 'add':
-				$this->user->update_session_infos();
+				if ($update_session_infos)
+				{
+					$this->user->update_session_infos();
+				}
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('INSERT INTO ' . $this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 				break;
 
 			// User edits a message
 			case 'edit':
-				$this->user->update_session_infos();
+				if ($update_session_infos)
+				{
+					$this->user->update_session_infos();
+				}
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('UPDATE ' . $this->mchat_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE message_id = ' . (int) $message_id);
 				$this->mchat_insert_log('edit', $message_id);
@@ -797,7 +807,10 @@ class functions
 
 			// User deletes a message
 			case 'del':
-				$this->user->update_session_infos();
+				if ($update_session_infos)
+				{
+					$this->user->update_session_infos();
+				}
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_table . ' WHERE message_id = ' . (int) $message_id);
 				$this->mchat_insert_log('del', $message_id);
