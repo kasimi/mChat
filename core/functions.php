@@ -684,10 +684,7 @@ class functions
 			'login' => 'mchat_posts_login',
 		);
 
-		if (empty($mode_config[$mode]) || !$this->settings->cfg($mode_config[$mode]))
-		{
-			return;
-		}
+		$is_mode_enabled = !empty($mode_config[$mode]) && $this->settings->cfg($mode_config[$mode]);
 
 		// Special treatment for login notifications
 		if ($mode === 'login')
@@ -696,7 +693,7 @@ class functions
 			$post_id = $is_hidden_login ? self::LOGIN_HIDDEN : self::LOGIN_VISIBLE;
 		}
 
-		$sql_ary = array(
+		$sql_array = array(
 			'forum_id'			=> (int) $forum_id,
 			'post_id'			=> (int) $post_id,
 			'user_id'			=> (int) $this->user->data['user_id'],
@@ -705,8 +702,32 @@ class functions
 			'message_time'		=> time(),
 		);
 
-		$sql = 'INSERT INTO ' .	$this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
-		$this->db->sql_query($sql);
+		/**
+		 * @event dmzx.mchat.insert_posting_before
+		 * @var string	mode			The posting mode, one of post|quote|edit|reply|login
+		 * @var int		forum_id		The ID of the forum where the post was made, or 0 if mode is login.
+		 * @var int		post_id			The ID of the post that was made. If mode is login this value is
+		 * 								one of the constants LOGIN_HIDDEN|LOGIN_VISIBLE
+		 * @var bool	is_hidden_login	Whether or not the user session is hidden. Only used if mode is login.
+		 * @var array	is_mode_enabled	Whether or not the posting should be added to the database.
+		 * @var array	sql_array		An array containing the data that is about to be inserted into the messages table.
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'mode',
+			'forum_id',
+			'post_id',
+			'is_hidden_login',
+			'is_mode_enabled',
+			'sql_array',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.insert_posting_before', compact($vars)));
+
+		if ($is_mode_enabled)
+		{
+			$sql = 'INSERT INTO ' .	$this->mchat_table . ' ' . $this->db->sql_build_array('INSERT', $sql_array);
+			$this->db->sql_query($sql);
+		}
 	}
 
 	/**
