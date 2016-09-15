@@ -11,6 +11,7 @@
 
 namespace dmzx\mchat\event;
 
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class main_listener implements EventSubscriberInterface
@@ -62,11 +63,12 @@ class main_listener implements EventSubscriberInterface
 			'core.display_custom_bbcodes_modify_sql'	=> array(array('remove_disallowed_bbcodes'), array('pm_compose_add_quote')),
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
 			'core.login_box_redirect'					=> 'user_login_success',
+			'core.session_gc_after'						=> 'session_gc',
 		);
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function add_page_viewonline($event)
 	{
@@ -78,7 +80,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function load_language_on_setup($event)
 	{
@@ -93,7 +95,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Create a URL to the mchat controller file for the header linklist
 	 *
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function add_page_header_link($event)
 	{
@@ -103,7 +105,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Check if mchat should be displayed on index.
 	 *
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function display_mchat_on_index($event)
 	{
@@ -111,7 +113,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function insert_posting($event)
 	{
@@ -119,7 +121,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function remove_disallowed_bbcodes($event)
 	{
@@ -127,7 +129,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function user_registration_set_default_values($event)
 	{
@@ -135,7 +137,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function user_login_success($event)
 	{
@@ -146,7 +148,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function pm_compose_add_quote($event)
 	{
@@ -156,5 +158,13 @@ class main_listener implements EventSubscriberInterface
 		{
 			$this->mchat->quote_message_text($mchat_message_id);
 		}
+	}
+
+	/**
+	 * @param Event $event
+	 */
+	public function session_gc($event)
+	{
+		$this->mchat->session_gc();
 	}
 }

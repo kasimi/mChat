@@ -11,6 +11,7 @@
 
 namespace dmzx\mchat\event;
 
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class acp_listener implements EventSubscriberInterface
@@ -66,7 +67,7 @@ class acp_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function permissions($event)
 	{
@@ -121,7 +122,7 @@ class acp_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function acp_users_prefs_modify_sql($event)
 	{
@@ -159,7 +160,7 @@ class acp_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param object $event The event object
+	 * @param Event $event
 	 */
 	public function acp_users_prefs_modify_template_data($event)
 	{

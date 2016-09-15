@@ -161,6 +161,8 @@ class functions
 	 */
 	public function mchat_active_users()
 	{
+		$check_time = time() - $this->mchat_session_time();
+
 		$sql_array = array(
 			'SELECT'	=> 'u.user_id, u.username, u.user_colour, s.session_viewonline',
 			'FROM'		=> array(
@@ -176,7 +178,7 @@ class functions
 					'ON'	=> 'ms.user_id = u.user_id',
 				),
 			),
-			'WHERE'		=> 'u.user_id <> ' . ANONYMOUS . ' AND s.session_viewonline IS NOT NULL AND ms.user_lastupdate > ' . (int) (time() - $this->mchat_session_time()),
+			'WHERE'		=> 'u.user_id <> ' . ANONYMOUS . ' AND s.session_viewonline IS NOT NULL AND ms.user_lastupdate > ' . (int) $check_time,
 			'ORDER_BY'	=> 'u.username ASC',
 		);
 
@@ -213,22 +215,26 @@ class functions
 			$mchat_users[$row['user_id']] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
 		}
 
-		/**
-		 * @event dmzx.mchat.active_users_after
-		 * @var array	mchat_users		Array containing all currently active mChat sessions, mapping from user ID to full username
-		 * @since 2.0.0-RC6
-		 */
-		$vars = array(
-			'mchat_users',
-		);
-		extract($this->dispatcher->trigger_event('dmzx.mchat.active_users_after', compact($vars)));
-
-		return array(
+		$active_users = array(
 			'online_userlist'	=> implode($this->user->lang('COMMA_SEPARATOR'), $mchat_users),
 			'users_count_title'	=> $this->user->lang('MCHAT_TITLE_COUNT', count($mchat_users)),
 			'users_total'		=> $this->user->lang('MCHAT_ONLINE_USERS_TOTAL', count($mchat_users)),
 			'refresh_message'	=> $this->mchat_format_seconds($this->mchat_session_time()),
 		);
+
+		/**
+		 * @event dmzx.mchat.active_users_after
+		 * @var array	mchat_users		Array containing all currently active mChat sessions, mapping from user ID to full username
+		 * @var array	active_users	Array containing info about currently active mChat users
+		 * @since 2.0.0-RC6
+		 */
+		$vars = array(
+			'mchat_users',
+			'active_users',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.active_users_after', compact($vars)));
+
+		return $active_users;
 	}
 
 	/**
@@ -238,12 +244,6 @@ class functions
 	 */
 	public function mchat_add_user_session()
 	{
-		// Remove expired sessions from the database
-		$check_time = time() - $this->mchat_session_time();
-		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
-			WHERE user_lastupdate < ' . (int) $check_time;
-		$this->db->sql_query($sql);
-
 		if (!$this->user->data['is_registered'] || $this->user->data['is_bot'])
 		{
 			return false;
@@ -278,6 +278,18 @@ class functions
 		$this->db->sql_query($sql);
 
 		return $is_new_session;
+	}
+
+	/**
+	 * Remove expired sessions from the database
+	 */
+	public function mchat_session_gc()
+	{
+		$check_time = time() - $this->mchat_session_time();
+
+		$sql = 'DELETE FROM ' . $this->mchat_sessions_table . '
+			WHERE user_lastupdate <= ' . (int) $check_time;
+		$this->db->sql_query($sql);
 	}
 
 	/**

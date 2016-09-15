@@ -1396,6 +1396,14 @@ class mchat
 	}
 
 	/**
+	 * Remove expired sessions from the database
+	 */
+	public function session_gc()
+	{
+		$this->functions->mchat_session_gc();
+	}
+
+	/**
 	 * Assigns whois and stats at the bottom of the index page
 	 */
 	protected function assign_whois()
