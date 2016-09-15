@@ -617,7 +617,7 @@ jQuery(function($) {
 
 		var $colourPalette = $('#colour_palette');
 		$colourPalette.appendTo($colourPalette.parent()).wrap('<div id="mchat-colour"></div>').show();
-		$('#bbpalette,#abbc3_bbpalette').prop('onclick', null).attr('data-mchat-toggle', 'colour');
+		$('#bbpalette,#abbc3_bbpalette,#color_wheel').prop('onclick', null).attr('data-mchat-toggle', 'colour');
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
 			if (localStorage.getItem(mChat.cookie + 'mchat_show_' + elem)) {
