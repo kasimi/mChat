@@ -201,7 +201,7 @@ jQuery(function($) {
 			if (mChat.cached('add').prop('disabled')) {
 				return;
 			}
-			var messageLength = mChat.inputMessageLength();
+			var messageLength = mChat.cached('input').val().length;
 			if (!messageLength) {
 				phpbb.alert(mChat.err, mChat.noMessageInput);
 				return;
@@ -564,10 +564,6 @@ jQuery(function($) {
 		ip: function() {
 			popup(this.href, 750, 500);
 		},
-		bbCodeRegex: /\[\/?[^\[\]]+\]/g,
-		inputMessageLength: function() {
-			return $.trim(mChat.cached('input').val()).replace(mChat.bbCodeRegex, '').length;
-		},
 		cached: function() {
 			return $($.map(arguments, function(name) {
 				if (!mChat.cache[name]) {
@@ -649,7 +645,7 @@ jQuery(function($) {
 
 		if (mChat.showCharCount) {
 			mChat.cached('form').keyup(function(e) {
-				var count = mChat.inputMessageLength();
+				var count = mChat.cached('input').val().length;
 				var $elem = mChat.cached('character-count').html(mChat.charCount.format({current: count, max: mChat.mssgLngth})).toggleClass('hidden', count === 0);
 				if (mChat.mssgLngth) {
 					$elem.toggleClass('error', count > mChat.mssgLngth);

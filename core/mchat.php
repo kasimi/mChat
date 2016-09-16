@@ -1457,8 +1457,8 @@ class mchat
 	protected function process_message($message)
 	{
 		// Must have something other than bbcode in the message
-		$message_chars = trim(preg_replace('#\[/?[^\[\]]+\]#mi', '', $message));
-		if (!utf8_strlen($message_chars))
+		$message_without_bbcode = trim(preg_replace('#\[\/?[^\[\]]+\]#m', '', $message));
+		if (!utf8_strlen($message_without_bbcode))
 		{
 			throw new http_exception(400, 'MCHAT_NOMESSAGEINPUT');
 		}
@@ -1466,7 +1466,7 @@ class mchat
 		// Must not exceed character limit
 		if ($this->settings->cfg('mchat_max_message_lngth'))
 		{
-			if (utf8_strlen($message_chars) > $this->settings->cfg('mchat_max_message_lngth'))
+			if (utf8_strlen($message) > $this->settings->cfg('mchat_max_message_lngth'))
 			{
 				throw new http_exception(400, 'MCHAT_MESS_LONG', array($this->settings->cfg('mchat_max_message_lngth')));
 			}
