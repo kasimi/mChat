@@ -244,38 +244,27 @@ class functions
 	 */
 	public function mchat_add_user_session()
 	{
-		if (!$this->user->data['is_registered'] || $this->user->data['is_bot'])
+		if (!$this->user->data['is_registered'] || $this->user->data['user_id'] == ANONYMOUS || $this->user->data['is_bot'])
 		{
 			return false;
 		}
 
-		$sql = 'SELECT user_id
-			FROM ' . $this->mchat_sessions_table . '
+		$sql = 'UPDATE ' . $this->mchat_sessions_table . '
+			SET user_lastupdate = ' . time() . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+		$this->db->sql_query($sql);
 
-		$is_new_session = false;
+		$is_new_session = $this->db->sql_affectedrows() < 1;
 
-		if ($row)
+		if ($is_new_session)
 		{
-			$sql = 'UPDATE ' . $this->mchat_sessions_table . '
-				SET user_lastupdate = ' . time() . '
-				WHERE user_id = ' . (int) $this->user->data['user_id'];
-		}
-		else
-		{
-			$is_new_session = true;
-
 			$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
 				'user_id'			=> (int) $this->user->data['user_id'],
 				'user_ip'			=> $this->user->data['user_ip'],
 				'user_lastupdate'	=> time(),
 			));
+			$this->db->sql_query($sql);
 		}
-
-		$this->db->sql_query($sql);
 
 		return $is_new_session;
 	}
