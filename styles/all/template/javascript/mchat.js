@@ -102,7 +102,7 @@ jQuery(function($) {
 					if (json[mode]) {
 						deferred.resolve(data.json, data.status, data.xhr);
 					} else {
-						deferred.reject(data.xhr, data.status, mChat.parserErr);
+						deferred.reject(data.xhr, data.status, mChat.lang.parserErr);
 					}
 				}
 			}).fail(function(xhr, status, error) {
@@ -138,7 +138,7 @@ jQuery(function($) {
 				} catch (e) {
 					responseText = errorThrown;
 				}
-				phpbb.alert(mChat.err, responseText);
+				phpbb.alert(mChat.lang.err, responseText);
 				data.updateSession(data.xhr);
 			});
 		},
@@ -164,7 +164,7 @@ jQuery(function($) {
 			};
 			$(mChat).trigger('mchat_titlealert_before', [data]);
 			if (data.doAlert) {
-				$.titleAlert(mChat.newMessageAlert, data);
+				$.titleAlert(mChat.lang.newMessageAlert, data);
 			}
 		},
 		toggle: function(name) {
@@ -203,11 +203,11 @@ jQuery(function($) {
 			}
 			var messageLength = mChat.cached('input').val().length;
 			if (!messageLength) {
-				phpbb.alert(mChat.err, mChat.noMessageInput);
+				phpbb.alert(mChat.lang.err, mChat.lang.noMessageInput);
 				return;
 			}
 			if (mChat.mssgLngth && messageLength > mChat.mssgLngth) {
-				phpbb.alert(mChat.err, mChat.mssgLngthLong);
+				phpbb.alert(mChat.lang.err, mChat.lang.mssgLngthLong);
 				return;
 			}
 			mChat.cached('add').prop('disabled', true);
@@ -236,7 +236,7 @@ jQuery(function($) {
 				container: mChat.cached('confirm'),
 				fields: function($container) {
 					return [
-						$container.find('p').text(mChat.editInfo),
+						$container.find('p').text(mChat.lang.editInfo),
 						$container.find('textarea').val($message.data('mchat-message'))
 					];
 				},
@@ -258,7 +258,7 @@ jQuery(function($) {
 				container: mChat.cached('confirm'),
 				fields: function($container) {
 					return [
-						$container.find('p').text(mChat.delConfirm)
+						$container.find('p').text(mChat.lang.delConfirm)
 					];
 				},
 				confirm: function($p) {
@@ -459,7 +459,7 @@ jQuery(function($) {
 		},
 		relativeTimeUpdate: function($time) {
 			var minutesAgo = $time.data('mchat-minutes-ago') + 1;
-			var langMinutesAgo = mChat.minutesAgo[minutesAgo];
+			var langMinutesAgo = mChat.lang.minutesAgo[minutesAgo];
 			if (langMinutesAgo) {
 				$time.text(langMinutesAgo).data('mchat-minutes-ago', minutesAgo);
 			} else {
@@ -476,7 +476,7 @@ jQuery(function($) {
 		},
 		countDown: function() {
 			mChat.sessionTime -= 1;
-			mChat.cached('session').html(mChat.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
+			mChat.cached('session').html(mChat.lang.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
 			if (mChat.sessionTime < 1) {
 				mChat.endSession();
 			}
@@ -497,7 +497,7 @@ jQuery(function($) {
 				if (mChat.timeout) {
 					mChat.sessionTime = mChat.timeout / 1000;
 					clearInterval(mChat.sessionCountdown);
-					mChat.cached('session').html(mChat.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
+					mChat.cached('session').html(mChat.lang.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
 					mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
 				}
 				if (mChat.whoisRefresh) {
@@ -506,7 +506,7 @@ jQuery(function($) {
 				}
 				mChat.cached('status-ok').show();
 				mChat.cached('status-load', 'status-error', 'status-paused').hide();
-				mChat.cached('refresh-text').html(mChat.refreshYes);
+				mChat.cached('refresh-text').html(mChat.lang.refreshYes);
 			}
 		},
 		endSession: function(skipUpdateWhois) {
@@ -514,7 +514,7 @@ jQuery(function($) {
 			mChat.refreshInterval = false;
 			if (mChat.timeout) {
 				clearInterval(mChat.sessionCountdown);
-				mChat.cached('session').html(mChat.sessOut);
+				mChat.cached('session').html(mChat.lang.sessOut);
 			}
 			if (mChat.whoisRefresh) {
 				clearInterval(mChat.whoisInterval);
@@ -524,16 +524,16 @@ jQuery(function($) {
 			}
 			mChat.cached('status-load', 'status-ok', 'status-error').hide();
 			mChat.cached('status-paused').show();
-			mChat.cached('refresh-text').html(mChat.refreshNo);
+			mChat.cached('refresh-text').html(mChat.lang.refreshNo);
 		},
 		pauseStart: function() {
 			mChat.isPaused = true;
-			mChat.cached('refresh-text').html(mChat.refreshNo);
+			mChat.cached('refresh-text').html(mChat.lang.refreshNo);
 			mChat.cached('status-load', 'status-ok', 'status-error').hide();
 			mChat.cached('status-paused').show();
 		},
 		pauseEnd: function() {
-			mChat.cached('refresh-text').html(mChat.refreshYes);
+			mChat.cached('refresh-text').html(mChat.lang.refreshYes);
 			mChat.cached('status-load', 'status-error', 'status-paused').hide();
 			mChat.cached('status-ok').show();
 			mChat.isPaused = false;
@@ -559,7 +559,7 @@ jQuery(function($) {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
 			var quote = $container.data('mchat-message');
-			insert_text(mChat.likes + '[quote="' + username + '"] ' + quote + '[/quote]');
+			insert_text(mChat.lang.likes + '[quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		ip: function() {
 			popup(this.href, 750, 500);
@@ -646,7 +646,8 @@ jQuery(function($) {
 		if (mChat.showCharCount) {
 			mChat.cached('form').keyup(function(e) {
 				var count = mChat.cached('input').val().length;
-				var $elem = mChat.cached('character-count').html(mChat.charCount.format({current: count, max: mChat.mssgLngth})).toggleClass('hidden', count === 0);
+				var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
+				var $elem = mChat.cached('character-count').html(charCount).toggleClass('hidden', count === 0);
 				if (mChat.mssgLngth) {
 					$elem.toggleClass('error', count > mChat.mssgLngth);
 				}
