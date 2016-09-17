@@ -360,23 +360,26 @@ jQuery(function($) {
 				mChat.messageIds.push($message.data('mchat-id'));
 				setTimeout(function() {
 					var $container = mChat.cached('messages');
-					var scrollHeight = $container.get(0).scrollHeight;
 					var data = {
 						container: $container,
 						message: $message,
-						add: function($container, $message) {
+						add: function() {
 							if (mChat.messageTop) {
-								$container.prepend($message);
+								this.container.prepend(this.message);
 							} else {
-								$container.append($message);
+								this.container.append(this.message);
 							}
 						},
-						show: function($message) {
-							$message.css('opacity', 0).slideDown().animate({opacity: 1}, {queue: false});
-						},
-						scroll: function($container) {
-							if (!mChat.messageTop && $container.scrollTop() >= scrollHeight - $container.height()) {
-								$container.animate({
+						show: function() {
+							var scrollTop, scrollHeight = mChat.messageTop ? 0 : $container.get(0).scrollHeight;
+							if (mChat.messageTop && (scrollTop = this.container.scrollTop()) > 0) {
+								this.message.show();
+								this.container.scrollTop(scrollTop + this.message.outerHeight());
+							} else {
+								this.message.css('opacity', 0).slideDown().animate({opacity: 1}, {duration: 'fast', queue: false});
+							}
+							if (!mChat.messageTop && this.container.scrollTop() >= scrollHeight - this.container.height()) {
+								this.container.animate({
 									scrollTop: scrollHeight,
 									easing: 'swing',
 									duration: 'slow'
@@ -385,9 +388,8 @@ jQuery(function($) {
 						}
 					};
 					$(mChat).trigger('mchat_add_message_animate_before', [data]);
-					data.add(data.container, data.message);
-					data.show(data.message);
-					data.scroll(data.container);
+					data.add();
+					data.show();
 				}, i * data.delay);
 				if (mChat.editDeleteLimit && $message.data('mchat-edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
 					var id = $message.prop('id');
