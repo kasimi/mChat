@@ -1047,7 +1047,7 @@ class mchat
 
 			$message_age = time() - $row['message_time'];
 			$minutes_ago = $this->get_minutes_ago($message_age);
-			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'));
+			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
 
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
 
