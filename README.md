@@ -1,6 +1,7 @@
-# mChat Extension
+phpBB Extension - mChat
+=====================
 
-[![Build Status](https://travis-ci.org/dmzx/mChat-Extension.svg?branch=master)](https://travis-ci.org/dmzx/mChat-Extension)
+[![Build Status](https://travis-ci.org/kasimi/mChat.svg?branch=master)](https://travis-ci.org/kasimi/mChat)
 
 ## Install
 
@@ -18,4 +19,5 @@
 3. To permanently uninstall, click `Delete Data` and then delete the `/ext/dmzx/mchat` folder.
 
 ## License
+
 [GNU General Public License v2](http://opensource.org/licenses/GPL-2.0)
