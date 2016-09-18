@@ -22,20 +22,20 @@
 			<div id="mchat-buttons">
 				<!-- EVENT dmzx_mchat_buttons_before -->
 				<!-- IF MCHAT_ALLOW_USE -->
-					<input id="mchat-add" class="button2" type="button" data-mchat-action="add" value="{L_MCHAT_ADD}" />
+					<input id="mchat-add" class="<!-- IF IS_PHPBB31 -->button2<!-- ELSEIF IS_PHPBB32 -->button<!-- ENDIF -->" type="button" data-mchat-action="add" value="{L_MCHAT_ADD}" />
 					<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
-						<input type="button" class="button2" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
+						<input type="button" class="<!-- IF IS_PHPBB31 -->button2<!-- ELSEIF IS_PHPBB32 -->button<!-- ENDIF -->" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
 					<!-- ENDIF -->
 					<!-- IF S_BBCODE_ALLOWED -->
-						<input type="button" class="button2" data-mchat-toggle="bbcodes" value="{L_MCHAT_BBCODES}" />
+						<input type="button" class="<!-- IF IS_PHPBB31 -->button2<!-- ELSEIF IS_PHPBB32 -->button<!-- ENDIF -->" data-mchat-toggle="bbcodes" value="{L_MCHAT_BBCODES}" />
 					<!-- ENDIF -->
 					<!-- IF MCHAT_RULES -->
-						<input type="button" class="button2" onclick="popup('{U_MCHAT_RULES}', 450, 275); return false;" value="{L_MCHAT_RULES}" />
+						<input type="button" class="<!-- IF IS_PHPBB31 -->button2<!-- ELSEIF IS_PHPBB32 -->button<!-- ENDIF -->" onclick="popup('{U_MCHAT_RULES}', 450, 275); return false;" value="{L_MCHAT_RULES}" />
 					<!-- ENDIF -->
 				<!-- ENDIF -->
 				<!-- EVENT dmzx_mchat_buttons_mid -->
 				<!-- IF MCHAT_ARCHIVE -->
-					<input type="button" class="button2" onclick="window.location.href = '{U_MCHAT_ARCHIVE_URL}';" value="{L_MCHAT_ARCHIVE}" />
+					<input type="button" class="<!-- IF IS_PHPBB31 -->button2<!-- ELSEIF IS_PHPBB32 -->button<!-- ENDIF -->" onclick="window.location.href = '{U_MCHAT_ARCHIVE_URL}';" value="{L_MCHAT_ARCHIVE}" />
 				<!-- ENDIF -->
 				<!-- EVENT dmzx_mchat_buttons_after -->
 			</div>
