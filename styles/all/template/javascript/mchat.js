@@ -633,7 +633,7 @@ jQuery(function($) {
 		});
 
 		if (mChat.pause) {
-			mChat.cached('form').keyup(function(e) {
+			mChat.cached('form').on('input', function() {
 				if (mChat.refreshInterval !== false) {
 					var val = mChat.cached('input').val();
 					if (mChat.isPaused && val === '') {
@@ -646,7 +646,7 @@ jQuery(function($) {
 		}
 
 		if (mChat.showCharCount) {
-			mChat.cached('form').keyup(function(e) {
+			mChat.cached('form').on('input', function() {
 				var count = mChat.cached('input').val().length;
 				var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
 				var $elem = mChat.cached('character-count').html(charCount).toggleClass('hidden', count === 0);
