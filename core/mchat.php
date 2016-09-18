@@ -931,7 +931,7 @@ class mchat
 		 */
 		$vars = array(
 			'page',
-			'actions'
+			'actions',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_after', compact($vars)));
 	}
