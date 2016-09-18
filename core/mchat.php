@@ -1363,7 +1363,7 @@ class mchat
 	 * @param int $forum_id Can be 0 if mode is login.
 	 * @param int $post_id Can be 0 if mode is login.
 	 */
-	public function insert_posting($mode, $forum_id = 0, $post_id= 0)
+	public function insert_posting($mode, $forum_id = 0, $post_id = 0)
 	{
 		$is_hidden_login = $this->request->is_set_post('viewonline') || !$this->user->data['user_allow_viewonline'];
 		$this->functions->mchat_insert_posting($mode, $forum_id, $post_id, $is_hidden_login);

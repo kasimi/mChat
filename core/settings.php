@@ -24,7 +24,7 @@ class settings
 
 	/**
 	 * Keys for global settings that only the administrator is allowed to modify.
-     * The values are stored in the phpbb_config table.
+	 * The values are stored in the phpbb_config table.
 	 *
 	 * @var array
 	 */
@@ -32,7 +32,7 @@ class settings
 
 	/**
 	 * Keys for user-specific settings for which the administrator can set default
-     * values as well as adjust permissions to allow users to customize them.
+	 * values as well as adjust permissions to allow users to customize them.
 	 * The values are stored in the phpbb_users table as well as the phpbb_config table.
 	 * If a user has permission to customize a setting, the value in the phpbb_users
 	 * table is used, otherwise the value in the phpbb_config table is used.
