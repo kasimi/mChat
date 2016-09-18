@@ -535,7 +535,7 @@ class mchat
 		 * Event that is triggered before new mChat messages are checked
 		 *
 		 * @event dmzx.mchat.action_refresh_before
-		 * @var bool	need_session_update	Whether to the user's phpBB session
+		 * @var bool	keep_session_alive	Whether to the user's phpBB session
 		 * @var bool	need_log_update		Whether to check the log table for new entries
 		 * @since 2.0.0-RC6
 		 */
