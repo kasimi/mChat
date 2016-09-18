@@ -1153,12 +1153,19 @@ class mchat
 			'MCHAT_NEW_LOGIN',
 		);
 
-		foreach ($rows as $row)
+		foreach ($rows as $i => $row)
 		{
 			// If post_id is 0 it's not a notification.
 			if ($row['post_id'] && in_array($row['message'], $notification_lang))
 			{
-				$notification_post_ids[] = $row['post_id'];
+				if ($row['forum_id'])
+				{
+					$notification_post_ids[] = $row['post_id'];
+				}
+				else
+				{
+					$rows[$i] = $this->process_notification($row, $board_url);
+				}
 			}
 		}
 
@@ -1184,7 +1191,7 @@ class mchat
 	 * @param array $post_data
 	 * @return array
 	 */
-	protected function process_notification($row, $board_url, $post_data)
+	protected function process_notification($row, $board_url, $post_data = null)
 	{
 		$args = array($row['message']);
 
