@@ -183,6 +183,8 @@ class functions
 		);
 
 		/**
+		 * Event to modify the SQL query that fetches active mChat users
+		 *
 		 * @event dmzx.mchat.active_users_sql_before
 		 * @var array	sql_array	Array with SQL query data to fetch the current active sessions
 		 * @since 2.0.0-RC6
@@ -223,6 +225,8 @@ class functions
 		);
 
 		/**
+		 * Event to modify collected data about active mChat users
+		 *
 		 * @event dmzx.mchat.active_users_after
 		 * @var array	mchat_users		Array containing all currently active mChat sessions, mapping from user ID to full username
 		 * @var array	active_users	Array containing info about currently active mChat users
@@ -329,6 +333,8 @@ class functions
 		}
 
 		/**
+		 * Event to modify messages that are about to be pruned
+		 *
 		 * @event dmzx.mchat.prune_before
 		 * @var array	prune_ids	Array of message IDs that are about to be pruned
 		 * @since 2.0.0-RC6
@@ -363,6 +369,8 @@ class functions
 		);
 
 		/**
+		 * Event to modifying the SQL query that fetches the total number of mChat messages
+		 *
 		 * @event dmzx.mchat.total_message_count_modify_sql
 		 * @var array	sql_array	Array with SQL query data to fetch the total message count
 		 * @since 2.0.0-RC6
@@ -446,6 +454,8 @@ class functions
 		);
 
 		/**
+		 * Event to modify the SQL query that fetches mChat messages
+		 *
 		 * @event dmzx.mchat.get_messages_modify_sql
 		 * @var array	message_ids	IDs of specific messages to fetch, e.g. for fetching edited messages
 		 * @var int		last_id		The ID of the latest message that the user has, for fetching new messages
@@ -704,6 +714,8 @@ class functions
 		);
 
 		/**
+		 * Event that allows to modify data of a posting notification before it is inserted in the database
+		 *
 		 * @event dmzx.mchat.insert_posting_before
 		 * @var string	mode			The posting mode, one of post|quote|edit|reply|login
 		 * @var int		forum_id		The ID of the forum where the post was made, or 0 if mode is login.
@@ -786,6 +798,8 @@ class functions
 		$update_session_infos = true;
 
 		/**
+		 * Event to modify the SQL query that adds, edits or deletes an mChat message
+		 *
 		 * @event dmzx.mchat.action_before
 		 * @var	string	action					The action that is being performed, one of add|edit|del
 		 * @var bool	sql_ary					Array containing SQL data, or null if a message is deleted

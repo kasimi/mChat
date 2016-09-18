@@ -316,6 +316,8 @@ class mchat
 		);
 
 		/**
+		 * Event to modify a new message before it is inserted in the database
+		 *
 		 * @event dmzx.mchat.action_add_before
 		 * @var	string	message			The message that is about to be processed and added to the database
 		 * @var array	message_data	Array containing additional information that is added to the database
@@ -344,6 +346,8 @@ class mchat
 		}
 
 		/**
+		 * Event to modify message data of a user's new message before it is sent back to the user
+		 *
 		 * @event dmzx.mchat.action_add_after
 		 * @var	string	message			The message that was added to the database
 		 * @var array	message_data	Array containing additional information that was added to the database
@@ -413,6 +417,8 @@ class mchat
 		$response = array('edit' => $this->render_template('mchat_messages.html'));
 
 		/**
+		 * Event to modify the data of an edited message
+		 *
 		 * @event dmzx.mchat.action_edit_after
 		 * @var int		message_id	The ID of the edited message
 		 * @var	string	message		The content of the edited message that was added to the database
@@ -473,6 +479,8 @@ class mchat
 		$response = array('del' => true);
 
 		/**
+		 * Event that is triggered after an mChat message was deleted
+		 *
 		 * @event dmzx.mchat.action_delete_after
 		 * @var int		message_id	The ID of the deleted message
 		 * @var array	author		Information about the message author
@@ -524,6 +532,8 @@ class mchat
 		$need_log_update = $this->settings->cfg('mchat_live_updates');
 
 		/**
+		 * Event that is triggered before new mChat messages are checked
+		 *
 		 * @event dmzx.mchat.action_refresh_before
 		 * @var bool	need_session_update	Whether to the user's phpBB session
 		 * @var bool	need_log_update		Whether to check the log table for new entries
@@ -571,6 +581,8 @@ class mchat
 				}
 
 				/**
+				 * Event that allows processing log messages
+				 *
 				 * @event dmzx.mchat.action_refresh_process_log_row
 				 * @var array	response	The data that is sent back to the user (still incomplete at this point)
 				 * @var array	log_row		The log data
@@ -589,7 +601,9 @@ class mchat
 		$offset = 0;
 
 		/**
-		 * @event dmzx.mchat.action_refresh_sql_before
+		 * Event that allows modifying data before new mChat messages are fetched
+		 *
+		 * @event dmzx.mchat.action_refresh_get_messages_before
 		 * @var array	response			The data that is sent back to the user (still incomplete at this point)
 		 * @var array	log_edit_del_ids	An array containing IDs of messages that have been edited or deleted since the user's last refresh
 		 * @var int		last_id				The latest message that the user has
@@ -604,7 +618,7 @@ class mchat
 			'total',
 			'offset',
 		);
-		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_sql_before', compact($vars)));
+		extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_get_messages_before', compact($vars)));
 
 		$rows = $this->functions->mchat_get_messages($log_edit_del_ids['edit'], $last_id, $total, $offset);
 		$rows_refresh = array();
@@ -648,6 +662,8 @@ class mchat
 		}
 
 		/**
+		 * Event to modify the data that is sent to the user after checking for new mChat message
+		 *
 		 * @event dmzx.mchat.action_refresh_after
 		 * @var array	rows		The rows that where fetched from the database
 		 * @var array	response	The data that is sent back to the user
@@ -701,6 +717,8 @@ class mchat
 		}
 
 		/**
+		 * Event to modify the result of the Who Is Online update
+		 *
 		 * @event dmzx.mchat.action_whois_after
 		 * @var array	response	The data that is sent back to the user
 		 * @var boolean	return_raw	Whether to return a raw array or a JsonResponse object
@@ -758,8 +776,10 @@ class mchat
 	protected function render_page($page)
 	{
 		/**
+		 * Event that is triggered before mChat is rendered
+		 *
 		 * @event dmzx.mchat.render_page_before
-		 * @var string	page	The page that was rendered, one of index|custom|archive
+		 * @var string	page	The page that is rendered, one of index|custom|archive
 		 * @since 2.0.0-RC6
 		 */
 		$vars = array(
@@ -852,6 +872,8 @@ class mchat
 			$total_messages = $this->functions->mchat_total_message_count();
 
 			/**
+			 * Event to modify mChat pagination on the archive page
+			 *
 			 * @event dmzx.mchat.render_page_pagination_before
 			 * @var string	archive_url		Pagination base URL
 			 * @var int		total_messages	Total number of messages
@@ -900,6 +922,8 @@ class mchat
 		}
 
 		/**
+		 * Event that is triggered after mChat was rendered
+		 *
 		 * @event dmzx.mchat.render_page_after
 		 * @var string	page	The page that was rendered, one of index|custom|archive
 		 * @var array	actions	Array containing URLs to actions the user is allowed to perform
@@ -959,6 +983,8 @@ class mchat
 		);
 
 		/**
+		 * Event that allows adding global templte data for mChat
+		 *
 		 * @event dmzx.mchat.global_modify_template_data
 		 * @var array	template_data		The data that is about to be assigned to the template
 		 * @since 2.0.0-RC6
@@ -1078,6 +1104,8 @@ class mchat
 			);
 
 			/**
+			 * Event to modify the template data of an mChat message before it is sent to the template
+			 *
 			 * @event dmzx.mchat.message_modify_template_data
 			 * @var array	template_data		The data that is about to be assigned to the template
 			 * @var string	username_full		The link to the user profile, e.g. <a href="...">Username</a>
