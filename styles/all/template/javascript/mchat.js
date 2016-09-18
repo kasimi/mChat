@@ -561,7 +561,7 @@ jQuery(function($) {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
 			var quote = $container.data('mchat-message');
-			insert_text(mChat.lang.likes + '[quote="' + username + '"] ' + quote + '[/quote]');
+			insert_text('[i]' + mChat.lang.likes + '[/i][quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		ip: function() {
 			popup(this.href, 750, 500);
