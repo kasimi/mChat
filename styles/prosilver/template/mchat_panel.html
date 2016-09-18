@@ -18,10 +18,11 @@
 					<textarea id="mchat-input" name="message" class="inputbox no-auto-resize"></textarea>
 				<!-- ENDIF -->
 			<!-- ENDIF -->
-			<!-- EVENT dmzx_mchat_buttons_before -->
+			<!-- EVENT dmzx_mchat_buttons_container_before -->
 			<div id="mchat-buttons">
+				<!-- EVENT dmzx_mchat_buttons_before -->
 				<!-- IF MCHAT_ALLOW_USE -->
-					<input id="mchat-add" type="button" class="button2" data-mchat-action="add" value="{L_MCHAT_ADD}" />
+					<input id="mchat-add" class="button2" type="button" data-mchat-action="add" value="{L_MCHAT_ADD}" />
 					<!-- IF MCHAT_ALLOW_SMILES and .smiley -->
 						<input type="button" class="button2" data-mchat-toggle="smilies" value="{L_MCHAT_SMILES}" />
 					<!-- ENDIF -->
@@ -38,6 +39,7 @@
 				<!-- ENDIF -->
 				<!-- EVENT dmzx_mchat_buttons_after -->
 			</div>
+			<!-- EVENT dmzx_mchat_buttons_container_after -->
 			<!-- IF MCHAT_ALLOW_USE and S_BBCODE_ALLOWED -->
 				<div id="mchat-bbcodes">
 					<!-- INCLUDE posting_buttons.html -->
