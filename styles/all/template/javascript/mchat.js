@@ -169,7 +169,7 @@ jQuery(function($) {
 		},
 		toggle: function(name) {
 			var $elem = mChat.cached(name);
-			$elem.stop().slideToggle(function() {
+			$elem.stop().slideToggle('fast', function() {
 				if ($elem.is(':visible')) {
 					localStorage.setItem(mChat.cookie + 'mchat_show_' + name, 'yes');
 				} else {
@@ -376,7 +376,7 @@ jQuery(function($) {
 								this.message.show();
 								this.container.scrollTop(scrollTop + this.message.outerHeight());
 							} else {
-								this.message.css('opacity', 0).slideDown().animate({opacity: 1}, {duration: 'fast', queue: false});
+								this.message.css('opacity', 0).slideDown('fast').animate({opacity: 1}, {duration: 'fast', queue: false});
 							}
 							if (!mChat.messageTop && this.container.scrollTop() >= scrollHeight - this.container.height()) {
 								this.container.animate({

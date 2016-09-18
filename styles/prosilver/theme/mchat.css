@@ -176,12 +176,8 @@
 	list-style-type: circle;
 }
 
-.mchat-text blockquote {
-	margin-bottom: 5px;
-}
-
 .mchat-text blockquote, .mchat-text .codebox, .mchat-text ul, .mchat-text ol {
-	margin-top: 5px;
+	margin-bottom: 5px;
 	margin-left: 1em;
 }
 
