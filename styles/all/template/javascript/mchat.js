@@ -212,17 +212,23 @@ jQuery(function($) {
 			}
 			mChat.cached('add').prop('disabled', true);
 			mChat.pauseSession();
-			var inputValue = mChat.cached('input').val();
-			var originalInputValue = inputValue;
+			var originalInputValue = mChat.cached('input').val();
+			var inputValue = originalInputValue;
 			var color = localStorage.getItem(mChat.cookie + 'mchat_color');
 			if (color && inputValue.indexOf('[color=') === -1) {
 				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
 			}
 			mChat.cached('input').val('');
+			if (mChat.showCharCount) {
+				mChat.updateCharCount();
+			}
 			mChat.refresh(inputValue).done(function() {
 				mChat.resetSession();
 			}).fail(function() {
 				mChat.cached('input').val(originalInputValue);
+				if (mChat.showCharCount) {
+					mChat.updateCharCount();
+				}
 			}).always(function() {
 				mChat.cached('add').prop('disabled', false);
 				setTimeout(function() {
@@ -540,6 +546,14 @@ jQuery(function($) {
 			mChat.cached('status-ok').show();
 			mChat.isPaused = false;
 		},
+		updateCharCount: function() {
+			var count = mChat.cached('input').val().length;
+			var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
+			var $elem = mChat.cached('character-count').html(charCount).toggleClass('hidden', count === 0);
+			if (mChat.mssgLngth) {
+				$elem.toggleClass('error', count > mChat.mssgLngth);
+			}
+		},
 		mention: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
@@ -646,14 +660,7 @@ jQuery(function($) {
 		}
 
 		if (mChat.showCharCount) {
-			mChat.cached('form').on('input', function() {
-				var count = mChat.cached('input').val().length;
-				var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
-				var $elem = mChat.cached('character-count').html(charCount).toggleClass('hidden', count === 0);
-				if (mChat.mssgLngth) {
-					$elem.toggleClass('error', count > mChat.mssgLngth);
-				}
-			});
+			mChat.cached('form').on('input', mChat.updateCharCount);
 		}
 
 		mChat.cached('input').autogrow({
