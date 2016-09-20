@@ -710,7 +710,7 @@ class mchat
 
 		$response = array('whois' => $this->render_template('mchat_whois.html'));
 
-		if ($this->settings->cfg('mchat_navbar_link_count') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_custom_page'))
+		if ($this->settings->cfg('mchat_navbar_link_count') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_custom_page') && $this->active_users)
 		{
 			$response['navlink'] = $this->active_users['users_count_title'];
 			$response['navlink_title'] = strip_tags($this->active_users['users_total']);
@@ -810,7 +810,7 @@ class mchat
 			'MCHAT_PAUSE_ON_INPUT'			=> $this->settings->cfg('mchat_pause_on_input'),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->settings->cfg('mchat_max_message_lngth'),
 			'MCHAT_WHOIS_INDEX'				=> $this->settings->cfg('mchat_whois_index'),
-			'MCHAT_WHOIS_REFRESH'			=> $this->settings->cfg('mchat_whois') ? $this->settings->cfg('mchat_whois_refresh') * 1000 : 0,
+			'MCHAT_WHOIS_REFRESH'			=> $this->settings->cfg('mchat_whois_index') || $this->settings->cfg('mchat_stats_index') ? $this->settings->cfg('mchat_whois_refresh') * 1000 : 0,
 			'MCHAT_REFRESH_JS'				=> $this->settings->cfg('mchat_refresh') * 1000,
 			'MCHAT_ARCHIVE'					=> $this->auth->acl_get('u_mchat_archive'),
 			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules'),
@@ -846,7 +846,7 @@ class mchat
 			'del'		=> $this->auth_message('delete', true, time()),
 			'refresh'	=> $page !== 'archive' && $this->auth->acl_get('u_mchat_view'),
 			'add'		=> $page !== 'archive' && $this->auth->acl_get('u_mchat_use'),
-			'whois'		=> $page !== 'archive' && $this->settings->cfg('mchat_whois'),
+			'whois'		=> $page !== 'archive' && ($this->settings->cfg('mchat_whois_index') || $this->settings->cfg('mchat_stats_index')),
 		)));
 
 		foreach ($actions as $i => $action)
@@ -1443,7 +1443,7 @@ class mchat
 	 */
 	protected function assign_whois()
 	{
-		if ($this->settings->cfg('mchat_whois') || $this->settings->cfg('mchat_stats_index') && $this->settings->cfg('mchat_stats_index'))
+		if ($this->settings->cfg('mchat_whois_index') || $this->settings->cfg('mchat_stats_index'))
 		{
 			if ($this->active_users === null)
 			{
@@ -1451,7 +1451,7 @@ class mchat
 			}
 
 			$this->template->assign_vars(array(
-				'MCHAT_STATS_INDEX'		=> $this->settings->cfg('mchat_stats_index') && $this->settings->cfg('mchat_stats_index'),
+				'MCHAT_STATS_INDEX'		=> $this->settings->cfg('mchat_stats_index'),
 				'MCHAT_USERS_TOTAL'		=> $this->active_users['users_total'],
 				'MCHAT_USERS_LIST'		=> $this->active_users['online_userlist'] ?: '',
 				'MCHAT_ONLINE_EXPLAIN'	=> $this->active_users['refresh_message'],

@@ -87,7 +87,6 @@ class settings
 			'mchat_rules'					=> array('default' => '',	'validation' => array('string', false, 0, 255)),
 			'mchat_static_message'			=> array('default' => '',	'validation' => array('string', false, 0, 255)),
 			'mchat_timeout'					=> array('default' => 0,	'validation' => array('num', false, 0, (int) $this->cfg('session_length'))),
-			'mchat_whois'					=> array('default' => 1),
 			'mchat_whois_refresh'			=> array('default' => 60,	'validation' => array('num', false, 10, 300)),
 		);
 
