@@ -846,7 +846,7 @@ class mchat
 		}
 
 		// Render legend
-		if ($page !== 'index' && $this->settings->cfg('mchat_whois'))
+		if ($page !== 'index')
 		{
 			$legend = $this->functions->mchat_legend();
 			$this->template->assign_var('LEGEND', implode($this->user->lang('COMMA_SEPARATOR'), $legend));
