@@ -54,7 +54,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_MESS_LONG'				=> 'Your message is too long. Please limit it to %1$d characters.',
 	'MCHAT_NO_CUSTOM_PAGE'			=> 'The mChat custom page is not activated at this time.',
 	'MCHAT_NO_RULES'				=> 'The mChat rules page is not activated at this time.',
-	'MCHAT_NOACCESS'				=> 'You don’t have permission to post in the chat.',
 	'MCHAT_NOACCESS_ARCHIVE'		=> 'You don’t have permission to view the archive.',
 	'MCHAT_NOJAVASCRIPT'			=> 'Please enable JavaScript to use mChat.',
 	'MCHAT_NOMESSAGE'				=> 'No messages',

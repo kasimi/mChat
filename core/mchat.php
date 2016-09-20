@@ -277,14 +277,14 @@ class mchat
 	}
 
 	/**
-	 * User submits a message
+	 * Initialize AJAX action
 	 *
-	 * @param bool $return_raw
-	 * @return array data sent to client as JSON
+	 * @param string $permission Permission that is required to perform the current action
+	 * @param bool $check_form_key
 	 */
-	public function action_add($return_raw = false)
+	protected function init_action($permission, $check_form_key = true)
 	{
-		if (!$this->request->is_ajax())
+		if (!$this->request->is_ajax() || !$this->auth->acl_get($permission) || ($check_form_key && !check_form_key('mchat', -1)))
 		{
 			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
@@ -296,11 +296,17 @@ class mchat
 		}
 
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+	}
 
-		if (!$this->auth->acl_get('u_mchat_use') || !check_form_key('mchat', -1))
-		{
-			throw new http_exception(403, 'MCHAT_NOACCESS');
-		}
+	/**
+	 * User submits a message
+	 *
+	 * @param bool $return_raw
+	 * @return array data sent to client as JSON
+	 */
+	public function action_add($return_raw = false)
+	{
+		$this->init_action('u_mchat_use');
 
 		if ($this->functions->mchat_is_user_flooding())
 		{
@@ -376,31 +382,20 @@ class mchat
 	 */
 	public function action_edit($return_raw = false)
 	{
-		if (!$this->request->is_ajax())
-		{
-			throw new http_exception(403, 'NO_AUTH_OPERATION');
-		}
-
-		// Fix avatars & smilies
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->init_action('u_mchat_use');
 
 		$message_id = $this->request->variable('message_id', 0);
 
-		if (!$message_id || !check_form_key('mchat', -1))
+		if (!$message_id)
 		{
-			throw new http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
 		if (!$author || $author['post_id'] || !$this->auth_message('edit', $author['user_id'], $author['message_time']))
 		{
-			throw new http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', $this->request->variable('archive', false));
@@ -447,31 +442,20 @@ class mchat
 	 */
 	public function action_del($return_raw = false)
 	{
-		if (!$this->request->is_ajax())
-		{
-			throw new http_exception(403, 'NO_AUTH_OPERATION');
-		}
-
-		// Fix avatars & smilies
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->init_action('u_mchat_use');
 
 		$message_id = $this->request->variable('message_id', 0);
 
-		if (!$message_id || !check_form_key('mchat', -1))
+		if (!$message_id)
 		{
-			throw new http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
 		if (!$author || !$this->auth_message('delete', $author['user_id'], $author['message_time']))
 		{
-			throw new http_exception(403, 'MCHAT_NOACCESS');
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		$this->functions->mchat_action('del', null, $message_id);
@@ -507,23 +491,7 @@ class mchat
 	 */
 	public function action_refresh($return_raw = false)
 	{
-		if (!$this->request->is_ajax())
-		{
-			throw new http_exception(403, 'NO_AUTH_OPERATION');
-		}
-
-		// Fix avatars & smilies
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
-
-		if (!$this->auth->acl_get('u_mchat_view'))
-		{
-			throw new http_exception(403, 'NO_AUTH_OPERATION');
-		}
+		$this->init_action('u_mchat_view', false);
 
 		// Keep the session alive forever if there is no session timeout
 		$keep_session_alive = !$this->settings->cfg('mchat_timeout');
@@ -688,23 +656,7 @@ class mchat
 	 */
 	public function action_whois($return_raw = false)
 	{
-		if (!$this->request->is_ajax())
-		{
-			throw new http_exception(403, 'NO_AUTH_OPERATION');
-		}
-
-		// Fix avatars & smilies
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
-
-		if (!$this->auth->acl_get('u_mchat_view'))
-		{
-			throw new http_exception(403, 'MCHAT_NOACCESS');
-		}
+		$this->init_action('u_mchat_view', false);
 
 		$this->assign_whois();
 
