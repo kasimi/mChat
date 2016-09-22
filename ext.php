@@ -15,6 +15,7 @@ class ext extends \phpbb\extension\base
 {
 	/**
 	 * Requires phpBB 3.1.7-PL1 due to usage of \phpbb\session:update_session_infos()
+	 * Requires phpBB 3.1.8-RC1 due to HTTPS in version check
 	 *
 	 * @return bool
 	 * @access public
@@ -57,7 +58,7 @@ class ext extends \phpbb\extension\base
 			}
 		}
 
-		return phpbb_version_compare($config['version'], '3.1.7-PL1', '>=');
+		return phpbb_version_compare($config['version'], '3.1.8-RC1', '>=');
 	}
 
 	/**
