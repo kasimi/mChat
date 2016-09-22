@@ -394,6 +394,7 @@ jQuery(function($) {
 									this.container.scrollTop(scrollTop + this.message.outerHeight());
 								}
 							}
+							this.message.addClass('mchat-message-flash');
 						}
 					};
 					$(mChat).trigger('mchat_add_message_animate_before', [dataAddMessageAnimateBefore]);

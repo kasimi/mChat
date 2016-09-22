@@ -51,6 +51,17 @@
 	overflow: hidden;
 }
 
+.mchat-message-flash {
+	animation-name: flash-message;
+	animation-duration: .6s;
+	animation-timing-function: ease-out;
+}
+
+@keyframes flash-message {
+	0% { background-color: #F6F4D0; }
+  100% { background-color: transparent; }
+}
+
 .mchat-avatar {
 	float: left;
 	width: 40px;

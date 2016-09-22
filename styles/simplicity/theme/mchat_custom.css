@@ -65,3 +65,8 @@
 	left: auto;
 	right: 8px;
 }
+
+@keyframes flash-message {
+	0% { background-color: #F6F4D0; }
+  100% { background-color: #F4F4F4; }
+}

@@ -19,3 +19,8 @@
 #mChat + .forabg .collapse-box a:before {
   content: '';
 }
+
+@keyframes flash-message {
+	0% { background-color: rgba(255, 155, 0, .5); }
+  100% { background-color: #D8D8D8; }
+}
