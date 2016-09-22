@@ -37,6 +37,11 @@
 		"display-name": "mChat",
 		"soft-require": {
 			"phpbb/phpbb": ">=3.1.7-PL1,<3.3.0@dev"
+		},
+		"version-check": {
+			"host": "kasimi.github.io",
+			"directory": "/phpbb_version",
+			"filename": "mchat.json"
 		}
 	}
 }
