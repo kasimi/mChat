@@ -200,7 +200,7 @@
 	padding: 5px 0 0;
 }
 
-#mchat-character-count.hidden {
+#mchat-character-count.invisible {
 	visibility: hidden;
 }
 

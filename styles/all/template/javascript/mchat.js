@@ -356,7 +356,6 @@ jQuery(function($) {
 				};
 				$(mChat).trigger('mchat_add_message_before', [dataAddMessageBefore]);
 				if (dataAddMessageBefore.abort) {
-					numMessages--;
 					return;
 				}
 				if (dataAddMessageBefore.playSound) {
@@ -553,7 +552,7 @@ jQuery(function($) {
 		updateCharCount: function() {
 			var count = mChat.cached('input').val().length;
 			var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
-			var $elem = mChat.cached('character-count').html(charCount).toggleClass('hidden', count === 0);
+			var $elem = mChat.cached('character-count').html(charCount).toggleClass('invisible', count === 0);
 			if (mChat.mssgLngth) {
 				$elem.toggleClass('error', count > mChat.mssgLngth);
 			}
