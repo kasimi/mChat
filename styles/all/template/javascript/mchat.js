@@ -169,7 +169,7 @@ jQuery(function($) {
 		},
 		toggle: function(name) {
 			var $elem = mChat.cached(name);
-			$elem.stop().slideToggle('fast', function() {
+			$elem.stop().slideToggle(200, function() {
 				if ($elem.is(':visible')) {
 					localStorage.setItem(mChat.cookie + 'mchat_show_' + name, 'yes');
 				} else {
@@ -348,17 +348,18 @@ jQuery(function($) {
 			mChat.cached('messages').find('.mchat-no-messages').remove();
 			$messages.reverse(mChat.messageTop).hide().each(function(i) {
 				var $message = $(this);
-				var data = {
+				var dataAddMessageBefore = {
 					message: $message,
 					delay: mChat.refreshInterval ? 400 : 0,
 					abort: $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1,
 					playSound: playSound
 				};
-				$(mChat).trigger('mchat_add_message_before', [data]);
-				if (data.abort) {
+				$(mChat).trigger('mchat_add_message_before', [dataAddMessageBefore]);
+				if (dataAddMessageBefore.abort) {
+					numMessages--;
 					return;
 				}
-				if (data.playSound) {
+				if (dataAddMessageBefore.playSound) {
 					mChat.sound('add');
 					mChat.titleAlert();
 					playSound = false;
@@ -366,7 +367,7 @@ jQuery(function($) {
 				mChat.messageIds.push($message.data('mchat-id'));
 				setTimeout(function() {
 					var $container = mChat.cached('messages');
-					var data = {
+					var dataAddMessageAnimateBefore = {
 						container: $container,
 						message: $message,
 						add: function() {
@@ -377,26 +378,29 @@ jQuery(function($) {
 							}
 						},
 						show: function() {
-							var scrollTop, scrollHeight = mChat.messageTop ? 0 : $container.get(0).scrollHeight;
-							if (mChat.messageTop && (scrollTop = this.container.scrollTop()) > 0) {
-								this.message.show();
-								this.container.scrollTop(scrollTop + this.message.outerHeight());
+							var scrollTop = this.container.scrollTop();
+							var scrollHeight = mChat.messageTop ? 0 : $container.get(0).scrollHeight;
+							if (mChat.messageTop && scrollTop == 0 || !mChat.messageTop && scrollTop >= scrollHeight - this.container.height()) {
+								var animateOptions = {
+									duration: dataAddMessageBefore.delay - 10,
+									easing: 'swing'
+								};
+								this.message.css('opacity', 0).slideDown(animateOptions).animate({opacity: 1}, $.extend({queue: false}, animateOptions));
+								if (!mChat.messageTop) {
+									this.container.animate({scrollTop: scrollHeight}, animateOptions);
+								}
 							} else {
-								this.message.css('opacity', 0).slideDown('fast').animate({opacity: 1}, {duration: 'fast', queue: false});
-							}
-							if (!mChat.messageTop && this.container.scrollTop() >= scrollHeight - this.container.height()) {
-								this.container.animate({
-									scrollTop: scrollHeight,
-									easing: 'swing',
-									duration: 'slow'
-								});
+								this.message.show();
+								if (mChat.messageTop) {
+									this.container.scrollTop(scrollTop + this.message.outerHeight());
+								}
 							}
 						}
 					};
-					$(mChat).trigger('mchat_add_message_animate_before', [data]);
-					data.add();
-					data.show();
-				}, i * data.delay);
+					$(mChat).trigger('mchat_add_message_animate_before', [dataAddMessageAnimateBefore]);
+					dataAddMessageAnimateBefore.add();
+					dataAddMessageAnimateBefore.show();
+				}, i * dataAddMessageBefore.delay);
 				if (mChat.editDeleteLimit && $message.data('mchat-edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
 					var id = $message.prop('id');
 					setTimeout(function() {
@@ -608,7 +612,9 @@ jQuery(function($) {
 		mChat.resetSession();
 
 		if (!mChat.messageTop) {
-			mChat.cached('messages').animate({scrollTop: mChat.cached('messages')[0].scrollHeight, easing: 'swing', duration: 'slow'});
+			setTimeout(function() {
+				mChat.cached('messages').scrollTop(mChat.cached('messages')[0].scrollHeight);
+			}, 0);
 		}
 
 		mChat.cached('user-sound').prop('checked', mChat.playSound && !localStorage.getItem(mChat.cookie + 'mchat_no_sound')).change(function() {
