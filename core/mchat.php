@@ -315,6 +315,11 @@ class mchat
 
 		$message = $this->request->variable('message', '', true);
 
+		if ($this->settings->cfg('mchat_capital_letter'))
+		{
+			$message = utf8_ucfirst($message);
+		}
+
 		$message_data = array(
 			'user_id'			=> $this->user->data['user_id'],
 			'user_ip'			=> $this->user->data['session_ip'],
@@ -336,11 +341,6 @@ class mchat
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_add_before', compact($vars)));
 
 		$sql_ary = array_merge($this->process_message($message), $message_data);
-
-		if ($this->settings->cfg('mchat_capital_letter'))
-		{
-			$sql_ary['message'] = utf8_ucfirst($sql_ary['message']);
-		}
 
 		$is_new_session = $this->functions->mchat_action('add', $sql_ary);
 
