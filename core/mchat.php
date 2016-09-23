@@ -320,11 +320,13 @@ class mchat
 			$message = utf8_ucfirst($message);
 		}
 
-		$message_data = array(
-			'user_id'			=> $this->user->data['user_id'],
-			'user_ip'			=> $this->user->data['session_ip'],
-			'message_time'		=> time(),
-		);
+		$message_data = $this->process_message($message);
+
+		$message_data = array_merge($message_data, array(
+			'user_id'		=> $this->user->data['user_id'],
+			'user_ip'		=> $this->user->data['session_ip'],
+			'message_time'	=> time(),
+		));
 
 		/**
 		 * Event to modify a new message before it is inserted in the database
@@ -340,9 +342,7 @@ class mchat
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.action_add_before', compact($vars)));
 
-		$sql_ary = array_merge($this->process_message($message), $message_data);
-
-		$is_new_session = $this->functions->mchat_action('add', $sql_ary);
+		$is_new_session = $this->functions->mchat_action('add', $message_data);
 
 		$response = $this->action_refresh(true);
 
