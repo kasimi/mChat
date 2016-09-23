@@ -384,7 +384,7 @@ jQuery(function($) {
 									duration: dataAddMessageBefore.delay - 10,
 									easing: 'swing'
 								};
-								this.message.css('opacity', 0).slideDown(animateOptions).animate({opacity: 1}, $.extend({queue: false}, animateOptions));
+								this.message.slideDown(animateOptions);
 								if (!mChat.messageTop) {
 									this.container.animate({scrollTop: scrollHeight}, animateOptions);
 								}
