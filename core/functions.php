@@ -646,14 +646,18 @@ class functions
 
 		foreach ($rows as $row)
 		{
-			// Skip deleted posts
-			if (isset($row['post_subject']))
-			{
-				$post_subjects[$row['post_id']] = array(
-					'post_subject'	=> $row['post_subject'],
-					'forum_name'	=> $row['forum_name'],
-				);
-			}
+			$post_subjects[$row['post_id']] = array(
+				'post_subject'	=> $row['post_subject'],
+				'forum_name'	=> $row['forum_name'],
+			);
+		}
+
+		// Handle deleted posts
+		$non_existent_post_ids = array_diff($post_ids, array_keys($post_subjects));
+
+		foreach ($non_existent_post_ids as $post_id)
+		{
+			$post_subjects[$post_id] = null;
 		}
 
 		return $post_subjects;

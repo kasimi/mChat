@@ -1188,8 +1188,15 @@ class mchat
 				'f' => $row['forum_id'],
 			));
 
-			$args[] = '[url=' . $viewtopic_url . ']' . $post_data['post_subject'] . '[/url]';
-			$args[] = '[url=' . $viewforum_url . ']' . $post_data['forum_name'] . '[/url]';
+			if ($post_data)
+			{
+				$args[] = '[url=' . $viewtopic_url . ']' . $post_data['post_subject'] . '[/url]';
+				$args[] = '[url=' . $viewforum_url . ']' . $post_data['forum_name'] . '[/url]';
+			}
+			else
+			{
+				$args[0] .= '_DELETED';
+			}
 		}
 		else if ($row['post_id'] == functions::LOGIN_HIDDEN)
 		{
