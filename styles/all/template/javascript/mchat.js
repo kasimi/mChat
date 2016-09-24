@@ -365,9 +365,8 @@ jQuery(function($) {
 				}
 				mChat.messageIds.push($message.data('mchat-id'));
 				setTimeout(function() {
-					var $container = mChat.cached('messages');
 					var dataAddMessageAnimateBefore = {
-						container: $container,
+						container: mChat.cached('messages'),
 						message: $message,
 						add: function() {
 							if (mChat.messageTop) {
@@ -377,16 +376,21 @@ jQuery(function($) {
 							}
 						},
 						show: function() {
-							var scrollTop = this.container.scrollTop();
-							var scrollHeight = mChat.messageTop ? 0 : $container.get(0).scrollHeight;
-							if (mChat.messageTop && scrollTop == 0 || !mChat.messageTop && scrollTop >= scrollHeight - this.container.height()) {
+							var container = this.container;
+							var scrollTop = container.scrollTop();
+							if (mChat.messageTop && scrollTop == 0 || !mChat.messageTop && scrollTop >= container.get(0).scrollHeight - container.height()) {
 								var animateOptions = {
 									duration: dataAddMessageBefore.delay - 10,
 									easing: 'swing'
 								};
 								this.message.slideDown(animateOptions);
 								if (!mChat.messageTop) {
-									this.container.animate({scrollTop: scrollHeight}, animateOptions);
+									(animateOptions.complete = function() {
+										var scrollHeight = container.get(0).scrollHeight;
+										if (container.scrollTop() + container.height() < scrollHeight) {
+											container.animate({scrollTop: scrollHeight}, animateOptions);
+										}
+									})();
 								}
 							} else {
 								this.message.show();
