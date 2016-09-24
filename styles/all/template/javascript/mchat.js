@@ -378,13 +378,16 @@ jQuery(function($) {
 						show: function() {
 							var container = this.container;
 							var scrollTop = container.scrollTop();
-							if (mChat.messageTop && scrollTop == 0 || !mChat.messageTop && scrollTop >= container.get(0).scrollHeight - container.height()) {
+							var scrollLeeway = 20;
+							if (mChat.messageTop && scrollTop <= scrollLeeway || !mChat.messageTop && scrollTop >= container.get(0).scrollHeight - container.height() - scrollLeeway) {
 								var animateOptions = {
 									duration: dataAddMessageBefore.delay - 10,
 									easing: 'swing'
 								};
 								this.message.slideDown(animateOptions);
-								if (!mChat.messageTop) {
+								if (mChat.messageTop) {
+									container.animate({scrollTop: 0}, animateOptions);
+								} else {
 									(animateOptions.complete = function() {
 										var scrollHeight = container.get(0).scrollHeight;
 										if (container.scrollTop() + container.height() < scrollHeight) {
