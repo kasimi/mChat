@@ -40,8 +40,9 @@
 		},
 		"version-check": {
 			"host": "kasimi.github.io",
-			"directory": "/phpbb_versions",
-			"filename": "mchat.json"
+			"directory": "/mChat",
+			"filename": "mchat_version.json",
+			"ssl": true
 		}
 	}
 }
