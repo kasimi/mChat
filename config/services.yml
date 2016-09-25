@@ -43,6 +43,7 @@ services:
             - '@ext.manager'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@?text_formatter.s9e.parser'
             - '@?phpbb.collapsiblecategories.operator'
     dmzx.mchat.functions:
         class: dmzx\mchat\core\functions

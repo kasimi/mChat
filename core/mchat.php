@@ -20,6 +20,7 @@ use phpbb\extension\manager;
 use phpbb\pagination;
 use phpbb\request\request_interface;
 use phpbb\template\template;
+use phpbb\textformatter\parser_interface;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -61,6 +62,9 @@ class mchat
 	/** @var string */
 	protected $php_ext;
 
+	/** @var parser_interface */
+	protected $parser;
+
 	/** @var cc_operator */
 	protected $cc_operator;
 
@@ -88,6 +92,7 @@ class mchat
 	 * @param manager 				$extension_manager
 	 * @param string				$root_path
 	 * @param string				$php_ext
+	 * @param parser_interface		$parser
 	 * @param cc_operator			$cc_operator
 	 */
 	public function __construct(
@@ -103,6 +108,7 @@ class mchat
 		manager $extension_manager,
 		$root_path,
 		$php_ext,
+		parser_interface $parser = null,
 		cc_operator $cc_operator = null
 	)
 	{
@@ -118,6 +124,7 @@ class mchat
 		$this->extension_manager	= $extension_manager;
 		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;
+		$this->parser				= $parser;
 		$this->cc_operator			= $cc_operator;
 
 		$this->template->assign_vars(array(
@@ -1503,6 +1510,17 @@ class mchat
 		$mchat_urls		= $this->settings->cfg('allow_post_links') && $this->auth->acl_get('u_mchat_urls');
 		$mchat_smilies	= $this->settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies');
 
+		$disallowed_bbcodes = $this->settings->cfg('mchat_bbcode_disallowed');
+
+		// Disallowed bbcodes for 3.2.x
+		if ($disallowed_bbcodes && $this->parser !== null)
+		{
+			foreach (explode('|', $disallowed_bbcodes) as $bbcode)
+			{
+				$this->parser->disable_bbcode($bbcode);
+			}
+		}
+
 		// Add function part code from http://wiki.phpbb.com/Parsing_text
 		$uid = $bitfield = $options = '';
 		generate_text_for_storage($message, $uid, $bitfield, $options, $mchat_bbcode, $mchat_urls, $mchat_smilies);
@@ -1513,8 +1531,8 @@ class mchat
 			$message = preg_replace('#\[/?[^\[\]]+\]#Usi', '', $message);
 		}
 
-		// Disallowed bbcodes
-		if ($this->settings->cfg('mchat_bbcode_disallowed'))
+		// Disallowed bbcodes for 3.1.x
+		if ($disallowed_bbcodes && $this->parser === null)
 		{
 			$bbcode_replace = array(
 				'#\[(' . str_replace('*', '\*', $this->settings->cfg('mchat_bbcode_disallowed')) . ')[^\[\]]+\]#Usi',
