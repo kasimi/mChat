@@ -38,7 +38,7 @@ env:
 
 branches:
   only:
-    - master
+    - dev
     - /^\d+(\.\d+)?\.x$/
 
 install:
@@ -59,7 +59,7 @@ script:
   - mkdir phpBB/ext/$EXTNAME/build/logs
   - phpBB/vendor/bin/phpunit --configuration phpBB/ext/$EXTNAME/travis/phpunit-$DB-travis.xml --bootstrap ./tests/bootstrap.php --coverage-clover phpBB/ext/$EXTNAME/build/logs/clover.xml
   - sh -c "if [ '$EPV' != '0' ] && [ '$TRAVIS_PHP_VERSION' = '5.5' ] && [ '$DB' = 'mysqli' ]; then phpBB/vendor/bin/EPV.php run --dir='phpBB/ext/$EXTNAME/'; fi"
-  
+
 after_script:
   - sh -c "if [ '$COVERAGE' != '0' ] && [ '$TRAVIS_PHP_VERSION' = '5.6' ] && [ '$DB' = 'mysqli' ]; then php phpBB/ext/$EXTNAME/vendor/bin/coveralls -v -x build/logs/clover.xml -r phpBB/ext/$EXTNAME/; fi"
 
