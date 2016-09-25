@@ -1522,15 +1522,8 @@ class mchat
 			}
 		}
 
-		// Add function part code from http://wiki.phpbb.com/Parsing_text
 		$uid = $bitfield = $options = '';
 		generate_text_for_storage($message, $uid, $bitfield, $options, $mchat_bbcode, $mchat_urls, $mchat_smilies);
-
-		// Not allowed bbcodes
-		if (!$mchat_bbcode)
-		{
-			$message = preg_replace('#\[/?[^\[\]]+\]#Usi', '', $message);
-		}
 
 		// Disallowed bbcodes for 3.1.x
 		if ($disallowed_bbcodes && $this->parser === null)
