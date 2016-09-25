@@ -1058,18 +1058,19 @@ class mchat
 			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
 
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
-
-			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
+			$is_notification = (bool) $row['post_id'];
+			$allow_edit = $this->auth_message('edit', $row['user_id'], $row['message_time']);
+			$message_for_edit = $allow_edit && !$is_notification ? generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']) : false;
 
 			$template_data = array(
-				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('edit', $row['user_id'], $row['message_time']),
+				'MCHAT_ALLOW_EDIT'			=> $allow_edit,
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}{$this->root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 				'MCHAT_IS_POSTER'			=> $is_poster,
-				'MCHAT_IS_NOTIFICATION'		=> (bool) $row['post_id'],
+				'MCHAT_IS_NOTIFICATION'		=> $is_notification,
 				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}{$this->root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;mchat_pm_quote_message=' . (int) $row['message_id'] . '&amp;u=' . $row['user_id']) : '',
-				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
+				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit ? $message_for_edit['text'] : '',
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'		=> $username_full,
 				'MCHAT_USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
