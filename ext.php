@@ -37,9 +37,9 @@ class ext extends \phpbb\extension\base
 
 			if ($module_ids)
 			{
-				if (phpbb_version_compare($config['version'], '3.2.0-dev', '>='))
+				if (phpbb_version_compare(PHPBB_VERSION, '3.2.0-dev', '>='))
 				{
-					// For phpBB 3.2.x
+					// For phpBB >= 3.2.x
 					$lang = $this->container->get('language');
 					$lang->add_lang('mchat_acp', 'dmzx/mchat');
 				}
@@ -58,7 +58,7 @@ class ext extends \phpbb\extension\base
 			}
 		}
 
-		return phpbb_version_compare($config['version'], '3.1.8-RC1', '>=');
+		return phpbb_version_compare(PHPBB_VERSION, '3.1.8-RC1', '>=');
 	}
 
 	/**
