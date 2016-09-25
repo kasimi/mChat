@@ -11,39 +11,48 @@
 
 namespace dmzx\mchat\core;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use phpbb\auth\auth;
+use phpbb\collapsiblecategories\operator\operator as cc_operator;
+use phpbb\controller\helper;
+use phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
+use phpbb\extension\manager;
+use phpbb\pagination;
+use phpbb\request\request_interface;
+use phpbb\template\template;
+use phpbb\user;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class mchat
 {
-	/** @var \dmzx\mchat\core\functions */
+	/** @var functions */
 	protected $functions;
 
-	/** @var \dmzx\mchat\core\settings */
+	/** @var settings */
 	protected $settings;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\pagination */
+	/** @var pagination */
 	protected $pagination;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\event\dispatcher_interface */
+	/** @var dispatcher_interface */
 	protected $dispatcher;
 
-	/** @var \phpbb\extension\manager */
+	/** @var manager */
 	protected $extension_manager;
 
 	/** @var string */
@@ -52,7 +61,7 @@ class mchat
 	/** @var string */
 	protected $php_ext;
 
-	/** @var \phpbb\collapsiblecategories\operator\operator */
+	/** @var cc_operator */
 	protected $cc_operator;
 
 	/** @var boolean */
@@ -67,21 +76,35 @@ class mchat
 	/**
 	 * Constructor
 	 *
-	 * @param \dmzx\mchat\core\functions						$functions
-	 * @param \dmzx\mchat\core\settings							$settings
-	 * @param \phpbb\controller\helper							$helper
-	 * @param \phpbb\template\template							$template
-	 * @param \phpbb\user										$user
-	 * @param \phpbb\auth\auth									$auth
-	 * @param \phpbb\pagination									$pagination
-	 * @param \phpbb\request\request							$request
-	 * @param \phpbb\event\dispatcher_interface 				$dispatcher
-	 * @param \phpbb\extension\manager 							$extension_manager
-	 * @param string											$root_path
-	 * @param string											$php_ext
-	 * @param \phpbb\collapsiblecategories\operator\operator	$cc_operator
+	 * @param functions				$functions
+	 * @param settings				$settings
+	 * @param helper				$helper
+	 * @param template				$template
+	 * @param user					$user
+	 * @param auth					$auth
+	 * @param pagination			$pagination
+	 * @param request_interface		$request
+	 * @param dispatcher_interface 	$dispatcher
+	 * @param manager 				$extension_manager
+	 * @param string				$root_path
+	 * @param string				$php_ext
+	 * @param cc_operator			$cc_operator
 	 */
-	public function __construct(\dmzx\mchat\core\functions $functions, \dmzx\mchat\core\settings $settings, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\extension\manager $extension_manager, $root_path, $php_ext, \phpbb\collapsiblecategories\operator\operator $cc_operator = null)
+	public function __construct(
+		functions $functions,
+		settings $settings,
+		helper $helper,
+		template $template,
+		user $user,
+		auth $auth,
+		pagination $pagination,
+		request_interface $request,
+		dispatcher_interface $dispatcher,
+		manager $extension_manager,
+		$root_path,
+		$php_ext,
+		cc_operator $cc_operator = null
+	)
 	{
 		$this->functions			= $functions;
 		$this->settings				= $settings;

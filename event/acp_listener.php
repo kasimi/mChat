@@ -11,21 +11,25 @@
 
 namespace dmzx\mchat\event;
 
+use dmzx\mchat\core\settings;
+use phpbb\request\request_interface;
+use phpbb\template\template;
+use phpbb\user;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class acp_listener implements EventSubscriberInterface
 {
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \dmzx\mchat\core\settings */
+	/** @var settings */
 	protected $settings;
 
 	/** @var string */
@@ -37,14 +41,21 @@ class acp_listener implements EventSubscriberInterface
 	/**
 	* Constructor
 	*
-	* @param \phpbb\template\template	$template
-	* @param \phpbb\request\request		$request
-	* @param \phpbb\user				$user
-	* @param \dmzx\mchat\core\settings	$settings
-	* @param string						$root_path
-	* @param string						$php_ext
+	* @param template			$template
+	* @param request_interface	$request
+	* @param user				$user
+	* @param settings			$settings
+	* @param string				$root_path
+	* @param string				$php_ext
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user $user, \dmzx\mchat\core\settings $settings, $root_path, $php_ext)
+	public function __construct(
+		template $template,
+		request_interface $request,
+		user $user,
+		settings $settings,
+		$root_path,
+		$php_ext
+	)
 	{
 		$this->template		= $template;
 		$this->request		= $request;

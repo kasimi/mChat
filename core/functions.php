@@ -11,27 +11,34 @@
 
 namespace dmzx\mchat\core;
 
+use phpbb\auth\auth;
+use phpbb\cache\driver\driver_interface as cache_interface;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\log\log_interface;
+use phpbb\user;
+
 class functions
 {
-	/** @var \dmzx\mchat\core\settings */
+	/** @var settings */
 	protected $settings;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\log\log */
+	/** @var log_interface */
 	protected $log;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\cache\driver\driver_interface */
+	/** @var cache_interface */
 	protected $cache;
 
-	/** @var \phpbb\event\dispatcher_interface */
+	/** @var dispatcher_interface */
 	protected $dispatcher;
 
 	/** @var string */
@@ -70,33 +77,46 @@ class functions
 	/**
 	* Constructor
 	*
-	* @param \dmzx\mchat\core\settings				$settings
-	* @param \phpbb\user							$user
-	* @param \phpbb\auth\auth						$auth
-	* @param \phpbb\log\log_interface				$log
-	* @param \phpbb\db\driver\driver_interface		$db
-	* @param \phpbb\cache\driver\driver_interface	$cache
-	* @param \phpbb\event\dispatcher_interface		$dispatcher
-	* @param string									$root_path
-	* @param string									$php_ext
-	* @param string									$mchat_table
-	* @param string									$mchat_log_table
-	* @param string									$mchat_sessions_table
+	* @param settings				$settings
+	* @param user					$user
+	* @param auth					$auth
+	* @param log_interface			$log
+	* @param db_interface			$db
+	* @param cache_interface		$cache
+	* @param dispatcher_interface	$dispatcher
+	* @param string					$root_path
+	* @param string					$php_ext
+	* @param string					$mchat_table
+	* @param string					$mchat_log_table
+	* @param string					$mchat_sessions_table
 	*/
-	function __construct(\dmzx\mchat\core\settings $settings, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, $root_path, $php_ext, $mchat_table, $mchat_log_table, $mchat_sessions_table)
+	function __construct(
+		settings $settings,
+		user $user,
+		auth $auth,
+		log_interface $log,
+		db_interface $db,
+		cache_interface $cache,
+		dispatcher_interface $dispatcher,
+		$root_path,
+		$php_ext,
+		$mchat_table,
+		$mchat_log_table,
+		$mchat_sessions_table
+	)
 	{
-		$this->settings					= $settings;
-		$this->user						= $user;
-		$this->auth						= $auth;
-		$this->log						= $log;
-		$this->db						= $db;
-		$this->cache					= $cache;
-		$this->dispatcher				= $dispatcher;
-		$this->root_path				= $root_path;
-		$this->php_ext					= $php_ext;
-		$this->mchat_table				= $mchat_table;
-		$this->mchat_log_table			= $mchat_log_table;
-		$this->mchat_sessions_table		= $mchat_sessions_table;
+		$this->settings				= $settings;
+		$this->user					= $user;
+		$this->auth					= $auth;
+		$this->log					= $log;
+		$this->db					= $db;
+		$this->cache				= $cache;
+		$this->dispatcher			= $dispatcher;
+		$this->root_path			= $root_path;
+		$this->php_ext				= $php_ext;
+		$this->mchat_table			= $mchat_table;
+		$this->mchat_log_table		= $mchat_log_table;
+		$this->mchat_sessions_table	= $mchat_sessions_table;
 	}
 
 	/**

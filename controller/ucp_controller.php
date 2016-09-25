@@ -11,24 +11,31 @@
 
 namespace dmzx\mchat\controller;
 
+use dmzx\mchat\core\settings;
+use phpbb\auth\auth;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\request\request_interface;
+use phpbb\template\template;
+use phpbb\user;
+
 class ucp_controller
 {
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \dmzx\mchat\core\settings */
+	/** @var settings */
 	protected $settings;
 
 	/** @var string */
@@ -40,16 +47,25 @@ class ucp_controller
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\template\template			$template
-	 * @param \phpbb\user						$user
-	 * @param \phpbb\auth\auth					$auth
-	 * @param \phpbb\db\driver\driver_interface	$db
-	 * @param \phpbb\request\request			$request
-	 * @param \dmzx\mchat\core\settings			$settings
-	 * @param string							$root_path
-	 * @param string							$php_ext
+	 * @param template			$template
+	 * @param user				$user
+	 * @param auth				$auth
+	 * @param db_interface		$db
+	 * @param request_interface	$request
+	 * @param settings			$settings
+	 * @param string			$root_path
+	 * @param string			$php_ext
 	 */
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \dmzx\mchat\core\settings $settings, $root_path, $php_ext)
+	public function __construct(
+		template $template,
+		user $user,
+		auth $auth,
+		db_interface $db,
+		request_interface $request,
+		settings $settings,
+		$root_path,
+		$php_ext
+	)
 	{
 		$this->template		= $template;
 		$this->user			= $user;

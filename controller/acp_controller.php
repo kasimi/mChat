@@ -11,30 +11,39 @@
 
 namespace dmzx\mchat\controller;
 
+use dmzx\mchat\core\functions;
+use dmzx\mchat\core\settings;
+use phpbb\cache\driver\driver_interface as cache_interface;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\log\log_interface;
+use phpbb\request\request_interface;
+use phpbb\template\template;
+use phpbb\user;
+
 class acp_controller
 {
-	/** @var \dmzx\mchat\core\functions */
+	/** @var functions */
 	protected $functions;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\log\log_interface */
+	/** @var log_interface */
 	protected $log;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\cache\service */
+	/** @var cache_interface */
 	protected $cache;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \dmzx\mchat\core\settings */
+	/** @var settings */
 	protected $settings;
 
 	/** @var string */
@@ -52,20 +61,32 @@ class acp_controller
 	/**
 	 * Constructor
 	 *
-	 * @param \dmzx\mchat\core\functions		$functions
-	 * @param \phpbb\template\template			$template
-	 * @param \phpbb\log\log_interface			$log
-	 * @param \phpbb\user						$user
-	 * @param \phpbb\db\driver\driver_interface	$db
-	 * @param \phpbb\cache\service				$cache
-	 * @param \phpbb\request\request			$request
-	 * @param \dmzx\mchat\core\settings			$settings
-	 * @param string							$mchat_table
-	 * @param string							$mchat_log_table
-	 * @param string							$root_path
-	 * @param string							$php_ext
+	 * @param functions				$functions
+	 * @param template				$template
+	 * @param log_interface			$log
+	 * @param user					$user
+	 * @param db_interface			$db
+	 * @param cache_interface		$cache
+	 * @param request_interface		$request
+	 * @param settings				$settings
+	 * @param string				$mchat_table
+	 * @param string				$mchat_log_table
+	 * @param string				$root_path
+	 * @param string				$php_ext
 	 */
-	public function __construct(\dmzx\mchat\core\functions $functions, \phpbb\template\template $template, \phpbb\log\log_interface $log, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\request\request $request, \dmzx\mchat\core\settings $settings, $mchat_table, $mchat_log_table, $root_path, $php_ext)
+	public function __construct(
+		functions $functions,
+		template $template,
+		log_interface $log,
+		user $user,
+		db_interface $db,
+		cache_interface $cache,
+		request_interface $request,
+		settings $settings,
+		$mchat_table,
+		$mchat_log_table,
+		$root_path, $php_ext
+	)
 	{
 		$this->functions		= $functions;
 		$this->template			= $template;

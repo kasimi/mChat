@@ -11,6 +11,10 @@
 
 namespace dmzx\mchat\core;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\user;
+
 class settings
 {
 	/** @var \phpbb\user */
@@ -50,15 +54,19 @@ class settings
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\user			$user
-	 * @param \phpbb\config\config	$config
-	 * @param \phpbb\auth\auth		$auth
+	 * @param user		$user
+	 * @param config	$config
+	 * @param auth		$auth
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth)
+	public function __construct(
+		user $user,
+		config $config,
+		auth $auth
+	)
 	{
-		$this->user			= $user;
-		$this->config		= $config;
-		$this->auth			= $auth;
+		$this->user		= $user;
+		$this->config	= $config;
+		$this->auth		= $auth;
 
 		$this->global = array(
 			'mchat_bbcode_disallowed'		=> array('default' => '',	'validation' => array('string', false, 0, 255)),

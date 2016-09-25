@@ -10,7 +10,7 @@ services:
             - '@log'
             - '@user'
             - '@dbal.conn'
-            - '@cache'
+            - '@cache.driver'
             - '@request'
             - '@dmzx.mchat.settings'
             - '%dmzx.mchat.table.mchat%'
