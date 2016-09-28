@@ -312,35 +312,33 @@ class functions
 	 */
 	public function mchat_prune()
 	{
-		$sql_aray = array(
+		$prune_num = (int) $this->settings->cfg('mchat_prune_num');
+		$prune_mode = (int) $this->settings->cfg('mchat_prune_mode');
+
+		if (empty($this->settings->prune_modes[$prune_mode]))
+		{
+			return 0;
+		}
+
+		$sql_array = array(
 			'SELECT'	=> 'message_id',
 			'FROM'		=> array($this->mchat_table => 'm'),
 		);
 
-		$prune_num = $this->settings->cfg('mchat_prune_num');
-
-		if (ctype_digit($prune_num))
+		if ($this->settings->prune_modes[$prune_mode] === 'messages')
 		{
-			// Retain fixed number of messages
+			// Skip fixed number of messages, delete all others
+			$sql_array['ORDER_BY'] = 'm.message_id DESC';
 			$offset = $prune_num;
-			$sql_aray['ORDER_BY'] = 'message_id DESC';
 		}
 		else
 		{
-			// Retain messages of a time period
-			$time_period = strtotime($prune_num, 0);
-
-			if ($time_period === false)
-			{
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNE_FAIL', false, array($this->user->data['username']));
-				return false;
-			}
-
+			// Delete messages older than time period
+			$sql_array['WHERE'] = 'm.message_time < ' . (int) strtotime($prune_num * $prune_mode . ' hours ago');
 			$offset = 0;
-			$sql_aray['WHERE'] = 'message_time < ' . (int) (time() - $time_period);
 		}
 
-		$sql = $this->db->sql_build_query('SELECT', $sql_aray);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query_limit($sql, 0, $offset);
 		$rows = $this->db->sql_fetchrowset();
 		$this->db->sql_freeresult($result);

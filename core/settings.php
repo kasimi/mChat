@@ -17,13 +17,13 @@ use phpbb\user;
 
 class settings
 {
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
 	/**
@@ -44,6 +44,19 @@ class settings
 	 * @var array
 	 */
 	public $ucp;
+
+	/**
+	 * Prune modes listed in the ACP. For values other than messages the key is the
+	 * amount of hours that is later multiplied with the value that is set in the ACP.
+	 *
+	 * @var array
+	 */
+	public $prune_modes = array(
+		0	=> 'messages',
+		1	=> 'hours',
+		24	=> 'days',
+		168	=> 'weeks',
+	);
 
 	/** @var bool */
 	public $is_phpbb31;
@@ -90,7 +103,8 @@ class settings
 			'mchat_posts_topic'				=> array('default' => 0),
 			'mchat_posts_login'				=> array('default' => 0),
 			'mchat_prune'					=> array('default' => 0),
-			'mchat_prune_num'				=> array('default' => '0'),
+			'mchat_prune_mode'				=> array('default' => 0),
+			'mchat_prune_num'				=> array('default' => 0),
 			'mchat_refresh'					=> array('default' => 10,	'validation' => array('num', false, 5, 60)),
 			'mchat_rules'					=> array('default' => '',	'validation' => array('string', false, 0, 255)),
 			'mchat_static_message'			=> array('default' => '',	'validation' => array('string', false, 0, 255)),
@@ -132,7 +146,7 @@ class settings
 	/**
 	 * @param string $config
 	 * @param array $user_data
-	 * @param \phpbb\auth\auth $auth
+	 * @param auth $auth
 	 * @param bool $force_global
 	 * @return string
 	 */

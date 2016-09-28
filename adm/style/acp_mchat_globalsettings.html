@@ -174,15 +174,19 @@
 	<fieldset>
 		<legend>{L_MCHAT_SETTINGS_PRUNE}</legend>
 		<dl>
-			<dt><label for="mchat_prune">{L_MCHAT_PRUNE}{L_COLON}</label><br />
-				<span>{L_MCHAT_PRUNE_EXPLAIN}</span></dt>
+			<dt><label for="mchat_prune">{L_MCHAT_PRUNE}{L_COLON}</label></dt>
 			<dd><label><input type="radio" class="radio" name="mchat_prune" value="1"<!-- IF MCHAT_PRUNE --> id="mchat_prune" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="mchat_prune" value="0"<!-- IF not MCHAT_PRUNE --> id="mchat_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
 			<dt><label for="mchat_prune_num">{L_MCHAT_PRUNE_NUM}{L_COLON}</label><br />
 				<span>{L_MCHAT_PRUNE_NUM_EXPLAIN}</span></dt>
-			<dd><input type="text" name="mchat_prune_num" size="10" id="mchat_prune_num" value="{MCHAT_PRUNE_NUM}" /></dd>
+			<dd>
+				<input type="text" name="mchat_prune_num" size="10" id="mchat_prune_num" value="{MCHAT_PRUNE_NUM}" />
+				<select name="mchat_prune_mode" id="mchat_prune_mode" title="{L_MCHAT_PRUNE_NUM}">
+					{S_MCHAT_PRUNE_MODE_OPTIONS}
+				</select>
+			</dd>
 		</dl>
 		<dl>
 			<dt><label for="mchat_prune_now">{L_MCHAT_PRUNE_NOW}{L_COLON}</label></dt>

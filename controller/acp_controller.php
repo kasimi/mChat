@@ -193,6 +193,7 @@ class acp_controller
 			'MCHAT_ERROR'							=> implode('<br />', $error),
 			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
 			'MCHAT_FOUNDER'							=> $is_founder,
+			'S_MCHAT_PRUNE_MODE_OPTIONS'			=> $this->get_prune_mode_options($this->settings->cfg('mchat_prune_mode')),
 			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
 			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
 			'U_ACTION'								=> $u_action,
@@ -286,5 +287,28 @@ class acp_controller
 			'MCHAT_VERSION'		=> $this->settings->cfg('mchat_version'),
 			'U_ACTION'			=> $u_action,
 		));
+	}
+
+	/**
+	 * @param $selected
+	 * @return array
+	 */
+	protected function get_prune_mode_options($selected)
+	{
+		if (empty($this->settings->prune_modes[$selected]))
+		{
+			$selected = 0;
+		}
+
+		$prune_mode_options = '';
+
+		foreach ($this->settings->prune_modes as $i => $prune_mode)
+		{
+			$prune_mode_options .= '<option value="' . $i . '"' . (($i == $selected) ? ' selected="selected"' : '') . '>';
+			$prune_mode_options .= $this->user->lang('MCHAT_ACP_' . strtoupper($prune_mode));
+			$prune_mode_options .= '</option>';
+		}
+
+		return $prune_mode_options;
 	}
 }
