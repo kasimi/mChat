@@ -381,9 +381,12 @@ class functions
 	 */
 	public function mchat_total_message_count()
 	{
+		$sql_where_ary = $this->get_sql_where_for_notifcation_messages();
+
 		$sql_array = array(
 			'SELECT'	=> 'COUNT(*) AS rows_total',
 			'FROM'		=> array($this->mchat_table => 'm'),
+			'WHERE'		=> $sql_where_ary ? $this->db->sql_escape('(' . implode(') AND (', $sql_where_ary) . ')') : '',
 		);
 
 		/**
@@ -436,22 +439,11 @@ class functions
 			$sql_where_message_id[] = $this->db->sql_in_set('m.message_id', array_map('intval', $message_ids));
 		}
 
-		$sql_where_ary = $sql_where_message_id ? array(implode(' OR ', $sql_where_message_id)) : array();
+		$sql_where_ary = $this->get_sql_where_for_notifcation_messages();
 
-		if ($this->settings->cfg('mchat_posts'))
+		if ($sql_where_message_id)
 		{
-			// If the current user doesn't have permission to see hidden users, exclude their login posts
-			if (!$this->auth->acl_get('u_viewonline'))
-			{
-				$sql_where_ary[] = 'm.post_id <> ' . (int) self::LOGIN_HIDDEN .	// Exclude all notifications that were created by hidden users ...
-					' OR m.user_id = ' . (int) $this->user->data['user_id'] .	// ... but include all login notifications of the current user
-					' OR m.forum_id <> 0';										// ... and include all post notifications
-			}
-		}
-		else
-		{
-			// Exclude all post notifications
-			$sql_where_ary[] = 'm.post_id = 0';
+			$sql_where_ary[] = implode(' OR ', $sql_where_message_id);
 		}
 
 		$sql_array = array(
@@ -506,6 +498,35 @@ class functions
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * Generates SQL where conditions to include or exlude notifacation
+	 * messages based on the current user's settings and permissions
+	 *
+	 * @return array
+	 */
+	protected function get_sql_where_for_notifcation_messages()
+	{
+		$sql_where_ary = array();
+
+		if ($this->settings->cfg('mchat_posts'))
+		{
+			// If the current user doesn't have permission to see hidden users, exclude their login posts
+			if (!$this->auth->acl_get('u_viewonline'))
+			{
+				$sql_where_ary[] = 'm.post_id <> ' . (int) self::LOGIN_HIDDEN .	// Exclude all notifications that were created by hidden users ...
+					' OR m.user_id = ' . (int) $this->user->data['user_id'] .	// ... but include all login notifications of the current user
+					' OR m.forum_id <> 0';										// ... and include all post notifications
+			}
+		}
+		else
+		{
+			// Exclude all post notifications
+			$sql_where_ary[] = 'm.post_id = 0';
+		}
+
+		return $sql_where_ary;
 	}
 
 	/**
