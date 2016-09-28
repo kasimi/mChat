@@ -74,6 +74,8 @@ $lang = array_merge($lang, array(
 	'MCHAT_LIVE_UPDATES'							=> 'Live updates of edited and deleted messages',
 	'MCHAT_LIVE_UPDATES_EXPLAIN'					=> 'When a user edits or deletes messages, the changes are updated live for all others, without them having to refresh the page. Disable this if you experience performance issues.',
 	'MCHAT_PRUNE'									=> 'Enable message pruning',
+	'MCHAT_PRUNE_GC'								=> 'Message prune task interval',
+	'MCHAT_PRUNE_GC_EXPLAIN'						=> 'The time in seconds that needs to pass before the next message pruning is triggered. Note: this setting controls <em>when</em> messages are checked if they can be deleted. It does <em>not</em> control <em>which</em> messages are deleted. <em>Default is 86400 = 24 hours.</em>',
 	'MCHAT_PRUNE_NUM'								=> 'Messages to retain when pruning',
 	'MCHAT_PRUNE_NUM_EXPLAIN'						=> 'When using ’messages’ a fixed number of messages will be kept. When using ’hours’, ’days’ or ’weeks’ all messages older than the specified time period at the time of pruning will be deleted.',
 	'MCHAT_PRUNE_NOW'								=> 'Prune messages now',

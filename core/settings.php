@@ -103,6 +103,7 @@ class settings
 			'mchat_posts_topic'				=> array('default' => 0),
 			'mchat_posts_login'				=> array('default' => 0),
 			'mchat_prune'					=> array('default' => 0),
+			'mchat_prune_gc'				=> array('default' => strtotime('1 day', 0)),
 			'mchat_prune_mode'				=> array('default' => 0),
 			'mchat_prune_num'				=> array('default' => 0),
 			'mchat_refresh'					=> array('default' => 10,	'validation' => array('num', false, 5, 60)),
