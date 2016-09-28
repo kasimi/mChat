@@ -845,7 +845,7 @@ class mchat
 		$rows = $this->functions->mchat_get_messages(array(), 0, $limit, $start);
 
 		$this->assign_global_template_data();
-		$this->assign_messages($rows);
+		$this->assign_messages($rows, $page);
 
 		// Render pagination
 		if ($page === 'archive')
@@ -993,8 +993,9 @@ class mchat
 	 * Assigns all message rows to the template
 	 *
 	 * @param array $rows
+	 * @param string $page
 	 */
-	public function assign_messages($rows)
+	public function assign_messages($rows, $page = '')
 	{
 		$rows = array_filter($rows, array($this, 'has_read_auth'));
 
@@ -1004,7 +1005,7 @@ class mchat
 		}
 
 		// Reverse the array if messages appear at the bottom
-		if (!$this->settings->cfg('mchat_message_top'))
+		if ($page !== 'archive' && !$this->settings->cfg('mchat_message_top'))
 		{
 			$rows = array_reverse($rows);
 		}
