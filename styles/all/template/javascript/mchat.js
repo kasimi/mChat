@@ -105,9 +105,7 @@ jQuery(function($) {
 						deferred.reject(data.xhr, data.status, mChat.lang.parserErr);
 					}
 				}
-			}).fail(function(xhr, status, error) {
-				deferred.reject(xhr, status, error);
-			});
+			}).fail(deferred.reject);
 			return deferred.promise().fail(function(xhr, textStatus, errorThrown) {
 				if (mChat.pageIsUnloading) {
 					return;
@@ -120,10 +118,10 @@ jQuery(function($) {
 					xhr: xhr,
 					textStatus: textStatus,
 					errorThrown: errorThrown,
-					updateSession: function(xhr) {
-						if (xhr.status == 403) {
+					updateSession: function() {
+						if (this.xhr.status == 403) {
 							mChat.endSession(true);
-						} else if (xhr.status == 400) {
+						} else if (this.xhr.status == 400) {
 							mChat.resetSession();
 						}
 					}
@@ -134,12 +132,14 @@ jQuery(function($) {
 				mChat.cached('status-error').show();
 				var responseText;
 				try {
-					responseText = xhr.responseJSON.message || errorThrown;
+					responseText = data.xhr.responseJSON.message || data.errorThrown;
 				} catch (e) {
-					responseText = errorThrown;
+					responseText = data.errorThrown;
 				}
-				phpbb.alert(mChat.lang.err, responseText);
-				data.updateSession(data.xhr);
+				if (responseText && responseText !== 'timeout') {
+					phpbb.alert(mChat.lang.err, responseText);
+				}
+				data.updateSession();
 			});
 		},
 		sound: function(file) {
