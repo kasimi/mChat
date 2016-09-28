@@ -52,7 +52,9 @@ $lang = array_merge($lang, array(
 	'MCHAT_ACP_USER_PREFS_EXPLAIN'					=> 'Below are listed all mChat preferences of the selected user. Settings for which the selected user does not have permission to customise are disabled. These settings can be changed in the <em>Global user settings</em> mChat configuration section.',
 
 	// ACP settings
+	'MCHAT_ACP_CHARACTERS'							=> 'characters',
 	'MCHAT_ACP_MESSAGES'							=> 'messages',
+	'MCHAT_ACP_SECONDS'								=> 'seconds',
 	'MCHAT_ACP_HOURS'								=> 'hours',
 	'MCHAT_ACP_DAYS'								=> 'days',
 	'MCHAT_ACP_WEEKS'								=> 'weeks',
