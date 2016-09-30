@@ -134,6 +134,8 @@ class acp_controller
 			if (!$is_founder)
 			{
 				unset($mchat_new_config['mchat_prune']);
+				unset($mchat_new_config['mchat_prune_gc']);
+				unset($mchat_new_config['mchat_prune_mode']);
 				unset($mchat_new_config['mchat_prune_num']);
 			}
 
@@ -206,8 +208,6 @@ class acp_controller
 	public function globalusersettings($u_action)
 	{
 		add_form_key('acp_mchat');
-
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat_ucp');
 
 		$error = array();
 
