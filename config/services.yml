@@ -12,6 +12,7 @@ services:
             - '@dbal.conn'
             - '@cache.driver'
             - '@request'
+            - '@dispatcher'
             - '@dmzx.mchat.settings'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_log%'
