@@ -26,6 +26,7 @@ services:
             - '@dbal.conn'
             - '@request'
             - '@dmzx.mchat.settings'
+            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
     dmzx.mchat.core:
