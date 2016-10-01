@@ -68,6 +68,7 @@ services:
             - '@user'
             - '@config'
             - '@auth'
+            - '@dispatcher'
     dmzx.mchat.acp.listener:
         class: dmzx\mchat\event\acp_listener
         arguments:

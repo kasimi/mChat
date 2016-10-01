@@ -126,7 +126,7 @@ class acp_controller
 		{
 			$mchat_new_config = array();
 			$validation = array();
-			foreach ($this->settings->global as $config_name => $config_data)
+			foreach ($this->settings->global_settings() as $config_name => $config_data)
 			{
 				$default = $this->settings->cfg($config_name);
 				settype($default, gettype($config_data['default']));
@@ -217,7 +217,7 @@ class acp_controller
 			'U_ACTION'								=> $u_action,
 		);
 
-		foreach (array_keys($this->settings->global) as $key)
+		foreach (array_keys($this->settings->global_settings()) as $key)
 		{
 			$template_data[strtoupper($key)] = $this->settings->cfg($key);
 		}
@@ -252,7 +252,7 @@ class acp_controller
 		{
 			$mchat_new_config = array();
 			$validation = array();
-			foreach ($this->settings->ucp as $config_name => $config_data)
+			foreach ($this->settings->ucp_settings() as $config_name => $config_data)
 			{
 				$default = $this->settings->cfg($config_name, true);
 				settype($default, gettype($config_data['default']));
@@ -330,7 +330,7 @@ class acp_controller
 		$selected_date = $this->settings->cfg('mchat_date', true);
 		$template_data = $this->settings->get_date_template_data($selected_date);
 
-		foreach (array_keys($this->settings->ucp) as $key)
+		foreach (array_keys($this->settings->ucp_settings()) as $key)
 		{
 			$template_data[strtoupper($key)] = $this->settings->cfg($key, true);
 		}

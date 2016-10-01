@@ -1366,7 +1366,7 @@ class mchat
 	 */
 	public function set_user_default_values($sql_ary)
 	{
-		foreach (array_keys($this->settings->ucp) as $config_name)
+		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
 		{
 			$sql_ary['user_' . $config_name] = $this->settings->cfg($config_name, true);
 		}

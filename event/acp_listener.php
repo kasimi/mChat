@@ -12,6 +12,7 @@
 namespace dmzx\mchat\event;
 
 use dmzx\mchat\core\settings;
+use phpbb\auth\auth;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\user;
@@ -84,7 +85,7 @@ class acp_listener implements EventSubscriberInterface
 	{
 		$ucp_configs = array();
 
-		foreach (array_keys($this->settings->ucp) as $config_name)
+		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
 		{
 			$ucp_configs[] = 'u_' . $config_name;
 		}
@@ -142,11 +143,11 @@ class acp_listener implements EventSubscriberInterface
 
 		$user_id = $event['user_row']['user_id'];
 
-		$auth = new \phpbb\auth\auth();
+		$auth = new auth();
 		$userdata = $auth->obtain_user_data($user_id);
 		$auth->acl($userdata);
 
-		foreach ($this->settings->ucp as $config_name => $config_data)
+		foreach ($this->settings->ucp_settings() as $config_name => $config_data)
 		{
 			if ($auth->acl_get('u_' . $config_name))
 			{
@@ -179,7 +180,7 @@ class acp_listener implements EventSubscriberInterface
 
 		$user_id = $event['user_row']['user_id'];
 
-		$auth = new \phpbb\auth\auth();
+		$auth = new auth();
 		$userdata = $auth->obtain_user_data($user_id);
 		$auth->acl($userdata);
 
@@ -190,7 +191,7 @@ class acp_listener implements EventSubscriberInterface
 		$notifications_template_data = $this->settings->get_enabled_post_notifications_lang();
 		$this->template->assign_var('MCHAT_POSTS_ENABLED_LANG', $notifications_template_data);
 
-		foreach (array_keys($this->settings->ucp) as $config_name)
+		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
 		{
 			$upper = strtoupper($config_name);
 			$this->template->assign_vars(array(

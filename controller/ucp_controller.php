@@ -99,7 +99,7 @@ class ucp_controller
 		{
 			$mchat_new_config = array();
 			$validation = array();
-			foreach ($this->settings->ucp as $config_name => $config_data)
+			foreach ($this->settings->ucp_settings() as $config_name => $config_data)
 			{
 				if ($this->auth->acl_get('u_' . $config_name))
 				{
@@ -161,7 +161,7 @@ class ucp_controller
 
 		$auth_count = 0;
 
-		foreach (array_keys($this->settings->ucp) as $config_name)
+		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
 		{
 			$upper = strtoupper($config_name);
 			$auth = $this->auth->acl_get('u_' . $config_name);
