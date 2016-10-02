@@ -171,6 +171,10 @@
 	font-weight: bold !important;
 }
 
+.mchat-text img {
+	max-width: 100%;
+}
+
 .mchat-text li {
 	display: list-item !important;
 	list-style-type: inherit !important;
