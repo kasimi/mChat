@@ -223,9 +223,9 @@ class acp_controller
 		}
 
 		/**
-		 * Event to modify ACP global user settings template data
+		 * Event to modify ACP global settings template data
 		 *
-		 * @event dmzx.mchat.acp_globalusersettings_modify_template_data
+		 * @event dmzx.mchat.acp_globalsettings_modify_template_data
 		 * @var array	template_data	Array containing the template data for the ACP settings
 		 * @var array	error			Array with error lang keys
 		 * @since 2.0.0-RC7
@@ -234,7 +234,7 @@ class acp_controller
 			'template_data',
 			'error',
 		);
-		extract($this->dispatcher->trigger_event('dmzx.mchat.acp_globalusersettings_modify_template_data', compact($vars)));
+		extract($this->dispatcher->trigger_event('dmzx.mchat.acp_globalsettings_modify_template_data', compact($vars)));
 
 		$this->template->assign_vars($template_data);
 	}
@@ -346,7 +346,7 @@ class acp_controller
 		 * Event to modify ACP global user settings template data
 		 *
 		 * @event dmzx.mchat.acp_globalusersettings_modify_template_data
-		 * @var array	template_data	Array containing the template data for the ACP settings
+		 * @var array	template_data	Array containing the template data for the ACP user settings
 		 * @var array	error			Array with error lang keys
 		 * @since 2.0.0-RC7
 		 */
