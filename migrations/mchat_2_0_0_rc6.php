@@ -11,7 +11,9 @@
 
 namespace dmzx\mchat\migrations;
 
-class mchat_2_0_0_rc6 extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+
+class mchat_2_0_0_rc6 extends migration
 {
 	static public function depends_on()
 	{

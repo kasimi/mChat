@@ -10,9 +10,9 @@
 
 namespace dmzx\mchat\migrations;
 
-use phpbb\db\migration\container_aware_migration;
+use phpbb\db\migration\migration;
 
-class mchat_2_0_0_rc7 extends container_aware_migration
+class mchat_2_0_0_rc7 extends migration
 {
 	static public function depends_on()
 	{
