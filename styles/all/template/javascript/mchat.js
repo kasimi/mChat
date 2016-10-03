@@ -1,10 +1,10 @@
 /**
  *
  * @package phpBB Extension - mChat
- * @copyright (c) 2009 By Shapoval Andrey Vladimirovich (AllCity) ~ http://allcity.net.ru/
- * @copyright (c) 2013 By Rich McGirr (RMcGirr83) http://rmcgirr83.org
- * @copyright (c) 2015 By dmzx - http://www.dmzx-web.net
- * @copyright (c) 2016 By kasimi
+ * @copyright (c) 2009 Shapoval Andrey Vladimirovich (AllCity) ~ http://allcity.net.ru/
+ * @copyright (c) 2013 Rich McGirr (RMcGirr83) http://rmcgirr83.org
+ * @copyright (c) 2015 dmzx - http://www.dmzx-web.net
+ * @copyright (c) 2016 kasimi - mail@kasimi.net
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */

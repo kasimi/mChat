@@ -4,7 +4,7 @@
  *
  * @package phpBB Extension - mChat
  * @copyright (c) 2016 dmzx - http://www.dmzx-web.net
- * @copyright (c) 2016 kasimi
+ * @copyright (c) 2016 kasimi - https://kasimi.net
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -937,8 +937,8 @@ class mchat
 
 		$this->template->assign_vars(array(
 			'MCHAT_DISPLAY_NAME'		=> $meta['extra']['display-name'],
-			'MCHAT_AUTHOR_NAMES'		=> implode(' &bull; ', $author_names),
-			'MCHAT_AUTHOR_HOMEPAGES'	=> implode(' &bull; ', $author_homepages),
+			'MCHAT_AUTHOR_NAMES'		=> implode(' &amp; ', $author_names),
+			'MCHAT_AUTHOR_HOMEPAGES'	=> implode(' &amp; ', $author_homepages),
 		));
 	}
 
