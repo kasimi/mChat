@@ -38,6 +38,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_ADD'						=> 'Send',
 	'MCHAT_ARCHIVE'					=> 'Archive',
 	'MCHAT_ARCHIVE_PAGE'			=> 'mChat Archive',
+	'MCHAT_CUSTOM_PAGE'				=> 'mChat',
 	'MCHAT_BBCODES'					=> 'BBCodes',
 	'MCHAT_CUSTOM_BBCODES'			=> 'Custom BBCodes',
 	'MCHAT_DELCONFIRM'				=> 'Are you sure you want to delete this message?',

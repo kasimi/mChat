@@ -4,6 +4,16 @@
 
 <!-- EVENT dmzx_mchat_overall_header_after -->
 
+<!-- EVENT dmzx_mchat_header_before -->
+
+<!-- IF MCHAT_IS_CUSTOM_PAGE -->
+   	<h2>{L_MCHAT_CUSTOM_PAGE}</h2>
+<!-- ELSEIF MCHAT_IS_ARCHIVE_PAGE -->
+	<h2>{L_MCHAT_ARCHIVE_PAGE}</h2>
+<!-- ENDIF -->
+
+<!-- EVENT dmzx_mchat_header_after -->
+
 <!-- INCLUDE mchat_script_data.html -->
 
 <!-- IF MCHAT_IS_ARCHIVE_PAGE and (.pagination or MCHAT_TOTAL_MESSAGES) -->
