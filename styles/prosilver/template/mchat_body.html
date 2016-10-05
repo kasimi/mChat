@@ -14,7 +14,7 @@
 
 <!-- EVENT dmzx_mchat_header_after -->
 
-<!-- INCLUDE mchat_script_data.html -->
+<!-- INCLUDE @dmzx_mchat/mchat_script_data.html -->
 
 <!-- IF MCHAT_IS_ARCHIVE_PAGE and (.pagination or MCHAT_TOTAL_MESSAGES) -->
 <div class="action-bar bar-top">
@@ -42,7 +42,7 @@
 	<div class="inner">
 		<ul class="topiclist">
 			<li class="header">
-				<!-- INCLUDE mchat_header.html -->
+				<!-- INCLUDE @dmzx_mchat/mchat_header.html -->
 				<!-- IF MCHAT_IS_COLLAPSIBLE -->
 					<a href="{U_MCHAT_COLLAPSE_URL}"
 						class="collapse-btn collapse-<!-- IF S_MCHAT_HIDDEN -->show<!-- ELSE -->hide<!-- ENDIF --> mchat-collapse"
@@ -87,7 +87,7 @@
 
 				<ul id="mchat-messages" class="topiclist forums"<!-- IF not MCHAT_IS_ARCHIVE_PAGE --> style="height:<!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px"<!-- ENDIF -->>
 					<!-- IF .mchatrow -->
-						<!-- INCLUDE mchat_messages.html -->
+						<!-- INCLUDE @dmzx_mchat/mchat_messages.html -->
 					<!-- ELSE -->
 						<li class="row mchat-static mchat-no-messages">{L_MCHAT_NOMESSAGE}</li>
 					<!-- ENDIF -->
@@ -96,7 +96,7 @@
 				<!-- EVENT dmzx_mchat_messages_container_after -->
 			</div>
 
-			<!-- INCLUDE mchat_panel.html -->
+			<!-- INCLUDE @dmzx_mchat/mchat_panel.html -->
 		</div>
 
 		<!-- EVENT dmzx_mchat_body_after -->
@@ -122,7 +122,7 @@
 
 <!-- IF MCHAT_IS_CUSTOM_PAGE and MCHAT_WHOIS_REFRESH -->
 	<h3>{L_MCHAT_WHO_IS_CHATTING}</h3>
-	<!-- INCLUDE mchat_whois.html -->
+	<!-- INCLUDE @dmzx_mchat/mchat_whois.html -->
 	<div id="mchat-refresh">
 		<span id="mchat-refresh-explain">{MCHAT_WHOIS_REFRESH_EXPLAIN}</span>
 		<span id="mchat-refresh-pending" class="hidden">{L_MCHAT_REFRESHING}</span>
