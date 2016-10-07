@@ -128,6 +128,7 @@ class settings
 			'mchat_timeout'					=> array('default' => 0,	'validation' => array('num', false, 0, (int) $this->cfg('session_length'))),
 			'mchat_whois_refresh'			=> array('default' => 60,	'validation' => array('num', false, 10, 300)),
 		);
+
 		/**
 		 * Event to modify global settings data
 		 *

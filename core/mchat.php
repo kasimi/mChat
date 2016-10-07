@@ -1507,7 +1507,7 @@ class mchat
 			$this->settings->set_cfg('max_post_smilies', 0, true);
 		}
 
-		$disallowed_bbcodes = explode('|', $this->settings->cfg('mchat_bbcode_disallowed'));
+		$disallowed_bbcodes = array_filter(explode('|', $this->settings->cfg('mchat_bbcode_disallowed')));
 
 		$mchat_bbcode		= $this->settings->cfg('allow_bbcode') && $this->auth->acl_get('u_mchat_bbcode');
 		$mchat_magic_urls	= $this->settings->cfg('allow_post_links') && $this->auth->acl_get('u_mchat_urls');
