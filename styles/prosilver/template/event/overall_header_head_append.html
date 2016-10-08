@@ -1,1 +1,9 @@
 <!-- INCLUDECSS @dmzx_mchat/mchat.css -->
+
+<!-- IF not MCHAT_IS_ARCHIVE_PAGE -->
+<style>
+#mchat-messages {
+	height: <!-- IF MCHAT_IS_CUSTOM_PAGE -->{MCHAT_CUSTOM_HEIGHT}<!-- ELSE -->{MCHAT_INDEX_HEIGHT}<!-- ENDIF -->px;
+}
+</style>
+<!-- ENDIF -->
