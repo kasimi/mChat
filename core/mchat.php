@@ -88,8 +88,8 @@ class mchat
 	 * @param auth					$auth
 	 * @param pagination			$pagination
 	 * @param request_interface		$request
-	 * @param dispatcher_interface 	$dispatcher
-	 * @param manager 				$extension_manager
+	 * @param dispatcher_interface	$dispatcher
+	 * @param manager				$extension_manager
 	 * @param string				$root_path
 	 * @param string				$php_ext
 	 * @param parser_interface		$parser
