@@ -26,3 +26,7 @@ ul.mchat-buttons > li {
 #mchat-panel #st_editor_buttons {
 	display: block !important;
 }
+
+.mchat-footer label {
+	padding-left: 3px;
+}
