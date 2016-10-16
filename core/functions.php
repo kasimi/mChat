@@ -317,7 +317,7 @@ class functions
 
 		if (empty($this->settings->prune_modes[$prune_mode]))
 		{
-			return 0;
+			return array();
 		}
 
 		$sql_array = array(
