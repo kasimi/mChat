@@ -4,19 +4,21 @@
  *
  * @package phpBB Extension - mChat
  * @copyright (c) 2016 dmzx - http://www.dmzx-web.net
- * @copyright (c) 2016 kasimi
+ * @copyright (c) 2016 kasimi - https://kasimi.net
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
 
 namespace dmzx\mchat\migrations;
 
-class mchat_2_0_0 extends \phpbb\db\migration\migration
+use \phpbb\db\migration\migration;
+
+class mchat_2_0_0 extends migration
 {
 	static public function depends_on()
 	{
 		return array(
-			'\dmzx\mchat\migrations\mchat_2_0_0_rc5',
+			'\dmzx\mchat\migrations\mchat_2_0_0_rc7',
 		);
 	}
 
