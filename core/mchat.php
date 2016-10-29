@@ -1491,7 +1491,8 @@ class mchat
 		// Must not exceed character limit
 		if ($this->settings->cfg('mchat_max_message_lngth'))
 		{
-			if (utf8_strlen($message) > $this->settings->cfg('mchat_max_message_lngth'))
+			$message_without_entities = htmlspecialchars_decode($message, ENT_COMPAT);
+			if (utf8_strlen($message_without_entities) > $this->settings->cfg('mchat_max_message_lngth'))
 			{
 				throw new http_exception(400, 'MCHAT_MESS_LONG', array($this->settings->cfg('mchat_max_message_lngth')));
 			}
