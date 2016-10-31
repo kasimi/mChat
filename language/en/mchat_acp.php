@@ -98,7 +98,6 @@ $lang = array_merge($lang, array(
 	'MCHAT_MAX_MESSAGE_LENGTH'						=> 'Maximum message length',
 	'MCHAT_MAX_MESSAGE_LENGTH_EXPLAIN'				=> 'Maximum number of characters allowed per message posted.<br /><em>You are limited from 0 to 1000. Default is 500. Set to 0 to disable.</em>',
 	'MCHAT_CUSTOM_PAGE'								=> 'Enable custom Page',
-	'MCHAT_CUSTOM_PAGE_EXPLAIN'						=> 'Allow the use of the custom page',
 	'MCHAT_CUSTOM_HEIGHT'							=> 'Custom page height',
 	'MCHAT_CUSTOM_HEIGHT_EXPLAIN'					=> 'The height of the chat box in pixels on the custom page.<br /><em>You are limited from 50 to 1000. Default is 350.</em>',
 	'MCHAT_BBCODES_DISALLOWED'						=> 'Disallowed bbcodes',
