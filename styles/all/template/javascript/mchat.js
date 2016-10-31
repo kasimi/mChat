@@ -218,11 +218,11 @@ jQuery(function($) {
 			if (color && inputValue.indexOf('[color=') === -1) {
 				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
 			}
-			mChat.cached('input').val('').focus();
+			mChat.cached('input').val('').trigger('update.autogrow').focus();
 			mChat.refresh(inputValue).done(function() {
 				mChat.resetSession();
 			}).fail(function() {
-				mChat.cached('input').val(originalInputValue);
+				mChat.cached('input').val(originalInputValue).trigger('update.autogrow');
 			}).always(function() {
 				mChat.cached('add').prop('disabled', false);
 				setTimeout(function() {
