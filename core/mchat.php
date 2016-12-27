@@ -1021,12 +1021,12 @@ class mchat
 		$user_avatars = array();
 
 		// Cache avatars
+		$display_avatar = $this->display_avatars();
 		foreach ($rows as $row)
 		{
 			if (!isset($user_avatars[$row['user_id']]))
 			{
-				$display_avatar = $this->display_avatars() && $row['user_avatar'];
-				$user_avatars[$row['user_id']] = !$display_avatar ? '' : phpbb_get_user_avatar(array(
+				$user_avatars[$row['user_id']] = !$display_avatar || !$row['user_avatar'] ? '' : phpbb_get_user_avatar(array(
 					'avatar'		=> $row['user_avatar'],
 					'avatar_type'	=> $row['user_avatar_type'],
 					'avatar_width'	=> $row['user_avatar_width'] >= $row['user_avatar_height'] ? 40 : 0,
