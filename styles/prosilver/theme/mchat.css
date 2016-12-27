@@ -337,8 +337,13 @@ textarea#mchat-input {
 	content: '';
 }
 
-.mchat-footer label {
+#mchat-user-sound {
+	margin: 0;
+}
+
+#mchat-user-sound + label {
 	padding-right: 0;
+	padding-left: 5px;
 }
 
 #mchat-legend {
