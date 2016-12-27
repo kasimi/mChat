@@ -137,6 +137,9 @@ class acp_controller
 				}
 			}
 
+			// Remove leading & trailing | characters to not break allowed BBCodes
+			$mchat_new_config['mchat_bbcode_disallowed'] = trim($mchat_new_config['mchat_bbcode_disallowed'], '|');
+
 			// Don't allow changing pruning settings for non founders
 			if (!$is_founder)
 			{
