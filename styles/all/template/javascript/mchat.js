@@ -575,12 +575,14 @@ jQuery(function($) {
 			var username = $container.data('mchat-username');
 			var quote = $container.data('mchat-message');
 			insert_text('[quote="' + username + '"] ' + quote + '[/quote]');
+			mChat.cached('input').trigger('update.autogrow');
 		},
 		like: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
 			var quote = $container.data('mchat-message');
 			insert_text('[i]' + mChat.lang.likes + '[/i][quote="' + username + '"] ' + quote + '[/quote]');
+			mChat.cached('input').trigger('update.autogrow');
 		},
 		ip: function() {
 			popup(this.href, 750, 500);
