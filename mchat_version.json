@@ -1,18 +1,18 @@
 {
     "stable": {
         "2.0": {
-            "current": "2.0.0-RC7",
-            "download": "https://www.phpbb.com/community/viewtopic.php?f=456&t=2281451",
-            "announcement": "https://www.phpbb.com/community/viewtopic.php?f=456&t=2281451",
+            "current": "2.0.0",
+            "download": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
+            "announcement": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
             "eol": null,
             "security": false
         }
     },
     "unstable": {
         "2.0": {
-            "current": "2.0.0-RC7",
-            "download": "https://www.phpbb.com/community/viewtopic.php?f=456&t=2281451",
-            "announcement": "https://www.phpbb.com/community/viewtopic.php?f=456&t=2281451",
+            "current": "2.0.0",
+            "download": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
+            "announcement": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
             "eol": null,
             "security": false
         }
