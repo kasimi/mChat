@@ -143,18 +143,16 @@ jQuery(function($) {
 			});
 		},
 		sound: function(file) {
-			if (!mChat.pageIsUnloading && !localStorage.getItem(mChat.cookie + 'mchat_no_sound')) {
-				var data = {
-					audio: mChat.cached('sound-' + file).get(0),
-					file: file,
-					play: true
-				};
-				$(mChat).trigger('mchat_sound_before', [data]);
-				if (data.play && data.audio.duration) {
-					data.audio.pause();
-					data.audio.currentTime = 0;
-					data.audio.play();
-				}
+			var data = {
+				audio: mChat.cached('sound-' + file).get(0),
+				file: file,
+				play: !mChat.pageIsUnloading && !localStorage.getItem(mChat.cookie + 'mchat_no_sound')
+			};
+			$(mChat).trigger('mchat_sound_before', [data]);
+			if (data.play && data.audio && data.audio.duration) {
+				data.audio.pause();
+				data.audio.currentTime = 0;
+				data.audio.play();
 			}
 		},
 		titleAlert: function() {
