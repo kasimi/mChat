@@ -91,7 +91,8 @@ class acp_controller
 		settings $settings,
 		$mchat_table,
 		$mchat_log_table,
-		$root_path, $php_ext
+		$root_path,
+		$php_ext
 	)
 	{
 		$this->functions		= $functions;
