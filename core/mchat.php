@@ -1222,8 +1222,12 @@ class mchat
 				'#' => 'p' . $row['post_id'],
 			));
 
+			// We prefer $post_data because it was fetched from the forums table just now.
+			// $row might contain outdated data if a post was moved to a new forum.
+			$forum_id = isset($post_data['forum_id']) ? $post_data['forum_id'] : $row['forum_id'];
+
 			$viewforum_url = append_sid($board_url . 'viewforum.' . $this->php_ext, array(
-				'f' => $row['forum_id'],
+				'f' => $forum_id,
 			));
 
 			if ($post_data)

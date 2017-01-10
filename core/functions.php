@@ -672,7 +672,7 @@ class functions
 			return array();
 		}
 
-		$sql = 'SELECT p.post_id, p.post_subject, f.forum_name
+		$sql = 'SELECT p.post_id, p.post_subject, f.forum_id, f.forum_name
 				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
 				WHERE p.forum_id = f.forum_id
 					AND ' . $this->db->sql_in_set('p.post_id', $post_ids);
@@ -687,6 +687,7 @@ class functions
 		{
 			$post_subjects[$row['post_id']] = array(
 				'post_subject'	=> $row['post_subject'],
+				'forum_id'		=> $row['forum_id'],
 				'forum_name'	=> $row['forum_name'],
 			);
 		}
