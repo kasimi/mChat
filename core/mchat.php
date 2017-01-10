@@ -1056,7 +1056,14 @@ class mchat
 
 			$message_age = time() - $row['message_time'];
 			$minutes_ago = $this->get_minutes_ago($message_age);
-			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
+			$absolute_datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
+			// If relative time is selected, also display "today" / "yesterday", else display absolute time.
+			if ($this->settings->cfg('mchat_relative_time'))
+			{
+				$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), false);
+			} else {
+				$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
+			}
 
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
 
@@ -1080,7 +1087,7 @@ class mchat
 				'MCHAT_U_PERMISSIONS'		=> append_sid("{$board_url}{$this->root_path}adm/index.{$this->php_ext}", 'i=permissions&amp;mode=setting_user_global&amp;user_id%5B0%5D=' . $row['user_id'], true, $this->user->session_id),
 				'MCHAT_MESSAGE'				=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
 				'MCHAT_TIME'				=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
-				'MCHAT_DATETIME'			=> $datetime,
+				'MCHAT_DATETIME'			=> $absolute_datetime,
 				'MCHAT_MINUTES_AGO'			=> $minutes_ago,
 				'MCHAT_RELATIVE_UPDATE'		=> 60 - $message_age % 60,
 				'MCHAT_MESSAGE_TIME'		=> $row['message_time'],
