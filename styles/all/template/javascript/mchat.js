@@ -88,59 +88,65 @@ jQuery(function($) {
 				timeout: Math.min(mChat.refreshTime, 10000),
 				type: 'POST',
 				dataType: 'json',
-				data: data
-			}).done(function(json, status, xhr) {
-				var data = {
+				data: data,
+				additionalData: {
 					mode: mode,
-					json: json,
-					status: status,
-					xhr: xhr,
-					handle: true
-				};
-				$(mChat).trigger('mchat_ajax_done_before', [data]);
-				if (data.handle) {
-					if (json[mode]) {
-						deferred.resolve(data.json, data.status, data.xhr);
-					} else {
-						deferred.reject(data.xhr, data.status, mChat.lang.parserErr);
+					deferred: deferred
+				}
+			}).done(mChat.ajaxDone).fail(deferred.reject);
+			return deferred.promise().fail(mChat.ajaxFail);
+		},
+		ajaxDone: function(json, status, xhr) {
+			var data = {
+				mode: this.additionalData.mode,
+				json: json,
+				status: status,
+				xhr: xhr,
+				handle: true
+			};
+			$(mChat).trigger('mchat_ajax_done_before', [data]);
+			if (data.handle) {
+				if (json[this.additionalData.mode]) {
+					this.additionalData.deferred.resolve(data.json, data.status, data.xhr);
+				} else {
+					this.additionalData.deferred.reject(data.xhr, data.status, mChat.lang.parserErr);
+				}
+			}
+		},
+		ajaxFail: function(xhr, textStatus, errorThrown) {
+			if (mChat.pageIsUnloading) {
+				return;
+			}
+			if (typeof console !== 'undefined' && console.log) {
+				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown + ' (' + xhr.responseText + ')');
+			}
+			var data = {
+				mode: this.additionalData.mode,
+				xhr: xhr,
+				textStatus: textStatus,
+				errorThrown: errorThrown,
+				updateSession: function() {
+					if (this.xhr.status == 403) {
+						mChat.endSession(true);
+					} else if (this.xhr.status == 400) {
+						mChat.resetSession();
 					}
 				}
-			}).fail(deferred.reject);
-			return deferred.promise().fail(function(xhr, textStatus, errorThrown) {
-				if (mChat.pageIsUnloading) {
-					return;
-				}
-				if (typeof console !== 'undefined' && console.log) {
-					console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown + ' (' + xhr.responseText + ')');
-				}
-				var data = {
-					mode: mode,
-					xhr: xhr,
-					textStatus: textStatus,
-					errorThrown: errorThrown,
-					updateSession: function() {
-						if (this.xhr.status == 403) {
-							mChat.endSession(true);
-						} else if (this.xhr.status == 400) {
-							mChat.resetSession();
-						}
-					}
-				};
-				$(mChat).trigger('mchat_ajax_fail_before', [data]);
-				mChat.sound('error');
-				mChat.cached('status-load', 'status-ok', 'status-paused').hide();
-				mChat.cached('status-error').show();
-				var responseText;
-				try {
-					responseText = data.xhr.responseJSON.message || data.errorThrown;
-				} catch (e) {
-					responseText = data.errorThrown;
-				}
-				if (responseText && responseText !== 'timeout') {
-					phpbb.alert(mChat.lang.err, responseText);
-				}
-				data.updateSession();
-			});
+			};
+			$(mChat).trigger('mchat_ajax_fail_before', [data]);
+			mChat.sound('error');
+			mChat.cached('status-load', 'status-ok', 'status-paused').hide();
+			mChat.cached('status-error').show();
+			var responseText;
+			try {
+				responseText = data.xhr.responseJSON.message || data.errorThrown;
+			} catch (e) {
+				responseText = data.errorThrown;
+			}
+			if (responseText && responseText !== 'timeout') {
+				phpbb.alert(mChat.lang.err, responseText);
+			}
+			data.updateSession();
 		},
 		sound: function(file) {
 			var data = {
