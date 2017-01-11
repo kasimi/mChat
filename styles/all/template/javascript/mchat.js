@@ -512,8 +512,9 @@ jQuery(function($) {
 			var selector = '.mchat-time[data-mchat-relative-update]';
 			clearInterval($message.find(selector).addBack(selector).data('mchat-relative-interval'));
 		},
+		timeLeftRegex: /\d\d:(\d\d:\d\d)/,
 		timeLeft: function(sessionTime) {
-			return (new Date(sessionTime * 1000)).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
+			return (new Date(sessionTime * 1000)).toUTCString().match(mChat.timeLeftRegex)[mChat.timeout >= 3600000 ? 0 : 1];
 		},
 		countDown: function() {
 			mChat.sessionTime -= 1;
