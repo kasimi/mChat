@@ -72,11 +72,35 @@ jQuery.fn.reverse = function(reverse) {
 	return reverse === 'undefined' || reverse ? jQuery(this.toArray().reverse()) : this;
 };
 
+function StorageWrapper(storage, prefix) {
+	this.prefix = prefix;
+	try {
+		this.storage = window[storage];
+		this.storage.setItem(prefix, prefix);
+		this.storage.removeItem(prefix);
+	} catch (e) {
+		this.storage = false;
+	}
+}
+
+StorageWrapper.prototype.get = function(key) {
+	return this.storage && this.storage.getItem(this.prefix + key);
+};
+
+StorageWrapper.prototype.set = function(key, value) {
+	this.storage && this.storage.setItem(this.prefix + key, value);
+};
+
+StorageWrapper.prototype.remove = function(key) {
+	return this.storage && this.storage.removeItem(this.prefix + key);
+};
+
 jQuery(function($) {
 
 	"use strict";
 
 	$.extend(mChat, {
+		storage: new StorageWrapper('localStorage', mChat.cookie + 'mchat_'),
 		ajaxRequest: function(mode, sendHiddenFields, data) {
 			var deferred = $.Deferred();
 			if (sendHiddenFields) {
@@ -152,7 +176,7 @@ jQuery(function($) {
 			var data = {
 				audio: mChat.cached('sound-' + file).get(0),
 				file: file,
-				play: !mChat.pageIsUnloading && !localStorage.getItem(mChat.cookie + 'mchat_no_sound')
+				play: !mChat.pageIsUnloading && mChat.cached('user-sound').is(':checked')
 			};
 			$(mChat).trigger('mchat_sound_before', [data]);
 			if (data.play && data.audio && data.audio.duration) {
@@ -175,9 +199,9 @@ jQuery(function($) {
 			var $elem = mChat.cached(name);
 			$elem.stop().slideToggle(200, function() {
 				if ($elem.is(':visible')) {
-					localStorage.setItem(mChat.cookie + 'mchat_show_' + name, 'yes');
+					mChat.storage.set('show_' + name, 'yes');
 				} else {
-					localStorage.removeItem(mChat.cookie + 'mchat_show_' + name);
+					mChat.storage.remove('show_' + name);
 				}
 			});
 		},
@@ -218,7 +242,7 @@ jQuery(function($) {
 			mChat.pauseSession();
 			var originalInputValue = mChat.cached('input').val();
 			var inputValue = originalInputValue;
-			var color = localStorage.getItem(mChat.cookie + 'mchat_color');
+			var color = mChat.storage.get('color');
 			if (color && inputValue.indexOf('[color=') === -1) {
 				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
 			}
@@ -324,7 +348,7 @@ jQuery(function($) {
 		handleWhoisResponse: function(json) {
 			var $whois = $(json.whois);
 			var $userlist = $whois.find('#mchat-userlist');
-			if (localStorage.getItem(mChat.cookie + 'mchat_show_userlist')) {
+			if (mChat.storage.get('show_userlist')) {
 				$userlist.show();
 			}
 			mChat.cached('whois').replaceWith($whois);
@@ -624,13 +648,13 @@ jQuery(function($) {
 			}, 1);
 		}
 
-		mChat.cached('user-sound').prop('checked', mChat.playSound && !localStorage.getItem(mChat.cookie + 'mchat_no_sound')).change(function() {
+		mChat.cached('user-sound').prop('checked', mChat.playSound && !mChat.storage.get('no_sound')).change(function() {
 			if (this.checked) {
-				localStorage.removeItem(mChat.cookie + 'mchat_no_sound');
+				mChat.storage.remove('no_sound');
 			} else {
-				localStorage.setItem(mChat.cookie + 'mchat_no_sound', 'yes');
+				mChat.storage.set('no_sound', 'yes');
 			}
-		}).change();
+		});
 
 		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
 			var bbCodeClass = '.bbcode-' + bbcode.replaceMany({
@@ -645,7 +669,7 @@ jQuery(function($) {
 		$('#bbpalette,#abbc3_bbpalette,#color_wheel').prop('onclick', null).attr('data-mchat-toggle', 'colour');
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
-			if (localStorage.getItem(mChat.cookie + 'mchat_show_' + elem)) {
+			if (mChat.storage.get('show_' + elem)) {
 				mChat.cached(elem).toggle();
 			}
 		});
@@ -699,17 +723,17 @@ jQuery(function($) {
 			e.stopImmediatePropagation();
 			var $this = $(this);
 			var newColor = $this.data('color');
-			if (localStorage.getItem(mChat.cookie + 'mchat_color') === newColor) {
-				localStorage.removeItem(mChat.cookie + 'mchat_color');
+			if (mChat.storage.get('color') === newColor) {
+				mChat.storage.remove('color');
 			} else {
-				localStorage.setItem(mChat.cookie + 'mchat_color', newColor);
+				mChat.storage.set('color', newColor);
 				mChat.cached('colour').find('.colour-palette a').removeClass('remember-color');
 			}
 			$this.toggleClass('remember-color');
 		}
 	});
 
-	var color = localStorage.getItem(mChat.cookie + 'mchat_color');
+	var color = mChat.storage.get('color');
 	if (color) {
 		mChat.cached('colour').find('.colour-palette a[data-color="' + color + '"]').addClass('remember-color');
 	}
