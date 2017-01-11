@@ -926,18 +926,15 @@ class mchat
 		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/mchat', $this->template);
 		$meta = $md_manager->get_metadata();
 
-		$author_names = array();
 		$author_homepages = array();
 
 		foreach (array_slice($meta['authors'], 0, 2) as $author)
 		{
-			$author_names[] = $author['name'];
 			$author_homepages[] = sprintf('<a href="%1$s" title="%2$s">%2$s</a>', $author['homepage'], $author['name']);
 		}
 
 		$this->template->assign_vars(array(
 			'MCHAT_DISPLAY_NAME'		=> $meta['extra']['display-name'],
-			'MCHAT_AUTHOR_NAMES'		=> implode(' &amp; ', $author_names),
 			'MCHAT_AUTHOR_HOMEPAGES'	=> implode(' &amp; ', $author_homepages),
 		));
 	}
