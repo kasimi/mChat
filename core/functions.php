@@ -813,14 +813,13 @@ class functions
 	/**
 	 * Returns user ID & name of the specified message
 	 *
-	 * @param $message_id
+	 * @param int $message_id
 	 * @return array
 	 */
 	public function mchat_author_for_message($message_id)
 	{
-		$sql = 'SELECT u.user_id, u.username, m.message_time, m.forum_id, m.post_id
+		$sql = 'SELECT m.user_id, m.message_time, m.post_id
 			FROM ' . $this->mchat_table . ' m
-			LEFT JOIN ' . USERS_TABLE . ' u ON m.user_id = u.user_id
 			WHERE m.message_id = ' . (int) $message_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);

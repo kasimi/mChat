@@ -59,6 +59,7 @@ $lang = array_merge($lang, array(
 	'MCHAT_NOJAVASCRIPT'			=> 'Please enable JavaScript to use mChat.',
 	'MCHAT_NOMESSAGE'				=> 'No messages',
 	'MCHAT_NOMESSAGEINPUT'			=> 'You have not entered a message',
+	'MCHAT_MESSAGE_DELETED'			=> 'This message has been deleted.',
 	'MCHAT_OK'						=> 'OK',
 	'MCHAT_PAUSE'					=> 'Paused',
 	'MCHAT_PERMISSIONS'				=> 'Change user’s permissions',

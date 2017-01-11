@@ -423,7 +423,13 @@ class mchat
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
-		if (!$author || $author['post_id'] || !$this->auth_message('edit', $author['user_id'], $author['message_time']))
+		if (!$author)
+		{
+			throw new http_exception(410, 'MCHAT_MESSAGE_DELETED');
+		}
+
+		// If post_id is not 0 it's a notification and notifications can't be edited
+		if ($author['post_id'] || !$this->auth_message('edit', $author['user_id'], $author['message_time']))
 		{
 			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
@@ -483,7 +489,12 @@ class mchat
 
 		$author = $this->functions->mchat_author_for_message($message_id);
 
-		if (!$author || !$this->auth_message('delete', $author['user_id'], $author['message_time']))
+		if (!$author)
+		{
+			throw new http_exception(410, 'MCHAT_MESSAGE_DELETED');
+		}
+
+		if (!$this->auth_message('delete', $author['user_id'], $author['message_time']))
 		{
 			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
