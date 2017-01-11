@@ -198,8 +198,8 @@ class acp_controller
 		{
 			if ($is_founder && $this->request->is_set_post('mchat_purge') && $this->request->variable('mchat_purge_confirm', false) && check_form_key('acp_mchat'))
 			{
-				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_table);
-				$this->db->sql_query('TRUNCATE TABLE ' . $this->mchat_log_table);
+				$this->db->sql_query('DELETE FROM ' . $this->mchat_table);
+				$this->db->sql_query('DELETE FROM ' . $this->mchat_log_table);
 				$this->cache->destroy('sql', $this->mchat_log_table);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
 				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
