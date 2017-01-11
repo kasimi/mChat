@@ -835,7 +835,7 @@ class mchat
 		{
 			$this->template->assign_block_vars('mchaturl', array(
 				'ACTION'	=> $action,
-				'URL'		=> $this->helper->route('dmzx_mchat_action_' . $action . '_controller'),
+				'URL'		=> $this->helper->route('dmzx_mchat_action_' . $action . '_controller', array(), false),
 				'IS_LAST'	=> $i + 1 === count($actions),
 			));
 		}
