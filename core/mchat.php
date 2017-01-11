@@ -1069,7 +1069,9 @@ class mchat
 			if ($this->settings->cfg('mchat_relative_time'))
 			{
 				$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), false);
-			} else {
+			}
+			else
+			{
 				$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
 			}
 
