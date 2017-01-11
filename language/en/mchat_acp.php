@@ -118,6 +118,10 @@ $lang = array_merge($lang, array(
 	'MCHAT_PURGE_CONFIRM'							=> 'Confirm deleting all messages',
 	'MCHAT_PURGED'									=> 'All mChat messages have been successfully deleted',
 
+	// '%1$s' contains 'Retain posts' and 'Delete posts' respectively
+	'MCHAT_RETAIN_MESSAGES'							=> '%1$s and retain mChat messages',
+	'MCHAT_DELETE_MESSAGES'							=> '%1$s and delete mChat messages',
+
 	// Error reporting
 	'TOO_LONG_MCHAT_BBCODE_DISALLOWED'				=> 'The disallowed bbcodes value is too long.',
 	'TOO_SMALL_MCHAT_CUSTOM_HEIGHT'					=> 'The custom height value is too small.',
