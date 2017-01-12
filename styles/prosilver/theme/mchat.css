@@ -388,6 +388,7 @@ textarea#mchat-input {
 
 	#mchat-input {
 		width: 95% !important;
+		font-size: 16px;
 	}
 
 }
