@@ -25,6 +25,7 @@ class mchat_2_0_1 extends migration
 	public function update_data()
 	{
 		return array(
+			array('config.update', array('mchat_version', '2.0.1')),
 			array('config.add', array('mchat_archive_sort', settings::ARCHIVE_SORT_BOTTOM_TOP)),
 		);
 	}
