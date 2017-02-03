@@ -1012,8 +1012,24 @@ class mchat
 			return;
 		}
 
-		// Reverse the array if messages appear at the bottom
-		if ($page !== 'archive' && !$this->settings->cfg('mchat_message_top'))
+		// At this point the rows are sorted by ID bottom to top.
+		// We need to reverse the array if they need to be sorted top to bottom.
+		$reverse = false;
+		$mchat_message_top = $this->settings->cfg('mchat_message_top');
+		if ($page === 'archive')
+		{
+			$mchat_archive_sort = $this->settings->cfg('mchat_archive_sort');
+			if ($mchat_archive_sort == settings::ARCHIVE_SORT_TOP_BOTTOM || $mchat_archive_sort == settings::ARCHIVE_SORT_USER && !$mchat_message_top)
+			{
+				$reverse = true;
+			}
+		}
+		else if (!$mchat_message_top)
+		{
+			$reverse = true;
+		}
+
+		if ($reverse)
 		{
 			$rows = array_reverse($rows);
 		}
