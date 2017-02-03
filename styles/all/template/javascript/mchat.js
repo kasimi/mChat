@@ -4,7 +4,7 @@
  * @copyright (c) 2009 Shapoval Andrey Vladimirovich (AllCity) ~ http://allcity.net.ru/
  * @copyright (c) 2013 Rich McGirr (RMcGirr83) http://rmcgirr83.org
  * @copyright (c) 2015 dmzx - http://www.dmzx-web.net
- * @copyright (c) 2016 kasimi - mail@kasimi.net
+ * @copyright (c) 2016 kasimi - https://kasimi.net
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
