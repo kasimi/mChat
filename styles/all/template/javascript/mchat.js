@@ -591,13 +591,16 @@ jQuery(function($) {
 		mention: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
-			var usercolor = $container.data('mchat-usercolor');
-			if (usercolor) {
-				username = '[b][color=' + usercolor + ']' + username + '[/color][/b]';
-			} else if (mChat.allowBBCodes) {
-				username = '[b]' + username + '[/b]';
+			if (mChat.allowBBCodes) {
+				var usercolor = $container.data('mchat-usercolor');
+				var profileUrl = $container.find(".mchat-message-header a[class^='username']").prop('href');
+				if (usercolor) {
+					username = '[url=' + profileUrl + '][b][color=' + usercolor + ']' + username + '[/color][/b][/url]';
+				} else {
+					username = '[url=' + profileUrl + '][b]' + username + '[/b][/url]';
+				}
 			}
-			insert_text('@ ' + username + ', ');
+			insert_text(mChat.lang.mention.format({username: username}));
 		},
 		quote: function() {
 			var $container = $(this).closest('.mchat-message');
