@@ -113,7 +113,7 @@ jQuery(function($) {
 				type: 'POST',
 				dataType: 'json',
 				data: data,
-				additionalData: {
+				context: {
 					mode: mode,
 					deferred: deferred
 				}
@@ -122,7 +122,7 @@ jQuery(function($) {
 		},
 		ajaxDone: function(json, status, xhr) {
 			var data = {
-				mode: this.additionalData.mode,
+				mode: this.mode,
 				json: json,
 				status: status,
 				xhr: xhr,
@@ -130,10 +130,10 @@ jQuery(function($) {
 			};
 			$(mChat).trigger('mchat_ajax_done_before', [data]);
 			if (data.handle) {
-				if (json[this.additionalData.mode]) {
-					this.additionalData.deferred.resolve(data.json, data.status, data.xhr);
+				if (json[this.mode]) {
+					this.deferred.resolve(data.json, data.status, data.xhr);
 				} else {
-					this.additionalData.deferred.reject(data.xhr, data.status, mChat.lang.parserErr);
+					this.deferred.reject(data.xhr, data.status, mChat.lang.parserErr);
 				}
 			}
 		},
@@ -145,7 +145,7 @@ jQuery(function($) {
 				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown + ' (' + xhr.responseText + ')');
 			}
 			var data = {
-				mode: this.additionalData.mode,
+				mode: this.mode,
 				xhr: xhr,
 				textStatus: textStatus,
 				errorThrown: errorThrown,
