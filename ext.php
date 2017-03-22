@@ -52,7 +52,7 @@ class ext extends \phpbb\extension\base
 				}
 
 				$php_ext = $this->container->getParameter('core.php_ext');
-				$error_msg = $lang->lang('MCHAT_30X_REMNANTS', $table_prefix, implode(', ', $module_ids)) . adm_back_link(append_sid('index.' . $php_ext, 'i=acp_extensions&amp;mode=main'));
+				$error_msg = $lang->lang('MCHAT_30X_REMNANTS', $table_prefix, implode($lang->lang('COMMA_SEPARATOR'), $module_ids)) . adm_back_link(append_sid('index.' . $php_ext, 'i=acp_extensions&amp;mode=main'));
 
 				trigger_error($error_msg, E_USER_WARNING);
 			}
