@@ -395,7 +395,7 @@ class functions
 	/**
 	 * Returns the total number of messages
 	 *
-	 * @return string
+	 * @return int
 	 */
 	public function mchat_total_message_count()
 	{
