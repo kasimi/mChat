@@ -245,8 +245,8 @@ class settings
 	}
 
 	/**
-	 * @param $config
-	 * @param $value
+	 * @param string $config
+	 * @param mixed $value
 	 * @param bool $volatile
 	 */
 	public function set_cfg($config, $value, $volatile = false)

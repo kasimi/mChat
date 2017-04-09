@@ -365,7 +365,7 @@ class acp_controller
 
 	/**
 	 * @param $selected
-	 * @return array
+	 * @return string
 	 */
 	protected function get_prune_mode_options($selected)
 	{
