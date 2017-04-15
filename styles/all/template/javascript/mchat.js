@@ -12,7 +12,7 @@
 // Support Opera
 if (typeof document.hasFocus === 'undefined') {
 	document.hasFocus = function() {
-		return document.visibilityState == 'visible';
+		return document.visibilityState === 'visible';
 	};
 }
 
@@ -29,7 +29,7 @@ if (!Array.prototype.min) {
 }
 
 Array.prototype.removeValue = function(value) {
-	var index = -1;
+	var index;
 	var elementsRemoved = 0;
 	while ((index = this.indexOf(value)) !== -1) {
 		this.splice(index, 1);
@@ -44,7 +44,7 @@ String.prototype.format = function() {
 		return str;
 	}
 	var type = typeof arguments[0];
-	var args = 'string' == type || 'number' == type ? arguments : arguments[0];
+	var args = 'string' === type || 'number' === type ? arguments : arguments[0];
 	for (var arg in args) {
 		if (args.hasOwnProperty(arg)) {
 			str = str.replace(new RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
@@ -69,7 +69,7 @@ RegExp.escape = function(s) {
 };
 
 jQuery.fn.reverse = function(reverse) {
-	return reverse === 'undefined' || reverse ? jQuery(this.toArray().reverse()) : this;
+	return typeof reverse === 'undefined' || reverse ? jQuery(this.toArray().reverse()) : this;
 };
 
 function StorageWrapper(storage, prefix) {
@@ -150,9 +150,9 @@ jQuery(function($) {
 				textStatus: textStatus,
 				errorThrown: errorThrown,
 				updateSession: function() {
-					if (this.xhr.status == 403) {
+					if (this.xhr.status === 403) {
 						mChat.endSession(true);
-					} else if (this.xhr.status == 400) {
+					} else if (this.xhr.status === 400) {
 						mChat.resetSession();
 					}
 				}
@@ -289,7 +289,7 @@ jQuery(function($) {
 						$container.find('p').text(mChat.lang.delConfirm)
 					];
 				},
-				confirm: function($p) {
+				confirm: function() {
 					mChat.ajaxRequest('del', true, {
 						message_id: delId
 					}).done(function() {
@@ -682,7 +682,7 @@ jQuery(function($) {
 		mChat.cached('form').submit(function(e){
 			e.preventDefault();
 		}).keypress(function(e) {
-			if ((e.which == 10 || e.which == 13) && (!mChat.isTextarea || e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
+			if ((e.which === 10 || e.which === 13) && (!mChat.isTextarea || e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
 				mChat.add();
 			}
 		});
