@@ -332,7 +332,7 @@ class mchat
 	 * User submits a message
 	 *
 	 * @param bool $return_raw
-	 * @return array data sent to client as JSON
+	 * @return array|JsonResponse data sent to client as JSON
 	 */
 	public function action_add($return_raw = false)
 	{
@@ -408,7 +408,7 @@ class mchat
 	 * User edits a message
 	 *
 	 * @param bool $return_raw
-	 * @return array data sent to client as JSON
+	 * @return array|JsonResponse data sent to client as JSON
 	 */
 	public function action_edit($return_raw = false)
 	{
@@ -474,7 +474,7 @@ class mchat
 	 * User deletes a message
 	 *
 	 * @param bool $return_raw
-	 * @return array data sent to client as JSON
+	 * @return array|JsonResponse data sent to client as JSON
 	 */
 	public function action_del($return_raw = false)
 	{
@@ -528,7 +528,7 @@ class mchat
 	 * User checks for new messages
 	 *
 	 * @param bool $return_raw
-	 * @return array sent to client as JSON
+	 * @return array|JsonResponse sent to client as JSON
 	 */
 	public function action_refresh($return_raw = false)
 	{
@@ -693,7 +693,7 @@ class mchat
 	 * User requests who is chatting
 	 *
 	 * @param bool $return_raw
-	 * @return array data sent to client as JSON
+	 * @return array|JsonResponse data sent to client as JSON
 	 */
 	public function action_whois($return_raw = false)
 	{
