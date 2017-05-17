@@ -65,7 +65,7 @@ class ext extends \phpbb\extension\base
 	 * This method checks whether the phpbb_modules table contains remnants of the 3.0 MOD.
 	 * It returns an array of the modules' IDs, or an empty array if no old modules are found.
 	 *
-	 * @var string $table_prefix
+	 * @param string $table_prefix
 	 * @return array
 	 */
 	protected function get_old_module_ids($table_prefix)
