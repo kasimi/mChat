@@ -592,12 +592,14 @@ jQuery(function($) {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
 			if (mChat.allowBBCodes) {
-				var usercolor = $container.data('mchat-usercolor');
 				var profileUrl = $container.find(".mchat-message-header a[class^='username']").prop('href');
-				if (usercolor) {
-					username = '[url=' + profileUrl + '][b][color=' + usercolor + ']' + username + '[/color][/b][/url]';
-				} else {
-					username = '[url=' + profileUrl + '][b]' + username + '[/b][/url]';
+				if (profileUrl) {
+					var usercolor = $container.data('mchat-usercolor');
+					if (usercolor) {
+						username = '[url=' + profileUrl + '][b][color=' + usercolor + ']' + username + '[/color][/b][/url]';
+					} else {
+						username = '[url=' + profileUrl + '][b]' + username + '[/b][/url]';
+					}
 				}
 			}
 			insert_text(mChat.lang.mention.format({username: username}));
