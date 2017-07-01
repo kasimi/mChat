@@ -155,8 +155,6 @@ class mchat
 		$this->assign_bbcodes_smilies();
 
 		$this->render_page('index');
-
-		$this->template->assign_var('MCHAT_IS_INDEX', true);
 	}
 
 	/**
@@ -189,8 +187,6 @@ class mchat
 
 		$this->assign_bbcodes_smilies();
 
-		$this->template->assign_var('MCHAT_IS_CUSTOM_PAGE', true);
-
 		$this->render_page('custom');
 
 		// Add to navlinks
@@ -220,8 +216,6 @@ class mchat
 
 			throw new http_exception(403, 'MCHAT_NOACCESS_ARCHIVE');
 		}
-
-		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', true);
 
 		$this->render_page('archive');
 
@@ -434,7 +428,7 @@ class mchat
 			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
-		$this->template->assign_var('MCHAT_IS_ARCHIVE_PAGE', $this->request->variable('archive', false));
+		$this->template->assign_var('MCHAT_PAGE', $this->request->variable('page', ''));
 
 		$message = $this->request->variable('message', '', true);
 		$sql_ary = $this->process_message($message);
@@ -807,13 +801,12 @@ class mchat
 			'MCHAT_REFRESH_JS'				=> $this->settings->cfg('mchat_refresh') * 1000,
 			'MCHAT_ARCHIVE'					=> $this->auth->acl_get('u_mchat_archive'),
 			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules'),
-			'MCHAT_WHOIS_REFRESH_EXPLAIN'	=> $this->user->lang('MCHAT_WHO_IS_REFRESH_EXPLAIN', $this->settings->cfg('mchat_whois_refresh')),
 			'MCHAT_SESSION_TIMELEFT'		=> $this->user->lang('MCHAT_SESSION_ENDS', gmdate($this->settings->cfg('mchat_timeout') >= 3600 ? 'H:i:s' : 'i:s', $this->settings->cfg('mchat_timeout'))),
 			'MCHAT_LOG_ID'					=> $this->functions->get_latest_log_id(),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
-			'A_MCHAT_MESS_LONG'				=> addslashes($this->user->lang('MCHAT_MESS_LONG', $this->settings->cfg('mchat_max_message_lngth'))),
-			'A_MCHAT_REFRESH_YES'			=> addslashes($this->user->lang('MCHAT_REFRESH_YES', $this->settings->cfg('mchat_refresh'))),
-			'A_COOKIE_NAME'					=> addslashes($this->settings->cfg('cookie_name', true) . '_'),
+			'MCHAT_MAX_MESSAGE_LENGTH'		=> $this->settings->cfg('mchat_max_message_lngth'),
+			'MCHAT_REFRESH_RATE'			=> $this->settings->cfg('mchat_refresh'),
+			'COOKIE_NAME'					=> $this->settings->cfg('cookie_name', true) . '_',
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_page_custom_controller'),
 			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_rules_controller'),
 			'U_MCHAT_ARCHIVE_URL'			=> $this->helper->route('dmzx_mchat_page_archive_controller'),
@@ -822,15 +815,7 @@ class mchat
 		// The template needs some language variables if we display relative time for messages
 		if ($this->settings->cfg('mchat_relative_time'))
 		{
-			$minutes_limit = $this->get_relative_minutes_limit();
-			for ($i = 0; $i < $minutes_limit; $i++)
-			{
-				$this->template->assign_block_vars('mchattime', array(
-					'KEY'		=> $i,
-					'A_LANG'	=> addslashes($this->user->lang('MCHAT_MINUTES_AGO', $i)),
-					'IS_LAST'	=> $i + 1 === $minutes_limit,
-				));
-			}
+			$this->template->assign_var('MCHAT_MINUTES_AGO_LIMIT', $this->get_relative_minutes_limit());
 		}
 
 		// Get actions which the user is allowed to perform on the current page
@@ -842,12 +827,11 @@ class mchat
 			'whois'		=> $page !== 'archive' && ($this->settings->cfg('mchat_whois_index') || $this->settings->cfg('mchat_stats_index')),
 		)));
 
-		foreach ($actions as $i => $action)
+		foreach ($actions as $action)
 		{
 			$this->template->assign_block_vars('mchaturl', array(
 				'ACTION'	=> $action,
 				'URL'		=> $this->helper->route('dmzx_mchat_action_' . $action . '_controller', array(), false),
-				'IS_LAST'	=> $i + 1 === count($actions),
 			));
 		}
 
@@ -1355,7 +1339,7 @@ class mchat
 				$this->template->assign_var($option['template_var'], !$is_disallowed);
 			}
 
-			$this->template->assign_var('A_MCHAT_DISALLOWED_BBCODES', addslashes($this->settings->cfg('mchat_bbcode_disallowed')));
+			$this->template->assign_var('MCHAT_DISALLOWED_BBCODES', $this->settings->cfg('mchat_bbcode_disallowed'));
 
 			if (!function_exists('display_custom_bbcodes'))
 			{

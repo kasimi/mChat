@@ -272,7 +272,7 @@ jQuery(function($) {
 					mChat.ajaxRequest('edit', true, {
 						message_id: $message.data('mchat-id'),
 						message: $textarea.val(),
-						archive: mChat.archivePage ? 1 : 0
+						page: mChat.page
 					}).done(function(json) {
 						mChat.updateMessages($(json.edit));
 						mChat.resetSession();
@@ -339,7 +339,7 @@ jQuery(function($) {
 			});
 		},
 		whois: function() {
-			if (mChat.customPage) {
+			if (mChat.page === 'custom') {
 				mChat.cached('refresh-pending').show();
 				mChat.cached('refresh-explain').hide();
 			}
@@ -354,7 +354,7 @@ jQuery(function($) {
 			mChat.cached('whois').replaceWith($whois);
 			mChat.cache.whois = $whois;
 			mChat.cache.userlist = $userlist;
-			if (mChat.customPage) {
+			if (mChat.page === 'custom') {
 				mChat.cached('refresh-pending').hide();
 				mChat.cached('refresh-explain').show();
 			}
@@ -533,7 +533,7 @@ jQuery(function($) {
 			}
 		},
 		resetSession: function() {
-			if (!mChat.archivePage) {
+			if (mChat.page !== 'archive') {
 				clearInterval(mChat.refreshInterval);
 				mChat.refreshInterval = setInterval(mChat.refresh, mChat.refreshTime);
 				if (mChat.timeout) {
@@ -645,7 +645,7 @@ jQuery(function($) {
 
 	mChat.isPaused = false;
 
-	if (!mChat.archivePage) {
+	if (mChat.page !== 'archive') {
 		mChat.resetSession();
 
 		if (!mChat.messageTop) {
