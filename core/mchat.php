@@ -285,7 +285,7 @@ class mchat
 
 		$lang_rules = $this->user->lang('MCHAT_RULES_MESSAGE');
 
-		if (!$this->settings->cfg('mchat_rules') && !$lang_rules)
+		if (!$lang_rules && !$this->settings->cfg('mchat_rules'))
 		{
 			throw new http_exception(404, 'MCHAT_NO_RULES');
 		}
