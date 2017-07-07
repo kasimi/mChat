@@ -667,7 +667,7 @@ jQuery(function($) {
 				'=': '-',
 				'*': 'asterisk'
 			});
-			$(bbCodeClass).remove();
+			mChat.cached('body').find(bbCodeClass).remove();
 		});
 
 		var $colourPalette = $('#colour_palette');
