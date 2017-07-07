@@ -770,7 +770,7 @@ class functions
 			'forum_id'			=> (int) $forum_id,
 			'post_id'			=> (int) $post_id,
 			'user_id'			=> (int) $this->user->data['user_id'],
-			'user_ip'			=> $this->user->data['session_ip'],
+			'user_ip'			=> $this->user->ip,
 			'message'			=> 'MCHAT_NEW_' . strtoupper($mode),
 			'message_time'		=> time(),
 		);

@@ -348,7 +348,7 @@ class mchat
 
 		$message_data = array_merge($message_data, array(
 			'user_id'		=> $this->user->data['user_id'],
-			'user_ip'		=> $this->user->data['session_ip'],
+			'user_ip'		=> $this->user->ip,
 			'message_time'	=> time(),
 		));
 
