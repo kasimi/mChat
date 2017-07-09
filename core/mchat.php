@@ -1136,7 +1136,7 @@ class mchat
 	}
 
 	/**
-	 * Returns true of the user is allowed to read the given message row
+	 * Returns true if the user is allowed to read the given message row
 	 *
 	 * @param array $row
 	 * @return bool
