@@ -57,6 +57,9 @@ class functions
 	protected $mchat_sessions_table;
 
 	/** @var array */
+	protected $active_users;
+
+	/** @var array */
 	public $log_types = array(
 		1 => 'edit',
 		2 => 'del',
@@ -177,10 +180,16 @@ class functions
 	/**
 	 * Returns data about users who are currently chatting
 	 *
+	 * @param bool $cached Whether to return possibly cached data
 	 * @return array
 	 */
-	public function mchat_active_users()
+	public function mchat_active_users($cached = true)
 	{
+		if ($cached && $this->active_users)
+		{
+			return $this->active_users;
+		}
+
 		$check_time = time() - $this->mchat_session_time();
 
 		$sql_array = array(
@@ -257,6 +266,8 @@ class functions
 			'active_users',
 		);
 		extract($this->dispatcher->trigger_event('dmzx.mchat.active_users_after', compact($vars)));
+
+		$this->active_users = $active_users;
 
 		return $active_users;
 	}

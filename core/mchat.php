@@ -72,9 +72,6 @@ class mchat
 	protected $remove_disallowed_bbcodes = false;
 
 	/** @var array */
-	protected $active_users = null;
-
-	/** @var array */
 	protected $foes = null;
 
 	/**
@@ -695,12 +692,18 @@ class mchat
 
 		$this->assign_whois();
 
-		$response = array('whois' => $this->render_template('mchat_whois.html'));
+		$response = array('whois' => true);
 
-		if ($this->settings->cfg('mchat_navbar_link_count') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_custom_page') && $this->active_users)
+		if ($this->settings->cfg('mchat_whois_index'))
 		{
-			$response['navlink'] = $this->active_users['users_count_title'];
-			$response['navlink_title'] = strip_tags($this->active_users['users_total']);
+			$response['container'] = $this->render_template('mchat_whois.html');
+		}
+
+		if ($this->settings->cfg('mchat_custom_page') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_navbar_link_count'))
+		{
+			$active_users = $this->functions->mchat_active_users();
+			$response['navlink'] = $active_users['users_count_title'];
+			$response['navlink_title'] = strip_tags($active_users['users_total']);
 		}
 
 		/**
@@ -743,13 +746,9 @@ class mchat
 
 		if ($navbar_link && $custom_page && $this->settings->cfg('mchat_navbar_link_count'))
 		{
-			if ($this->active_users === null)
-			{
-				$this->active_users = $this->functions->mchat_active_users();
-			}
-
-			$template_data['MCHAT_TITLE'] = $this->active_users['users_count_title'];
-			$template_data['MCHAT_TITLE_HINT'] = strip_tags($this->active_users['users_total']);
+			$active_users = $this->functions->mchat_active_users();
+			$template_data['MCHAT_TITLE'] = $active_users['users_count_title'];
+			$template_data['MCHAT_TITLE_HINT'] = strip_tags($active_users['users_total']);
 		}
 
 		$this->template->assign_vars($template_data);
@@ -780,6 +779,7 @@ class mchat
 		// If the static message is defined in the language file use it, else the entry in the database is used
 		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
 		$static_message = $lang_static_message ?: $this->settings->cfg('mchat_static_message');
+		$whois_refresh = $this->settings->cfg('mchat_whois_index') || ($this->settings->cfg('mchat_custom_page') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_navbar_link_count'));
 
 		$this->template->assign_vars(array(
 			'MCHAT_PAGE'					=> $page,
@@ -797,7 +797,7 @@ class mchat
 			'MCHAT_PAUSE_ON_INPUT'			=> $this->settings->cfg('mchat_pause_on_input'),
 			'MCHAT_MESSAGE_LNGTH'			=> $this->settings->cfg('mchat_max_message_lngth'),
 			'MCHAT_WHOIS_INDEX'				=> $this->settings->cfg('mchat_whois_index'),
-			'MCHAT_WHOIS_REFRESH'			=> $this->settings->cfg('mchat_whois_index') || $this->settings->cfg('mchat_stats_index') ? $this->settings->cfg('mchat_whois_refresh') * 1000 : 0,
+			'MCHAT_WHOIS_REFRESH'			=> $whois_refresh ? $this->settings->cfg('mchat_whois_refresh') * 1000 : 0,
 			'MCHAT_REFRESH_JS'				=> $this->settings->cfg('mchat_refresh') * 1000,
 			'MCHAT_ARCHIVE'					=> $this->auth->acl_get('u_mchat_archive'),
 			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules'),
@@ -824,7 +824,7 @@ class mchat
 			'del'		=> $this->auth_message('delete', true, time()),
 			'refresh'	=> $page !== 'archive' && $this->auth->acl_get('u_mchat_view'),
 			'add'		=> $page !== 'archive' && $this->auth->acl_get('u_mchat_use'),
-			'whois'		=> $page !== 'archive' && ($this->settings->cfg('mchat_whois_index') || $this->settings->cfg('mchat_stats_index')),
+			'whois'		=> $page !== 'archive' && $whois_refresh,
 		)));
 
 		foreach ($actions as $action)
@@ -1456,22 +1456,19 @@ class mchat
 	{
 		if ($this->settings->cfg('mchat_whois_index') || $this->settings->cfg('mchat_stats_index'))
 		{
-			if ($this->active_users === null)
-			{
-				$this->active_users = $this->functions->mchat_active_users();
-			}
+			$active_users = $this->functions->mchat_active_users();
 
 			$this->template->assign_vars(array(
 				'MCHAT_STATS_INDEX'		=> $this->settings->cfg('mchat_stats_index'),
-				'MCHAT_USERS_TOTAL'		=> $this->active_users['users_total'],
-				'MCHAT_USERS_LIST'		=> $this->active_users['online_userlist'] ?: '',
-				'MCHAT_ONLINE_EXPLAIN'	=> $this->active_users['refresh_message'],
+				'MCHAT_USERS_TOTAL'		=> $active_users['users_total'],
+				'MCHAT_USERS_LIST'		=> $active_users['online_userlist'] ?: '',
+				'MCHAT_ONLINE_EXPLAIN'	=> $active_users['refresh_message'],
 			));
 		}
 	}
 
 	/**
-	 * Checks whether an author has edit or delete permissions for a message
+	 * Checks whether the current user has edit or delete permissions for a message written by $author_id
 	 *
 	 * @param string $mode One of edit|delete
 	 * @param int $author_id The user id of the message

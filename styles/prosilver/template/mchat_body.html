@@ -124,7 +124,7 @@
 	<h3>{{ lang('MCHAT_WHO_IS_CHATTING') }}</h3>
 	{% INCLUDE '@dmzx_mchat/mchat_whois.html' %}
 	<div id="mchat-refresh">
-		<span id="mchat-refresh-explain">{{ lang('MCHAT_WHOIS_REFRESH_EXPLAIN') }}</span>
+		<span id="mchat-refresh-explain">{{ lang('MCHAT_WHO_IS_REFRESH_EXPLAIN', MCHAT_WHOIS_REFRESH / 1000) }}</span>
 		<span id="mchat-refresh-pending" class="hidden">{{ lang('MCHAT_REFRESHING') }}</span>
 	</div>
 {% endif %}

@@ -346,7 +346,7 @@ jQuery(function($) {
 			mChat.ajaxRequest('whois', false, {}).done(mChat.handleWhoisResponse);
 		},
 		handleWhoisResponse: function(json) {
-			var $whois = $(json.whois);
+			var $whois = $(json.container);
 			var $userlist = $whois.find('#mchat-userlist');
 			if (mChat.storage.get('show_userlist')) {
 				$userlist.show();
