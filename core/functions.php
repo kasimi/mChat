@@ -284,7 +284,7 @@ class functions
 		{
 			$sql = 'INSERT INTO ' . $this->mchat_sessions_table . ' ' . $this->db->sql_build_array('INSERT', array(
 				'user_id'			=> (int) $this->user->data['user_id'],
-				'user_ip'			=> $this->user->data['user_ip'],
+				'user_ip'			=> $this->user->ip,
 				'user_lastupdate'	=> time(),
 			));
 			$this->db->sql_query($sql);
