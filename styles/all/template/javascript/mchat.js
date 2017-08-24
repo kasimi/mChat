@@ -219,8 +219,8 @@ jQuery(function($) {
 					$input.focus().val('').val(value);
 				}
 			}, 1);
-			phpbb.confirm(data.container.show(), function() {
-				if (typeof data.confirm === 'function') {
+			phpbb.confirm(data.container.show(), function(success) {
+				if (success && typeof data.confirm === 'function') {
 					data.confirm.apply(this, fields);
 				}
 			});
