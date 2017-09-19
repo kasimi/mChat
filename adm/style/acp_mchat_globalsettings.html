@@ -267,11 +267,14 @@
 
 	{% EVENT acp_dmzx_mchat_globalsettings_after %}
 
-	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+		</p>
 		{{ S_FORM_TOKEN }}
-	</p>
+	</fieldset>
 </form>
 
 {% INCLUDE 'overall_footer.html' %}
