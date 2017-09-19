@@ -84,7 +84,7 @@ class ext extends \phpbb\extension\base
 			FROM ' . $table_prefix . 'modules
 			WHERE ' . $db->sql_in_set('module_langname', $mchat_30x_module_langnames);
 		$result = $db->sql_query($sql);
-		$rows = $db->sql_fetchrowset();
+		$rows = $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
 
 		$module_ids = array();

@@ -362,7 +362,7 @@ class functions
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query_limit($sql, 0, $offset);
-		$rows = $this->db->sql_fetchrowset();
+		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
 		$prune_ids = array();
