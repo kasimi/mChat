@@ -978,7 +978,7 @@ class mchat
 	 */
 	protected function display_avatars()
 	{
-		return $this->settings->cfg('mchat_avatars') && $this->user->optionget('viewavatars') && $this->settings->cfg('mchat_avatars');
+		return $this->settings->cfg('mchat_avatars') && $this->user->optionget('viewavatars');
 	}
 
 	/**
