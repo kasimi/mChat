@@ -70,7 +70,7 @@
 					</dd>
 				</dl>
 				{% endif %}
-				{% if MCHAT_CAPITAL_LETTER_AUTH %}
+				{% if MCHAT_CAPITAL_LETTER_AUTH and MCHAT_ALLOW_USE %}
 				<dl>
 					<dt><label for="user_mchat_capital_letter">{{ lang('MCHAT_CAPITAL_LETTER') ~ lang('COLON') }}</label></dt>
 					<dd>
@@ -97,7 +97,7 @@
 					</dd>
 				</dl>
 				{% endif %}
-				{% if MCHAT_INPUT_AREA_AUTH %}
+				{% if MCHAT_INPUT_AREA_AUTH and MCHAT_ALLOW_USE %}
 				<dl>
 					<dt><label for="user_mchat_input_area">{{ lang('MCHAT_CHAT_AREA') ~ lang('COLON') }}</label></dt>
 					<dd>
@@ -106,7 +106,7 @@
 					</dd>
 				</dl>
 				{% endif %}
-				{% if MCHAT_CHARACTER_COUNT_AUTH %}
+				{% if MCHAT_CHARACTER_COUNT_AUTH and MCHAT_ALLOW_USE %}
 				<dl>
 					<dt><label for="user_mchat_character_count">{{ lang('MCHAT_DISPLAY_CHARACTER_COUNT') ~ lang('COLON') }}</label></dt>
 					<dd>
@@ -115,7 +115,7 @@
 					</dd>
 				</dl>
 				{% endif %}
-				{% if MCHAT_PAUSE_ON_INPUT_AUTH %}
+				{% if MCHAT_PAUSE_ON_INPUT_AUTH and MCHAT_ALLOW_USE %}
 				<dl>
 					<dt><label for="user_mchat_pause_on_input">{{ lang('MCHAT_PAUSE_ON_INPUT') ~ lang('COLON') }}</label><br /><span>{{ lang('MCHAT_PAUSE_ON_INPUT_EXPLAIN') }}</span></dt>
 					<dd>
