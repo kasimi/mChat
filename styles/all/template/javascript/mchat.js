@@ -102,6 +102,9 @@ jQuery(function($) {
 	$.extend(mChat, {
 		storage: new StorageWrapper('localStorage', mChat.cookie + 'mchat_'),
 		ajaxRequest: function(mode, sendHiddenFields, data) {
+			if (mChat.pageIsUnloading) {
+				return;
+			}
 			var deferred = $.Deferred();
 			if (sendHiddenFields) {
 				$.extend(data, mChat.hiddenFields);
