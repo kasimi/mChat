@@ -197,6 +197,14 @@
 				<label><input type="radio" name="mchat_posts_login" value="0"{% if not MCHAT_POSTS_LOGIN %} id="mchat_posts_login" checked="checked"{% endif %} /> {{ lang('NO') }}</label>
 			</dd>
 		</dl>
+		<dl>
+			<dt><label for="mchat_posts_auth_check">{{ lang('MCHAT_POSTS_AUTH_CHECK') ~ lang('COLON') }}</label><br />
+				<span>{{ lang('MCHAT_POSTS_AUTH_CHECK_EXPLAIN') }}</span></dt>
+			<dd>
+				<label><input type="radio" name="mchat_posts_auth_check" value="1"{% if MCHAT_POSTS_AUTH_CHECK %} id="mchat_posts_auth_check" checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" name="mchat_posts_auth_check" value="0"{% if not MCHAT_POSTS_AUTH_CHECK %} id="mchat_posts_auth_check" checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+			</dd>
+		</dl>
 
 		{% EVENT dmzx_mchat_acp_posts_login_after %}
 

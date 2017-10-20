@@ -143,6 +143,7 @@ class settings
 			'mchat_navbar_link_count'		=> array('default' => 1),
 			'mchat_override_min_post_chars' => array('default' => 0),
 			'mchat_override_smilie_limit'	=> array('default' => 0),
+			'mchat_posts_auth_check'		=> array('default' => 0),
 			'mchat_posts_edit'				=> array('default' => 0),
 			'mchat_posts_quote'				=> array('default' => 0),
 			'mchat_posts_reply'				=> array('default' => 0),

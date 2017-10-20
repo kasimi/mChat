@@ -115,6 +115,9 @@ $lang = array_merge($lang, array(
 	'MCHAT_OVERRIDE_MIN_POST_CHARS'					=> 'Override minimum characters limit',
 	'MCHAT_OVERRIDE_MIN_POST_CHARS_EXPLAIN'			=> 'Set to yes to override the forums minimum characters setting for chat messages',
 
+	'MCHAT_POSTS_AUTH_CHECK'						=> 'Require user permission',
+	'MCHAT_POSTS_AUTH_CHECK_EXPLAIN'				=> 'If set to yes, users who can not use mChat will not generate any post/login notification messages.',
+
 	'MCHAT_WHOIS_REFRESH'							=> 'Who is chatting refresh interval',
 	'MCHAT_WHOIS_REFRESH_EXPLAIN'					=> 'Number of seconds before who is chatting refreshes.<br /><em>You are limited from 10 to 300 seconds. Default is 60.</em>',
 	'MCHAT_SOUND'									=> 'Play sounds for new, edited and deleted messages',

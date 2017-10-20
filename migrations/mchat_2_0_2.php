@@ -26,6 +26,8 @@ class mchat_2_0_2 extends migration
 		return array(
 			array('config.update', array('mchat_version', '2.0.2')),
 
+			array('config.add', array('mchat_posts_auth_check', 0)),
+
 			// Move rules and static message from config to config_text table
 			array('config_text.add', array('mchat_rules', $this->config['mchat_rules'])),
 			array('config_text.add', array('mchat_static_message', $this->config['mchat_static_message'])),

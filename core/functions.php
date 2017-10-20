@@ -768,7 +768,7 @@ class functions
 			'login' => 'mchat_posts_login',
 		);
 
-		$is_mode_enabled = !empty($mode_config[$mode]) && $this->settings->cfg($mode_config[$mode]);
+		$is_mode_enabled = !empty($mode_config[$mode]) && $this->settings->cfg($mode_config[$mode]) && (!$this->settings->cfg('mchat_posts_auth_check') || $this->auth->acl_get('u_mchat_use'));
 
 		// Special treatment for login notifications
 		if ($mode === 'login')
