@@ -401,7 +401,7 @@ class settings
 
 		return array(
 			'S_MCHAT_DATEFORMAT_OPTIONS'	=> $dateformat_options,
-			'A_MCHAT_DEFAULT_DATEFORMAT'	=> addslashes($ucp_settings['mchat_date']['default']),
+			'MCHAT_DEFAULT_DATEFORMAT'		=> $ucp_settings['mchat_date']['default'],
 			'S_MCHAT_CUSTOM_DATEFORMAT'		=> $s_custom,
 		);
 	}

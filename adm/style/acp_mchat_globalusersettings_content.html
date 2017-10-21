@@ -87,7 +87,7 @@
 <dl>
 	<dt><label for="user_mchat_dateoptions">{{ lang('MCHAT_DATE_FORMAT') ~ lang('COLON') }}</label><br /><span>{{ lang('MCHAT_DATE_FORMAT_EXPLAIN') }}</span></dt>
 	<dd>
-		<select name="user_mchat_dateoptions" id="user_mchat_dateoptions" onchange="phpbb.toggleDisplay('user_mchat_custom_date', this.value == 'custom' ? 1 : -1); document.getElementById('user_mchat_date').value = this.value == 'custom' ? '{{ A_MCHAT_DEFAULT_DATEFORMAT }}' : this.value;"{% if MCHAT_DATE_NOAUTH %} disabled{% endif %}>
+		<select name="user_mchat_dateoptions" id="user_mchat_dateoptions" onchange="phpbb.toggleDisplay('user_mchat_custom_date', this.value == 'custom' ? 1 : -1); document.getElementById('user_mchat_date').value = this.value == 'custom' ? '{{ MCHAT_DEFAULT_DATEFORMAT | escape('js') }}' : this.value;"{% if MCHAT_DATE_NOAUTH %} disabled{% endif %}>
 			{{ S_MCHAT_DATEFORMAT_OPTIONS }}
 		</select>
 	</dd>
