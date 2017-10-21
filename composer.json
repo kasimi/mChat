@@ -2,9 +2,9 @@
 	"name": "dmzx/mchat",
 	"type": "phpbb-extension",
 	"description": "mChat",
-	"homepage": "https://github.com/kasimi/mChat",
-	"version": "2.0.1",
-	"time": "2017-02-03",
+	"homepage": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
+	"version": "2.0.2",
+	"time": "2017-10-22",
 	"keywords": ["phpbb", "extension", "mchat"],
 	"license": "GPL-2.0",
 	"authors": [
@@ -28,7 +28,7 @@
 	],
 	"require": {
 		"php": ">=5.3.3",
-		"phpbb/phpbb": ">=3.1.8-RC1"
+		"composer/installers": "~1.0"
 	},
 	"require-dev": {
 		"phpbb/epv": "dev-master"
