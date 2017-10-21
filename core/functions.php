@@ -360,6 +360,20 @@ class functions
 			$offset = 0;
 		}
 
+		/**
+		 * Allow modifying SQL query before message ids to be pruned are retrieved.
+		 *
+		 * @event dmzx.mchat.prune_sql_before
+		 * @var array	user_ids	Array of user IDs that are being pruned, empty when pruning via cron
+		 * @var array	sql_array	SQL query data
+		 * @since 2.0.2
+		 */
+		$vars = array(
+			'user_ids',
+			'sql_array',
+		);
+		extract($this->dispatcher->trigger_event('dmzx.mchat.prune_sql_before', compact($vars)));
+
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query_limit($sql, 0, $offset);
 		$rows = $this->db->sql_fetchrowset($result);
@@ -377,7 +391,7 @@ class functions
 		 *
 		 * @event dmzx.mchat.prune_before
 		 * @var array	prune_ids	Array of message IDs that are about to be pruned
-		 * @var array	user_ids	Array of user IDs that are being pruned
+		 * @var array	user_ids	Array of user IDs that are being pruned, empty when pruning via cron
 		 * @since 2.0.0-RC6
 		 * @changed 2.0.1 Added user_ids
 		 */
