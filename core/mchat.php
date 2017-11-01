@@ -290,7 +290,7 @@ class mchat
 		// If the rules are defined in the language file use them, else just use the entry in the database
 		$mchat_rules = $lang_rules ?: $this->settings->cfg('mchat_rules');
 		$mchat_rules = htmlspecialchars_decode($mchat_rules);
-		$mchat_rules = str_replace("\n", '<br />', $mchat_rules);
+		$mchat_rules = str_replace("\n", '<br>', $mchat_rules);
 
 		$this->template->assign_var('MCHAT_RULES', $mchat_rules);
 
