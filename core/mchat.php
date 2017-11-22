@@ -585,7 +585,7 @@ class mchat
 				 *
 				 * @event dmzx.mchat.action_refresh_process_log_row
 				 * @var array	response	The data that is sent back to the user (still incomplete at this point)
-				 * @var array	log_row		The log data
+				 * @var array	log_row		The log data (read only)
 				 * @since 2.0.0-RC6
 				 */
 				$vars = array(
@@ -593,6 +593,8 @@ class mchat
 					'log_row',
 				);
 				extract($this->dispatcher->trigger_event('dmzx.mchat.action_refresh_process_log_row', compact($vars)));
+
+				unset($log_row);
 			}
 		}
 
