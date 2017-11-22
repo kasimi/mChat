@@ -959,7 +959,7 @@ class mchat
 		);
 
 		/**
-		 * Event that allows adding global templte data for mChat
+		 * Event that allows adding global template data for mChat
 		 *
 		 * @event dmzx.mchat.global_modify_template_data
 		 * @var array	template_data		The data that is about to be assigned to the template
