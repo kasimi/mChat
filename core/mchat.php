@@ -1584,6 +1584,6 @@ class mchat
 		$this->template->set_filenames(array('body' => $template_file));
 		$content = $this->template->assign_display('body', '', true);
 
-		return trim(str_replace(array("\r", "\n"), '', $content));
+		return trim($content);
 	}
 }
