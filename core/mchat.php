@@ -71,6 +71,12 @@ class mchat
 	/** @var boolean */
 	protected $remove_disallowed_bbcodes = false;
 
+	/** @var bool */
+	protected $custom_bbcodes_generated = false;
+
+	/** @var bool */
+	protected $smilies_generated = false;
+
 	/** @var array */
 	protected $foes = null;
 
@@ -1343,17 +1349,20 @@ class mchat
 
 			$this->template->assign_var('MCHAT_DISALLOWED_BBCODES', $this->settings->cfg('mchat_bbcode_disallowed'));
 
-			if (!function_exists('display_custom_bbcodes'))
+			if (!$this->custom_bbcodes_generated)
 			{
-				include($this->root_path . 'includes/functions_display.' . $this->php_ext);
-			}
+				if (!function_exists('display_custom_bbcodes'))
+				{
+					include($this->root_path . 'includes/functions_display.' . $this->php_ext);
+				}
 
-			$this->remove_disallowed_bbcodes = true;
-			display_custom_bbcodes();
+				$this->remove_disallowed_bbcodes = true;
+				display_custom_bbcodes();
+			}
 		}
 
 		// Display smilies
-		if ($this->settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies'))
+		if ($this->settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies') && !$this->smilies_generated)
 		{
 			if (!function_exists('generate_smilies'))
 			{
@@ -1571,6 +1580,22 @@ class mchat
 			'bbcode_uid'		=> $uid,
 			'bbcode_options'	=> $options,
 		);
+	}
+
+	/**
+	 * @param bool $custom_bbcodes_generated
+	 */
+	public function set_custom_bbcodes_generated($custom_bbcodes_generated)
+	{
+		$this->custom_bbcodes_generated = $custom_bbcodes_generated;
+	}
+
+	/**
+	 * @param bool $smilies_generated
+	 */
+	public function set_smilies_generated($smilies_generated)
+	{
+		$this->smilies_generated = $smilies_generated;
 	}
 
 	/**

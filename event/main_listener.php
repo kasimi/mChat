@@ -71,6 +71,7 @@ class main_listener implements EventSubscriberInterface
 			'core.index_modify_page_title'				=> 'display_mchat_on_index',
 			'core.submit_post_end'						=> 'insert_posting',
 			'core.display_custom_bbcodes_modify_sql'	=> array(array('remove_disallowed_bbcodes'), array('pm_compose_add_quote')),
+			'core.generate_smilies_after'				=> 'generate_smilies_after',
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
 			'core.login_box_redirect'					=> 'user_login_success',
 			'core.session_gc_after'						=> 'session_gc',
@@ -132,6 +133,16 @@ class main_listener implements EventSubscriberInterface
 	public function remove_disallowed_bbcodes($event)
 	{
 		$event['sql_ary'] = $this->mchat->remove_disallowed_bbcodes($event['sql_ary']);
+
+		$this->mchat->set_custom_bbcodes_generated(true);
+	}
+
+	/**
+	 *
+	 */
+	public function generate_smilies_after()
+	{
+		$this->mchat->set_smilies_generated(true);
 	}
 
 	/**
