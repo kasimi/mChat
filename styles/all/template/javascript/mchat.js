@@ -164,14 +164,22 @@ jQuery(function($) {
 			mChat.sound('error');
 			mChat.cached('status-load', 'status-ok', 'status-paused').hide();
 			mChat.cached('status-error').show();
+			var title = mChat.lang.err;
 			var responseText;
 			try {
-				responseText = data.xhr.responseJSON.message || data.errorThrown;
+				var json = data.xhr.responseJSON;
+				if (json.S_USER_WARNING || json.S_USER_NOTICE) {
+					title = json.MESSAGE_TITLE;
+					responseText = json.MESSAGE_TEXT;
+					data.xhr.status = 403;
+				} else {
+					responseText = json.message || data.errorThrown;
+				}
 			} catch (e) {
 				responseText = data.errorThrown;
 			}
 			if (responseText && responseText !== 'timeout') {
-				phpbb.alert(mChat.lang.err, responseText);
+				phpbb.alert(title, responseText);
 			}
 			data.updateSession();
 		},
