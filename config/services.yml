@@ -42,7 +42,7 @@ services:
             - '@request'
             - '@dispatcher'
             - '@ext.manager'
-            - '@?text_formatter.s9e.parser'
+            - '@text_formatter.s9e.parser'
             - '@?phpbb.collapsiblecategories.operator'
     dmzx.mchat.functions:
         class: dmzx\mchat\core\functions

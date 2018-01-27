@@ -22,20 +22,20 @@
 			<div id="mchat-buttons">
 				{% EVENT dmzx_mchat_buttons_before %}
 				{% if MCHAT_ALLOW_USE %}
-					<input id="mchat-add" class="{% if IS_PHPBB31 %}button2{% elseif IS_PHPBB32 %}button{% endif %}" type="button" data-mchat-action="add" value="{{ lang('MCHAT_ADD') }}" />
+					<input id="mchat-add" class="button" type="button" data-mchat-action="add" value="{{ lang('MCHAT_ADD') }}" />
 					{% if MCHAT_ALLOW_SMILES and loops.smiley|length %}
-						<input type="button" class="{% if IS_PHPBB31 %}button2{% elseif IS_PHPBB32 %}button{% endif %}" data-mchat-toggle="smilies" value="{{ lang('MCHAT_SMILES') }}" />
+						<input type="button" class="button" data-mchat-toggle="smilies" value="{{ lang('MCHAT_SMILES') }}" />
 					{% endif %}
 					{% if S_BBCODE_ALLOWED %}
-						<input type="button" class="{% if IS_PHPBB31 %}button2{% elseif IS_PHPBB32 %}button{% endif %}" data-mchat-toggle="bbcodes" value="{{ lang('MCHAT_BBCODES') }}" />
+						<input type="button" class="button" data-mchat-toggle="bbcodes" value="{{ lang('MCHAT_BBCODES') }}" />
 					{% endif %}
 					{% if MCHAT_RULES %}
-						<input type="button" class="{% if IS_PHPBB31 %}button2{% elseif IS_PHPBB32 %}button{% endif %}" onclick="popup('{{ U_MCHAT_RULES }}', 450, 275); return false;" value="{{ lang('MCHAT_RULES') }}" />
+						<input type="button" class="button" onclick="popup('{{ U_MCHAT_RULES }}', 450, 275); return false;" value="{{ lang('MCHAT_RULES') }}" />
 					{% endif %}
 				{% endif %}
 				{% EVENT dmzx_mchat_buttons_mid %}
 				{% if MCHAT_ARCHIVE %}
-					<input type="button" class="{% if IS_PHPBB31 %}button2{% elseif IS_PHPBB32 %}button{% endif %}" onclick="window.location.href = '{{ U_MCHAT_ARCHIVE_URL }}';" value="{{ lang('MCHAT_ARCHIVE') }}" />
+					<input type="button" class="button" onclick="window.location.href = '{{ U_MCHAT_ARCHIVE_URL }}';" value="{{ lang('MCHAT_ARCHIVE') }}" />
 				{% endif %}
 				{% EVENT dmzx_mchat_buttons_after %}
 			</div>
@@ -60,10 +60,10 @@
 				<ul class="mchat-footer">
 					<li>
 						<span id="mchat-status-icons">
-							<i id="mchat-status-load" class="{% if IS_PHPBB31 %}mchat-status-load{% elseif IS_PHPBB32 %}fa fa-refresh fa-spin icon icon-blue{% endif %}" title="{{ lang('LOADING') }}"></i>
-							<i id="mchat-status-ok" class="{% if IS_PHPBB31 %}mchat-status-ok{% elseif IS_PHPBB32 %}fa fa-check icon icon-green{% endif %}" title="{{ lang('MCHAT_OK') }}"></i>
-							<i id="mchat-status-paused" class="{% if IS_PHPBB31 %}mchat-status-paused{% elseif IS_PHPBB32 %}fa fa-pause icon icon-orange{% endif %}" title="{{ lang('MCHAT_PAUSE') }}"></i>
-							<i id="mchat-status-error" class="{% if IS_PHPBB31 %}mchat-status-error{% elseif IS_PHPBB32 %}fa fa-times icon icon-red{% endif %}" title="{{ lang('ERROR') }}"></i>
+							<i id="mchat-status-load" class="fa fa-refresh fa-spin icon icon-blue" title="{{ lang('LOADING') }}"></i>
+							<i id="mchat-status-ok" class="fa fa-check icon icon-green" title="{{ lang('MCHAT_OK') }}"></i>
+							<i id="mchat-status-paused" class="fa fa-pause icon icon-orange" title="{{ lang('MCHAT_PAUSE') }}"></i>
+							<i id="mchat-status-error" class="fa fa-times icon icon-red" title="{{ lang('ERROR') }}"></i>
 						</span>
 						<span id="mchat-refresh-text">{{ MCHAT_REFRESH_YES }}</span>
 					</li>

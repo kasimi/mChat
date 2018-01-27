@@ -94,12 +94,6 @@ class settings
 		168	=> 'weeks',
 	];
 
-	/** @var bool */
-	public $is_phpbb31;
-
-	/** @var bool */
-	public $is_phpbb32;
-
 	/**
 	 * Possible values of the global setting mchat_archive_sort
 	 */
@@ -138,9 +132,6 @@ class settings
 		$this->dispatcher	= $dispatcher;
 		$this->root_path	= $root_path;
 		$this->php_ext		= $php_ext;
-
-		$this->is_phpbb31 = phpbb_version_compare(PHPBB_VERSION, '3.1.0@dev', '>=') && phpbb_version_compare(PHPBB_VERSION, '3.2.0@dev', '<');
-		$this->is_phpbb32 = phpbb_version_compare(PHPBB_VERSION, '3.2.0@dev', '>=') && phpbb_version_compare(PHPBB_VERSION, '3.3.0@dev', '<');
 	}
 
 	/**

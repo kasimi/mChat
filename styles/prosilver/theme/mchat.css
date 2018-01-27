@@ -25,9 +25,6 @@
 	position: relative;
 }
 
-.icon-mchat {
-	background-image: url("./images/icon_mchat.png");
-}
 
 .mchat-ucp fieldset hr:first-child, .mchat-ucp fieldset hr:last-child, .mchat-ucp fieldset hr + hr {
 	display: none;
@@ -119,32 +116,6 @@
 	position: absolute;
 	width: 1px;
 }
-
-.mchat-icons-black .mchat-icon:before {
-	background-image: url("./images/message_icons_black.png");
-}
-
-.mchat-icons-white .mchat-icon:before {
-	background-image: url("./images/message_icons_white.png");
-}
-
-.mchat-icon:before {
-	content: '';
-	background-repeat: no-repeat;
-	width: 16px;
-	height: 16px;
-	display: block;
-	float: right;
-}
-
-.mchat-icon-mention:before		{ background-position: -2px -2px; }
-.mchat-icon-edit:before			{ background-position: -22px -2px; }
-.mchat-icon-pm:before			{ background-position: -42px -2px; }
-.mchat-icon-quote:before		{ background-position: -62px -2px; }
-.mchat-icon-like:before			{ background-position: -82px -2px; }
-.mchat-icon-delete:before		{ background-position: -102px -2px; }
-.mchat-icon-permissions:before	{ background-position: -122px -2px; }
-.mchat-icon-ip:before			{ background-position: -142px -2px; }
 
 .mchat-text {
 	clear: both;
@@ -294,17 +265,9 @@ textarea#mchat-input {
 	cursor: help;
 }
 
-.mchat-status-error {
-	background-image: url("./images/error.gif");
-}
-
 #mchat-status-ok {
 	display: none;
 	cursor: help;
-}
-
-.mchat-status-ok {
-	background-image: url("./images/ok.gif");
 }
 
 #mchat-status-load {
@@ -312,16 +275,8 @@ textarea#mchat-input {
 	cursor: wait;
 }
 
-.mchat-status-load {
-	background-image: url("./images/load.gif");
-}
-
 #mchat-status-paused {
 	cursor: help;
-}
-
-.mchat-status-paused {
-	background-image: url("./images/paused.gif");
 }
 
 .mchat-footer li {

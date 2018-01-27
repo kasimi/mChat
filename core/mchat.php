@@ -107,7 +107,7 @@ class mchat
 		request_interface $request,
 		dispatcher_interface $dispatcher,
 		manager $extension_manager,
-		parser_interface $parser = null,
+		parser_interface $parser,
 		cc_operator $cc_operator = null
 	)
 	{
@@ -124,11 +124,6 @@ class mchat
 		$this->extension_manager	= $extension_manager;
 		$this->parser				= $parser;
 		$this->cc_operator			= $cc_operator;
-
-		$this->template->assign_vars([
-			'IS_PHPBB31' => $this->settings->is_phpbb31,
-			'IS_PHPBB32' => $this->settings->is_phpbb32,
-		]);
 	}
 
 	/**
@@ -1525,11 +1520,10 @@ class mchat
 		$mchat_magic_urls	= $this->settings->cfg('allow_post_links') && $this->auth->acl_get('u_mchat_urls');
 		$mchat_smilies		= $this->settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies');
 
-		// These arguments for generate_text_for_storage() are ignored in 3.1.x
 		$mchat_img = $mchat_flash = $mchat_quote = $mchat_url = $mchat_bbcode;
 
-		// Disallowed bbcodes for 3.2.x
-		if ($disallowed_bbcodes && $this->parser !== null)
+		// Disallowed bbcodes
+		if ($disallowed_bbcodes)
 		{
 			$mchat_img		&= !in_array('img', $disallowed_bbcodes);
 			$mchat_flash	&= !in_array('flash', $disallowed_bbcodes);
@@ -1544,17 +1538,6 @@ class mchat
 
 		$uid = $bitfield = $options = '';
 		generate_text_for_storage($message, $uid, $bitfield, $options, $mchat_bbcode, $mchat_magic_urls, $mchat_smilies, $mchat_img, $mchat_flash, $mchat_quote, $mchat_url);
-
-		// Disallowed bbcodes for 3.1.x
-		if ($disallowed_bbcodes && $this->parser === null)
-		{
-			$bbcode_replace = [
-				'#\[(' . str_replace('*', '\*', $this->settings->cfg('mchat_bbcode_disallowed')) . ')[^\[\]]+\]#Usi',
-				'#\[/(' . str_replace('*', '\*', $this->settings->cfg('mchat_bbcode_disallowed')) . ')[^\[\]]+\]#Usi',
-			];
-
-			$message = preg_replace($bbcode_replace, '', $message);
-		}
 
 		return [
 			'message'			=> str_replace("'", '&#39;', $message),

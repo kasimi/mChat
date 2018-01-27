@@ -40,20 +40,8 @@ class ext extends base
 
 			if ($module_ids)
 			{
-				if (phpbb_version_compare(PHPBB_VERSION, '3.2.0-dev', '>='))
-				{
-					// For phpBB >= 3.2.x
-					$lang = $this->container->get('language');
-					$lang->add_lang('mchat_acp', 'dmzx/mchat');
-				}
-				else
-				{
-					// For phpBB 3.1.x
-					$user = $this->container->get('user');
-					$user->add_lang_ext('dmzx/mchat', 'mchat_acp');
-					$lang = $user;
-				}
-
+				$lang = $this->container->get('language');
+				$lang->add_lang('mchat_acp', 'dmzx/mchat');
 				$php_ext = $this->container->getParameter('core.php_ext');
 				$error_msg = $lang->lang('MCHAT_30X_REMNANTS', $table_prefix, implode($lang->lang('COMMA_SEPARATOR'), $module_ids)) . adm_back_link(append_sid('index.' . $php_ext, ['i' => 'acp_extensions', 'mode' => 'main']));
 
