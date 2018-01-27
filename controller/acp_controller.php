@@ -56,12 +56,6 @@ class acp_controller
 	/** @var string */
 	protected $mchat_log_table;
 
-	/** @var string */
-	protected $root_path;
-
-	/** @var string */
-	protected $php_ext;
-
 	/**
 	 * Constructor
 	 *
@@ -76,8 +70,6 @@ class acp_controller
 	 * @param settings				$settings
 	 * @param string				$mchat_table
 	 * @param string				$mchat_log_table
-	 * @param string				$root_path
-	 * @param string				$php_ext
 	 */
 	public function __construct(
 		functions $functions,
@@ -90,9 +82,7 @@ class acp_controller
 		dispatcher_interface $dispatcher,
 		settings $settings,
 		$mchat_table,
-		$mchat_log_table,
-		$root_path,
-		$php_ext
+		$mchat_log_table
 	)
 	{
 		$this->functions		= $functions;
@@ -106,8 +96,6 @@ class acp_controller
 		$this->settings			= $settings;
 		$this->mchat_table		= $mchat_table;
 		$this->mchat_log_table	= $mchat_log_table;
-		$this->root_path		= $root_path;
-		$this->php_ext			= $php_ext;
 	}
 
 	/**
@@ -152,10 +140,7 @@ class acp_controller
 				unset($mchat_new_config['mchat_prune_num']);
 			}
 
-			if (!function_exists('validate_data'))
-			{
-				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
-			}
+			$this->settings->include_functions('user', 'validate_data');
 
 			$error = array_merge($error, validate_data($mchat_new_config, $validation));
 
@@ -218,8 +203,8 @@ class acp_controller
 			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
 			'MCHAT_FOUNDER'							=> $is_founder,
 			'S_MCHAT_PRUNE_MODE_OPTIONS'			=> $this->get_prune_mode_options($this->settings->cfg('mchat_prune_mode')),
-			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
+			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'bbcodes'], true, $this->user->session_id) . '">', '</a>'),
+			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'board', 'mode' => 'load'], true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
 			'U_ACTION'								=> $u_action,
 		];
 
@@ -270,10 +255,7 @@ class acp_controller
 				}
 			}
 
-			if (!function_exists('validate_data'))
-			{
-				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
-			}
+			$this->settings->include_functions('user', 'validate_data');
 
 			$error = array_merge($error, validate_data($mchat_new_config, $validation));
 

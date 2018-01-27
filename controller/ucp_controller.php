@@ -42,12 +42,6 @@ class ucp_controller
 	/** @var dispatcher_interface */
 	protected $dispatcher;
 
-	/** @var string */
-	protected $root_path;
-
-	/** @var string */
-	protected $php_ext;
-
 	/**
 	 * Constructor
 	 *
@@ -58,8 +52,6 @@ class ucp_controller
 	 * @param request_interface		$request
 	 * @param settings				$settings
 	 * @param dispatcher_interface 	$dispatcher
-	 * @param string				$root_path
-	 * @param string				$php_ext
 	 */
 	public function __construct(
 		template $template,
@@ -68,9 +60,7 @@ class ucp_controller
 		db_interface $db,
 		request_interface $request,
 		settings $settings,
-		dispatcher_interface $dispatcher,
-		$root_path,
-		$php_ext
+		dispatcher_interface $dispatcher
 	)
 	{
 		$this->template		= $template;
@@ -80,8 +70,6 @@ class ucp_controller
 		$this->request		= $request;
 		$this->settings		= $settings;
 		$this->dispatcher	= $dispatcher;
-		$this->root_path	= $root_path;
-		$this->php_ext		= $php_ext;
 	}
 
 	/**
@@ -114,10 +102,7 @@ class ucp_controller
 				}
 			}
 
-			if (!function_exists('validate_data'))
-			{
-				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
-			}
+			$this->settings->include_functions('user', 'validate_data');
 
 			$error = array_merge($error, validate_data($mchat_new_config, $validation));
 

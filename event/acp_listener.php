@@ -14,10 +14,10 @@ namespace dmzx\mchat\event;
 use dmzx\mchat\core\functions;
 use dmzx\mchat\core\settings;
 use phpbb\auth\auth;
+use phpbb\event\data;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\user;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class acp_listener implements EventSubscriberInterface
@@ -37,12 +37,6 @@ class acp_listener implements EventSubscriberInterface
 	/** @var functions */
 	protected $functions;
 
-	/** @var string */
-	protected $root_path;
-
-	/** @var string */
-	protected $php_ext;
-
 	/**
 	* Constructor
 	*
@@ -51,17 +45,13 @@ class acp_listener implements EventSubscriberInterface
 	* @param user				$user
 	* @param settings			$settings
 	* @param functions			$functions
-	* @param string				$root_path
-	* @param string				$php_ext
 	*/
 	public function __construct(
 		template $template,
 		request_interface $request,
 		user $user,
 		settings $settings,
-		functions $functions,
-		$root_path,
-		$php_ext
+		functions $functions
 	)
 	{
 		$this->template		= $template;
@@ -69,14 +59,12 @@ class acp_listener implements EventSubscriberInterface
 		$this->user			= $user;
 		$this->settings		= $settings;
 		$this->functions	= $functions;
-		$this->root_path	= $root_path;
-		$this->php_ext		= $php_ext;
 	}
 
 	/**
 	 * @return array
 	 */
-	static public function getSubscribedEvents()
+	public static function getSubscribedEvents()
 	{
 		return [
 			'core.permissions'							=> 'permissions',
@@ -88,9 +76,9 @@ class acp_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param Event $event
+	 * @param data $event
 	 */
-	public function permissions($event)
+	public function permissions(data $event)
 	{
 		$ucp_configs = [];
 
@@ -143,9 +131,9 @@ class acp_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param Event $event
+	 * @param data $event
 	 */
-	public function acp_users_prefs_modify_sql($event)
+	public function acp_users_prefs_modify_sql(data $event)
 	{
 		$sql_ary = [];
 		$validation = [];
@@ -171,19 +159,16 @@ class acp_listener implements EventSubscriberInterface
 			}
 		}
 
-		if (!function_exists('validate_data'))
-		{
-			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
-		}
+		$this->settings->include_functions('user', 'validate_data');
 
 		$event['error'] = array_merge($event['error'], validate_data($sql_ary, $validation));
 		$event['sql_ary'] = array_merge($event['sql_ary'], $sql_ary);
 	}
 
 	/**
-	 * @param Event $event
+	 * @param data $event
 	 */
-	public function acp_users_prefs_modify_template_data($event)
+	public function acp_users_prefs_modify_template_data(data $event)
 	{
 		$this->user->add_lang_ext('dmzx/mchat', ['mchat_acp', 'mchat_ucp']);
 
@@ -211,9 +196,9 @@ class acp_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param Event $event
+	 *
 	 */
-	public function acp_users_overview_before($event)
+	public function acp_users_overview_before()
 	{
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat_acp');
 
@@ -224,9 +209,9 @@ class acp_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * @param Event $event
+	 * @param data $event
 	 */
-	public function delete_user_after($event)
+	public function delete_user_after(data $event)
 	{
 		if ($event['mode'] == 'remove')
 		{

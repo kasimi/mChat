@@ -56,12 +56,6 @@ class mchat
 	/** @var manager */
 	protected $extension_manager;
 
-	/** @var string */
-	protected $root_path;
-
-	/** @var string */
-	protected $php_ext;
-
 	/** @var parser_interface */
 	protected $parser;
 
@@ -93,8 +87,6 @@ class mchat
 	 * @param request_interface		$request
 	 * @param dispatcher_interface	$dispatcher
 	 * @param manager				$extension_manager
-	 * @param string				$root_path
-	 * @param string				$php_ext
 	 * @param parser_interface		$parser
 	 * @param cc_operator			$cc_operator
 	 */
@@ -109,8 +101,6 @@ class mchat
 		request_interface $request,
 		dispatcher_interface $dispatcher,
 		manager $extension_manager,
-		$root_path,
-		$php_ext,
 		parser_interface $parser = null,
 		cc_operator $cc_operator = null
 	)
@@ -125,8 +115,6 @@ class mchat
 		$this->request				= $request;
 		$this->dispatcher			= $dispatcher;
 		$this->extension_manager	= $extension_manager;
-		$this->root_path			= $root_path;
-		$this->php_ext				= $php_ext;
 		$this->parser				= $parser;
 		$this->cc_operator			= $cc_operator;
 
@@ -257,10 +245,7 @@ class mchat
 
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
 
-		if (!function_exists('user_ipwhois'))
-		{
-			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
-		}
+		$this->settings->include_functions('user', 'user_ipwhois');
 
 		$this->template->assign_var('WHOIS', user_ipwhois($ip));
 
@@ -960,8 +945,8 @@ class mchat
 			'MCHAT_RELATIVE_TIME'		=> $this->settings->cfg('mchat_relative_time'),
 			'MCHAT_TIMEOUT'				=> 1000 * $this->settings->cfg('mchat_timeout'),
 			'S_MCHAT_AVATARS'			=> $this->display_avatars(),
-			'EXT_URL'					=> generate_board_url() . '/ext/dmzx/mchat/',
-			'STYLE_PATH'				=> generate_board_url() . '/styles/' . rawurlencode($this->user->style['style_path']),
+			'EXT_URL'					=> $this->settings->url('ext/dmzx/mchat/', true, false),
+			'STYLE_PATH'				=> $this->settings->url('styles/' . rawurlencode($this->user->style['style_path']), true, false),
 		];
 
 		/**
@@ -1053,7 +1038,7 @@ class mchat
 
 		$board_url = generate_board_url() . '/';
 
-		$this->process_notifications($rows, $board_url);
+		$this->process_notifications($rows);
 
 		foreach ($rows as $row)
 		{
@@ -1091,10 +1076,10 @@ class mchat
 				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
-				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid("{$board_url}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
+				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid($this->settings->url('memberlist', true), ['mode' => 'viewprofile', 'u' => $row['user_id']]) : '',
 				'MCHAT_IS_POSTER'			=> $is_poster,
 				'MCHAT_IS_NOTIFICATION'		=> (bool) $row['post_id'],
-				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$board_url}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;mchat_pm_quote_message=' . (int) $row['message_id'] . '&amp;u=' . $row['user_id']) : '',
+				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid($this->settings->url('ucp', true), ['i' => 'pm', 'mode' => 'compose', 'mchat_pm_quote_message' => $row['message_id'], 'u' => $row['user_id']]) : '',
 				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'		=> $username_full,
@@ -1102,7 +1087,7 @@ class mchat
 				'MCHAT_USERNAME_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
 				'MCHAT_WHOIS_USER'			=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
 				'MCHAT_U_IP'				=> $this->helper->route('dmzx_mchat_page_whois_controller', ['ip' => $row['user_ip']]),
-				'MCHAT_U_PERMISSIONS'		=> append_sid("{$board_url}adm/index.{$this->php_ext}", 'i=permissions&amp;mode=setting_user_global&amp;user_id%5B0%5D=' . $row['user_id'], true, $this->user->session_id),
+				'MCHAT_U_PERMISSIONS'		=> append_sid($this->settings->url('adm/index', true), ['i' => 'permissions', 'mode' => 'setting_user_global', 'user_id[0]' => $row['user_id']], true, $this->user->session_id),
 				'MCHAT_MESSAGE'				=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
 				'MCHAT_TIME'				=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
 				'MCHAT_DATETIME'			=> $absolute_datetime,
@@ -1173,9 +1158,8 @@ class mchat
 	 * Checks the post rows for notifications and converts their language keys
 	 *
 	 * @param array $rows The rows to modify
-	 * @param string $board_url
 	 */
-	protected function process_notifications(&$rows, $board_url)
+	protected function process_notifications(&$rows)
 	{
 		$notification_post_ids = [];
 
@@ -1200,7 +1184,7 @@ class mchat
 				}
 				else
 				{
-					$rows[$i] = $this->process_notification($row, $board_url);
+					$rows[$i] = $this->process_notification($row);
 				}
 			}
 		}
@@ -1213,7 +1197,7 @@ class mchat
 			{
 				if (in_array($row['post_id'], $notification_post_ids))
 				{
-					$rows[$i] = $this->process_notification($row, $board_url, $notification_post_data[$row['post_id']]);
+					$rows[$i] = $this->process_notification($row, $notification_post_data[$row['post_id']]);
 				}
 			}
 		}
@@ -1223,11 +1207,10 @@ class mchat
 	 * Converts the message field of the post row so that it can be passed to generate_text_for_display()
 	 *
 	 * @param array $row
-	 * @param string $board_url
 	 * @param array $post_data
 	 * @return array
 	 */
-	protected function process_notification($row, $board_url, $post_data = null)
+	protected function process_notification($row, $post_data = null)
 	{
 		$args = [$row['message']];
 
@@ -1235,7 +1218,7 @@ class mchat
 		// If forum_id is not 0 it's a post notification, we need to fetch forum name and post subject.
 		if ($row['forum_id'])
 		{
-			$viewtopic_url = append_sid($board_url . 'viewtopic.' . $this->php_ext, [
+			$viewtopic_url = append_sid($this->settings->url('viewtopic', true), [
 				'p' => $row['post_id'],
 				'#' => 'p' . $row['post_id'],
 			]);
@@ -1244,7 +1227,7 @@ class mchat
 			// $row might contain outdated data if a post was moved to a new forum.
 			$forum_id = isset($post_data['forum_id']) ? $post_data['forum_id'] : $row['forum_id'];
 
-			$viewforum_url = append_sid($board_url . 'viewforum.' . $this->php_ext, [
+			$viewforum_url = append_sid($this->settings->url('viewforum', true), [
 				'f' => $forum_id,
 			]);
 
@@ -1351,10 +1334,7 @@ class mchat
 
 			if (!$this->custom_bbcodes_generated)
 			{
-				if (!function_exists('display_custom_bbcodes'))
-				{
-					include($this->root_path . 'includes/functions_display.' . $this->php_ext);
-				}
+				$this->settings->include_functions('display', 'display_custom_bbcodes');
 
 				$this->remove_disallowed_bbcodes = true;
 				display_custom_bbcodes();
@@ -1364,10 +1344,7 @@ class mchat
 		// Display smilies
 		if ($this->settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies') && !$this->smilies_generated)
 		{
-			if (!function_exists('generate_smilies'))
-			{
-				include($this->root_path . 'includes/functions_posting.' . $this->php_ext);
-			}
+			$this->settings->include_functions('posting', 'generate_smilies');
 
 			generate_smilies('inline', 0);
 		}
@@ -1442,7 +1419,7 @@ class mchat
 		if ($row['post_id'])
 		{
 			$rows = [$row];
-			$this->process_notifications($rows, generate_board_url() . '/');
+			$this->process_notifications($rows);
 			$row = reset($rows);
 		}
 

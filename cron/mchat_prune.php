@@ -40,8 +40,6 @@ class mchat_prune extends base
 
 	/**
 	 * Runs this cron task.
-	 *
-	 * @return null
 	 */
 	public function run()
 	{

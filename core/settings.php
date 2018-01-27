@@ -34,6 +34,15 @@ class settings
 	/** @var dispatcher_interface */
 	protected $dispatcher;
 
+	/** @var string */
+	protected $root_path;
+
+	/** @var string */
+	protected $php_ext;
+
+	/** @var string */
+	protected $board_url;
+
 	/**
 	 * Keys for global settings that only the administrator is allowed to modify.
 	 * The values are stored in the phpbb_config table.
@@ -102,13 +111,17 @@ class settings
 	 * @param db_text				$config_text
 	 * @param auth					$auth
 	 * @param dispatcher_interface	$dispatcher
+	 * @param string				$root_path
+	 * @param string				$php_ext
 	 */
 	public function __construct(
 		user $user,
 		config $config,
 		db_text $config_text,
 		auth $auth,
-		dispatcher_interface $dispatcher
+		dispatcher_interface $dispatcher,
+		$root_path,
+		$php_ext
 	)
 	{
 		$this->user			= $user;
@@ -116,6 +129,8 @@ class settings
 		$this->config_text	= $config_text;
 		$this->auth			= $auth;
 		$this->dispatcher	= $dispatcher;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
 
 		$this->is_phpbb31 = phpbb_version_compare(PHPBB_VERSION, '3.1.0@dev', '>=') && phpbb_version_compare(PHPBB_VERSION, '3.2.0@dev', '<');
 		$this->is_phpbb32 = phpbb_version_compare(PHPBB_VERSION, '3.2.0@dev', '>=') && phpbb_version_compare(PHPBB_VERSION, '3.3.0@dev', '<');
@@ -422,5 +437,40 @@ class settings
 		}
 
 		return implode($this->user->lang('COMMA_SEPARATOR'), $enabled_notifications_lang);
+	}
+
+	/**
+	 * @param string $path
+	 * @param bool $absolute_url
+	 * @param bool $append_ext
+	 * @return string
+	 */
+	public function url($path, $absolute_url = false, $append_ext = true)
+	{
+		if ($absolute_url && !$this->board_url)
+		{
+			$this->board_url = generate_board_url() . '/';
+		}
+
+		$url = ($absolute_url ? $this->board_url : $this->root_path) . $path;
+
+		if ($append_ext)
+		{
+			$url .= '.' . $this->php_ext;
+		}
+
+		return $url;
+	}
+
+	/**
+	 * @param string $file
+	 * @param string $function
+	 */
+	public function include_functions($file, $function)
+	{
+		if (!function_exists($function))
+		{
+			include($this->root_path . 'includes/functions_' . $file . '.' . $this->php_ext);
+		}
 	}
 }

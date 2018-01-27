@@ -42,12 +42,6 @@ class functions
 	protected $dispatcher;
 
 	/** @var string */
-	protected $root_path;
-
-	/** @var string */
-	protected $php_ext;
-
-	/** @var string */
 	protected $mchat_table;
 
 	/** @var string */
@@ -87,8 +81,6 @@ class functions
 	* @param db_interface			$db
 	* @param cache_interface		$cache
 	* @param dispatcher_interface	$dispatcher
-	* @param string					$root_path
-	* @param string					$php_ext
 	* @param string					$mchat_table
 	* @param string					$mchat_log_table
 	* @param string					$mchat_sessions_table
@@ -101,8 +93,6 @@ class functions
 		db_interface $db,
 		cache_interface $cache,
 		dispatcher_interface $dispatcher,
-		$root_path,
-		$php_ext,
 		$mchat_table,
 		$mchat_log_table,
 		$mchat_sessions_table
@@ -115,8 +105,6 @@ class functions
 		$this->db					= $db;
 		$this->cache				= $cache;
 		$this->dispatcher			= $dispatcher;
-		$this->root_path			= $root_path;
-		$this->php_ext				= $php_ext;
 		$this->mchat_table			= $mchat_table;
 		$this->mchat_log_table		= $mchat_log_table;
 		$this->mchat_sessions_table	= $mchat_sessions_table;
@@ -670,7 +658,7 @@ class functions
 			}
 			else
 			{
-				$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$this->root_path}memberlist.{$this->php_ext}", 'mode=group&amp;g='. $row['group_id']) . '">' . $group_name . '</a>';
+				$legend[] = '<a' . $colour_text . ' href="' . append_sid($this->settings->url('memberlist'), ['mode' => 'group', 'g' => $row['group_id']]) . '">' . $group_name . '</a>';
 			}
 		}
 

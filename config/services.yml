@@ -16,8 +16,6 @@ services:
             - '@dmzx.mchat.settings'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_log%'
-            - '%core.root_path%'
-            - '%core.php_ext%'
     dmzx.mchat.ucp.controller:
         class: dmzx\mchat\controller\ucp_controller
         arguments:
@@ -28,8 +26,6 @@ services:
             - '@request'
             - '@dmzx.mchat.settings'
             - '@dispatcher'
-            - '%core.root_path%'
-            - '%core.php_ext%'
     dmzx.mchat.core:
         class: dmzx\mchat\core\mchat
         arguments:
@@ -43,8 +39,6 @@ services:
             - '@request'
             - '@dispatcher'
             - '@ext.manager'
-            - '%core.root_path%'
-            - '%core.php_ext%'
             - '@?text_formatter.s9e.parser'
             - '@?phpbb.collapsiblecategories.operator'
     dmzx.mchat.functions:
@@ -57,8 +51,6 @@ services:
             - '@dbal.conn'
             - '@cache.driver'
             - '@dispatcher'
-            - '%core.root_path%'
-            - '%core.php_ext%'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_log%'
             - '%dmzx.mchat.table.mchat_sessions%'
@@ -70,6 +62,8 @@ services:
             - '@config_text'
             - '@auth'
             - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.php_ext%'
     dmzx.mchat.acp.listener:
         class: dmzx\mchat\event\acp_listener
         arguments:
@@ -78,8 +72,6 @@ services:
             - '@user'
             - '@dmzx.mchat.settings'
             - '@dmzx.mchat.functions'
-            - '%core.root_path%'
-            - '%core.php_ext%'
         tags:
             - { name: event.listener }
     dmzx.mchat.main.listener:

@@ -62,7 +62,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @return array
 	 */
-	static public function getSubscribedEvents()
+	public static function getSubscribedEvents()
 	{
 		return [
 			'core.viewonline_overwrite_location'		=> 'add_page_viewonline',
@@ -81,7 +81,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param data $event
 	 */
-	public function add_page_viewonline($event)
+	public function add_page_viewonline(data $event)
 	{
 		if (strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/mchat') === 0)
 		{
@@ -93,7 +93,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param data $event
 	 */
-	public function load_language_on_setup($event)
+	public function load_language_on_setup(data $event)
 	{
 		$lang_set_ext = $event['lang_set_ext'];
 		$lang_set_ext[] = [
@@ -122,7 +122,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param data $event
 	 */
-	public function insert_posting($event)
+	public function insert_posting(data $event)
 	{
 		$this->mchat->insert_posting($event['mode'], $event['data']['forum_id'], $event['data']['post_id']);
 	}
@@ -130,7 +130,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param data $event
 	 */
-	public function remove_disallowed_bbcodes($event)
+	public function remove_disallowed_bbcodes(data $event)
 	{
 		$event['sql_ary'] = $this->mchat->remove_disallowed_bbcodes($event['sql_ary']);
 
@@ -148,7 +148,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param data $event
 	 */
-	public function user_registration_set_default_values($event)
+	public function user_registration_set_default_values(data $event)
 	{
 		$event['sql_ary'] = $this->mchat->set_user_default_values($event['sql_ary']);
 	}
@@ -156,7 +156,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * @param data $event
 	 */
-	public function user_login_success($event)
+	public function user_login_success(data $event)
 	{
 		if (!$event['admin'])
 		{
