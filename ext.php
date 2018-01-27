@@ -18,6 +18,7 @@ class ext extends base
 	/**
 	 * Requires phpBB 3.1.7-PL1 due to usage of \phpbb\session:update_session_infos()
 	 * Requires phpBB 3.1.8-RC1 due to HTTPS in version check
+	 * Requires phpBB 3.2.0 due to EoL of phpBB 3.1
 	 *
 	 * @return bool
 	 * @access public
@@ -60,7 +61,7 @@ class ext extends base
 			}
 		}
 
-		return phpbb_version_compare(PHPBB_VERSION, '3.1.8-RC1', '>=');
+		return phpbb_version_compare(PHPBB_VERSION, '3.2.0', '>=');
 	}
 
 	/**
