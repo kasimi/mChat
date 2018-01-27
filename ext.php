@@ -72,13 +72,13 @@ class ext extends \phpbb\extension\base
 	{
 		$db = $this->container->get('dbal.conn');
 
-		$mchat_30x_module_langnames = array(
+		$mchat_30x_module_langnames = [
 			'ACP_CAT_MCHAT',
 			'ACP_MCHAT_CONFIG',
 			'ACP_USER_MCHAT',
 			'UCP_CAT_MCHAT',
 			'UCP_MCHAT_CONFIG',
-		);
+		];
 
 		$sql = 'SELECT module_id
 			FROM ' . $table_prefix . 'modules
@@ -87,7 +87,7 @@ class ext extends \phpbb\extension\base
 		$rows = $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
 
-		$module_ids = array();
+		$module_ids = [];
 
 		foreach ($rows as $row)
 		{

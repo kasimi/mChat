@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -34,7 +34,7 @@ if (empty($lang) || !is_array($lang))
 // Some characters for use
 // ’ » “ ” …
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'ACL_U_MCHAT_USE'						=> 'Can use mChat',
 	'ACL_U_MCHAT_VIEW'						=> 'Can view mChat',
 	'ACL_U_MCHAT_EDIT'						=> 'Can edit own messages',
@@ -67,4 +67,4 @@ $lang = array_merge($lang, array(
 	'ACL_U_MCHAT_STATS_INDEX'				=> 'Can customise <em>Display who is chatting in the stats section</em>',
 
 	'ACL_A_MCHAT'							=> 'Can manage mChat settings',
-));
+]);

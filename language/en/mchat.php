@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -34,7 +34,7 @@ if (empty($lang) || !is_array($lang))
 // Some characters for use
 // ’ » “ ” …
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'MCHAT_ADD'						=> 'Send',
 	'MCHAT_ARCHIVE'					=> 'Archive',
 	'MCHAT_ARCHIVE_PAGE'			=> 'mChat Archive',
@@ -74,11 +74,11 @@ $lang = array_merge($lang, array(
 	'MCHAT_USESOUND'				=> 'Play sound',
 	'MCHAT_COLLAPSE_TITLE'			=> 'Toggle visibility of mChat',
 	'MCHAT_WHO_IS_REFRESH_EXPLAIN'	=> 'Refreshes every <strong>%1$d</strong> seconds',
-	'MCHAT_MINUTES_AGO'				=> array(
+	'MCHAT_MINUTES_AGO'				=> [
 		0 => 'just now',
 		1 => '%1$d minute ago',
 		2 => '%1$d minutes ago',
-	),
+	],
 
 	// These messages are formatted with JavaScript, hence {} and no %d
 	'MCHAT_CHARACTER_COUNT'			=> '<strong>{current}</strong> characters',
@@ -89,4 +89,4 @@ $lang = array_merge($lang, array(
 	// Custom translations for administrators
 	'MCHAT_RULES_MESSAGE'			=> '',
 	'MCHAT_STATIC_MESSAGE'			=> '',
-));
+]);

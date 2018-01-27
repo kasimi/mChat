@@ -64,18 +64,18 @@ class main_listener implements EventSubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(
+		return [
 			'core.viewonline_overwrite_location'		=> 'add_page_viewonline',
 			'core.user_setup'							=> 'load_language_on_setup',
 			'core.page_header'							=> 'add_page_header_link',
 			'core.index_modify_page_title'				=> 'display_mchat_on_index',
 			'core.submit_post_end'						=> 'insert_posting',
-			'core.display_custom_bbcodes_modify_sql'	=> array(array('remove_disallowed_bbcodes'), array('pm_compose_add_quote')),
+			'core.display_custom_bbcodes_modify_sql'	=> [['remove_disallowed_bbcodes'], ['pm_compose_add_quote']],
 			'core.generate_smilies_after'				=> 'generate_smilies_after',
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
 			'core.login_box_redirect'					=> 'user_login_success',
 			'core.session_gc_after'						=> 'session_gc',
-		);
+		];
 	}
 
 	/**
@@ -96,10 +96,10 @@ class main_listener implements EventSubscriberInterface
 	public function load_language_on_setup($event)
 	{
 		$lang_set_ext = $event['lang_set_ext'];
-		$lang_set_ext[] = array(
+		$lang_set_ext[] = [
 			'ext_name' => 'dmzx/mchat',
 			'lang_set' => 'common',
-		);
+		];
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
 

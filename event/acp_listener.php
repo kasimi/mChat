@@ -78,13 +78,13 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(
+		return [
 			'core.permissions'							=> 'permissions',
 			'core.acp_users_prefs_modify_sql'			=> 'acp_users_prefs_modify_sql',
 			'core.acp_users_prefs_modify_template_data'	=> 'acp_users_prefs_modify_template_data',
 			'core.acp_users_overview_before'			=> 'acp_users_overview_before',
 			'core.delete_user_after'					=> 'delete_user_after',
-		);
+		];
 	}
 
 	/**
@@ -92,15 +92,15 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	public function permissions($event)
 	{
-		$ucp_configs = array();
+		$ucp_configs = [];
 
 		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
 		{
 			$ucp_configs[] = 'u_' . $config_name;
 		}
 
-		$permission_categories = array(
-			'mchat' => array(
+		$permission_categories = [
+			'mchat' => [
 				'u_mchat_use',
 				'u_mchat_view',
 				'u_mchat_edit',
@@ -117,29 +117,29 @@ class acp_listener implements EventSubscriberInterface
 				'u_mchat_smilies',
 				'u_mchat_urls',
 				'a_mchat',
-			),
+			],
 			'mchat_user_config' => $ucp_configs,
-		);
+		];
 
-		$mchat_permissions = array();
+		$mchat_permissions = [];
 
 		foreach ($permission_categories as $cat => $permissions)
 		{
 			foreach ($permissions as $permission)
 			{
-				$mchat_permissions[$permission] = array(
+				$mchat_permissions[$permission] = [
 					'lang'	=> 'ACL_' . strtoupper($permission),
 					'cat'	=> $cat,
-				);
+				];
 			}
 		}
 
 		$event['permissions'] = array_merge($event['permissions'], $mchat_permissions);
 
-		$event['categories'] = array_merge($event['categories'], array(
+		$event['categories'] = array_merge($event['categories'], [
 			'mchat'				=> 'ACP_CAT_MCHAT',
 			'mchat_user_config'	=> 'ACP_CAT_MCHAT_USER_CONFIG',
-		));
+		]);
 	}
 
 	/**
@@ -147,8 +147,8 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	public function acp_users_prefs_modify_sql($event)
 	{
-		$sql_ary = array();
-		$validation = array();
+		$sql_ary = [];
+		$validation = [];
 
 		$user_id = $event['user_row']['user_id'];
 
@@ -185,7 +185,7 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	public function acp_users_prefs_modify_template_data($event)
 	{
-		$this->user->add_lang_ext('dmzx/mchat', array('mchat_acp', 'mchat_ucp'));
+		$this->user->add_lang_ext('dmzx/mchat', ['mchat_acp', 'mchat_ucp']);
 
 		$user_id = (int) $event['user_row']['user_id'];
 
@@ -203,10 +203,10 @@ class acp_listener implements EventSubscriberInterface
 		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
 		{
 			$upper = strtoupper($config_name);
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				$upper				=> $this->settings->cfg_user($config_name, $event['user_row'], $auth),
 				$upper . '_NOAUTH'	=> !$auth->acl_get('u_' . $config_name, $user_id),
-			));
+			]);
 		}
 	}
 
@@ -217,10 +217,10 @@ class acp_listener implements EventSubscriberInterface
 	{
 		$this->user->add_lang_ext('dmzx/mchat', 'mchat_acp');
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'L_RETAIN_POSTS'	=> $this->user->lang('MCHAT_RETAIN_MESSAGES', $this->user->lang('RETAIN_POSTS')),
 			'L_DELETE_POSTS'	=> $this->user->lang('MCHAT_DELETE_MESSAGES', $this->user->lang('DELETE_POSTS')),
-		));
+		]);
 	}
 
 	/**

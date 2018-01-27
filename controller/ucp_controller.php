@@ -93,12 +93,12 @@ class ucp_controller
 	{
 		add_form_key('ucp_mchat');
 
-		$error = array();
+		$error = [];
 
 		if ($this->request->is_set_post('submit'))
 		{
-			$mchat_new_config = array();
-			$validation = array();
+			$mchat_new_config = [];
+			$validation = [];
 			foreach ($this->settings->ucp_settings() as $config_name => $config_data)
 			{
 				if ($this->auth->acl_get('u_' . $config_name))
@@ -134,10 +134,10 @@ class ucp_controller
 			 * @var array	error				Array with error lang keys
 			 * @since 2.0.0-RC7
 			 */
-			$vars = array(
+			$vars = [
 				'mchat_new_config',
 				'error',
-			);
+			];
 			extract($this->dispatcher->trigger_event('dmzx.mchat.ucp_update_data', compact($vars)));
 
 			if (!$error)
@@ -153,7 +153,7 @@ class ucp_controller
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = array_map(array($this->user, 'lang'), $error);
+			$error = array_map([$this->user, 'lang'], $error);
 		}
 
 		$selected_date = $this->settings->cfg('mchat_date');
@@ -175,13 +175,13 @@ class ucp_controller
 			}
 		}
 
-		$template_data = array_merge($template_data, array(
+		$template_data = array_merge($template_data, [
 			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
 			'MCHAT_POSTS_ENABLED_LANG'		=> $this->settings->get_enabled_post_notifications_lang(),
 			'ERROR'							=> sizeof($error) ? implode('<br>', $error) : '',
 			'MCHAT_AUTH_COUNT'				=> $auth_count,
 			'S_UCP_ACTION'					=> $u_action,
-		));
+		]);
 
 		/**
 		 * Event to modify UCP settings template data
@@ -192,11 +192,11 @@ class ucp_controller
 		 * @var array	error			Array with error lang keys
 		 * @since 2.0.0-RC7
 		 */
-		$vars = array(
+		$vars = [
 			'template_data',
 			'auth_count',
 			'error',
-		);
+		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.ucp_modify_template_data', compact($vars)));
 
 		$this->template->assign_vars($template_data);

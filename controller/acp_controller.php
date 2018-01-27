@@ -119,7 +119,7 @@ class acp_controller
 	{
 		add_form_key('acp_mchat');
 
-		$error = array();
+		$error = [];
 
 		$is_founder = $this->user->data['user_type'] == USER_FOUNDER;
 
@@ -127,8 +127,8 @@ class acp_controller
 
 		if ($this->request->is_set_post('submit'))
 		{
-			$mchat_new_config = array();
-			$validation = array();
+			$mchat_new_config = [];
+			$validation = [];
 			foreach ($settings as $config_name => $config_data)
 			{
 				$default = $this->settings->cfg($config_name);
@@ -172,10 +172,10 @@ class acp_controller
 			 * @var array	error					Array with error lang keys
 			 * @since 2.0.0-RC7
 			 */
-			$vars = array(
+			$vars = [
 				'mchat_new_config',
 				'error',
-			);
+			];
 			extract($this->dispatcher->trigger_event('dmzx.mchat.acp_globalsettings_update_data', compact($vars)));
 
 			if (!$error)
@@ -187,13 +187,13 @@ class acp_controller
 				}
 
 				// Add an entry into the log table
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, array($this->user->data['username']));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, [$this->user->data['username']]);
 
 				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = array_map(array($this->user, 'lang'), $error);
+			$error = array_map([$this->user, 'lang'], $error);
 		}
 
 		if (!$error)
@@ -203,7 +203,7 @@ class acp_controller
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_table);
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_log_table);
 				$this->cache->destroy('sql', $this->mchat_log_table);
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, array($this->user->data['username']));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, [$this->user->data['username']]);
 				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
 			}
 			else if ($is_founder && $this->request->is_set_post('mchat_prune_now') && $this->request->variable('mchat_prune_now_confirm', false) && check_form_key('acp_mchat'))
@@ -213,7 +213,7 @@ class acp_controller
 			}
 		}
 
-		$template_data = array(
+		$template_data = [
 			'MCHAT_ERROR'							=> implode('<br>', $error),
 			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
 			'MCHAT_FOUNDER'							=> $is_founder,
@@ -221,7 +221,7 @@ class acp_controller
 			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=bbcodes', true, $this->user->session_id) . '">', '</a>'),
 			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid("{$this->root_path}adm/index.$this->php_ext", 'i=board&amp;mode=load', true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
 			'U_ACTION'								=> $u_action,
-		);
+		];
 
 		foreach (array_keys($settings) as $key)
 		{
@@ -236,10 +236,10 @@ class acp_controller
 		 * @var array	error			Array with error lang keys
 		 * @since 2.0.0-RC7
 		 */
-		$vars = array(
+		$vars = [
 			'template_data',
 			'error',
-		);
+		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.acp_globalsettings_modify_template_data', compact($vars)));
 
 		$this->template->assign_vars($template_data);
@@ -252,12 +252,12 @@ class acp_controller
 	{
 		add_form_key('acp_mchat');
 
-		$error = array();
+		$error = [];
 
 		if ($this->request->is_set_post('submit'))
 		{
-			$mchat_new_config = array();
-			$validation = array();
+			$mchat_new_config = [];
+			$validation = [];
 			foreach ($this->settings->ucp_settings() as $config_name => $config_data)
 			{
 				$default = $this->settings->cfg($config_name, true);
@@ -282,7 +282,7 @@ class acp_controller
 				$error[] = 'FORM_INVALID';
 			}
 
-			$mchat_new_user_config = array();
+			$mchat_new_user_config = [];
 
 			if ($this->request->variable('mchat_overwrite', 0) && $this->request->variable('mchat_overwrite_confirm', 0))
 			{
@@ -301,11 +301,11 @@ class acp_controller
 			 * @var array	error					Array with error lang keys
 			 * @since 2.0.0-RC7
 			 */
-			$vars = array(
+			$vars = [
 				'mchat_new_config',
 				'mchat_new_user_config',
 				'error',
-			);
+			];
 			extract($this->dispatcher->trigger_event('dmzx.mchat.acp_globalusersettings_update_data', compact($vars)));
 
 			if (!$error)
@@ -323,13 +323,13 @@ class acp_controller
 				}
 
 				// Add an entry into the log table
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, array($this->user->data['username']));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, [$this->user->data['username']]);
 
 				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = array_map(array($this->user, 'lang'), $error);
+			$error = array_map([$this->user, 'lang'], $error);
 		}
 
 		// Force global date format for $selected_date value, not user-specific
@@ -341,12 +341,12 @@ class acp_controller
 			$template_data[strtoupper($key)] = $this->settings->cfg($key, true);
 		}
 
-		$template_data = array_merge($template_data, array(
+		$template_data = array_merge($template_data, [
 			'MCHAT_POSTS_ENABLED_LANG'	=> $this->settings->get_enabled_post_notifications_lang(),
 			'MCHAT_ERROR'				=> implode('<br>', $error),
 			'MCHAT_VERSION'				=> $this->settings->cfg('mchat_version'),
 			'U_ACTION'					=> $u_action,
-		));
+		]);
 
 		/**
 		 * Event to modify ACP global user settings template data
@@ -356,10 +356,10 @@ class acp_controller
 		 * @var array	error			Array with error lang keys
 		 * @since 2.0.0-RC7
 		 */
-		$vars = array(
+		$vars = [
 			'template_data',
 			'error',
-		);
+		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.acp_globalusersettings_modify_template_data', compact($vars)));
 
 		$this->template->assign_vars($template_data);

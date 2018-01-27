@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -34,7 +34,7 @@ if (empty($lang) || !is_array($lang))
 // Some characters for use
 // ’ » “ ” …
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'MCHAT_PREFERENCES'				=> 'mChat preferences',
 	'MCHAT_NO_SETTINGS'				=> 'You are not authorised to customise any settings.',
 
@@ -69,4 +69,4 @@ $lang = array_merge($lang, array(
 	'MCHAT_DATE_FORMAT'				=> 'Date format',
 	'MCHAT_DATE_FORMAT_EXPLAIN'		=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date">date()</a> function.',
 	'MCHAT_CUSTOM_DATEFORMAT'		=> 'Custom…',
-));
+]);

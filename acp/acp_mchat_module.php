@@ -22,7 +22,7 @@ class acp_mchat_module
 		global $phpbb_container, $user;
 
 		// Add the ACP lang file
-		$user->add_lang_ext('dmzx/mchat', array('mchat_acp', 'mchat_ucp'));
+		$user->add_lang_ext('dmzx/mchat', ['mchat_acp', 'mchat_ucp']);
 
 		// Set template
 		$this->tpl_name = 'acp_mchat_' . strtolower($mode);

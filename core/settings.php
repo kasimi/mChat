@@ -74,12 +74,12 @@ class settings
 	 *
 	 * @var array
 	 */
-	public $prune_modes = array(
+	public $prune_modes = [
 		0	=> 'messages',
 		1	=> 'hours',
 		24	=> 'days',
 		168	=> 'weeks',
-	);
+	];
 
 	/** @var bool */
 	public $is_phpbb31;
@@ -126,37 +126,37 @@ class settings
 	 */
 	public function initialize_global_settings()
 	{
-		$global_settings = array(
-			'mchat_archive_sort'			=> array('default' => self::ARCHIVE_SORT_BOTTOM_TOP),
-			'mchat_bbcode_disallowed'		=> array('default' => '',	'validation' => array('string', false, 0, 255)),
-			'mchat_custom_height'			=> array('default' => 350,	'validation' => array('num', false, 50, 1000)),
-			'mchat_custom_page'				=> array('default' => 1),
-			'mchat_edit_delete_limit'		=> array('default' => 0),
-			'mchat_flood_time'				=> array('default' => 0,	'validation' => array('num', false, 0, 60)),
-			'mchat_index_height'			=> array('default' => 250,	'validation' => array('num', false, 50, 1000)),
-			'mchat_live_updates'			=> array('default' => 1),
-			'mchat_max_message_lngth'		=> array('default' => 500,	'validation' => array('num', false, 0, 1000)),
-			'mchat_message_num_archive'		=> array('default' => 25,	'validation' => array('num', false, 10, 100)),
-			'mchat_message_num_custom'		=> array('default' => 10,	'validation' => array('num', false, 5, 50)),
-			'mchat_message_num_index'		=> array('default' => 10,	'validation' => array('num', false, 5, 50)),
-			'mchat_navbar_link'				=> array('default' => 1),
-			'mchat_navbar_link_count'		=> array('default' => 1),
-			'mchat_override_min_post_chars' => array('default' => 0),
-			'mchat_override_smilie_limit'	=> array('default' => 0),
-			'mchat_posts_auth_check'		=> array('default' => 0),
-			'mchat_posts_edit'				=> array('default' => 0),
-			'mchat_posts_quote'				=> array('default' => 0),
-			'mchat_posts_reply'				=> array('default' => 0),
-			'mchat_posts_topic'				=> array('default' => 0),
-			'mchat_posts_login'				=> array('default' => 0),
-			'mchat_prune'					=> array('default' => 0),
-			'mchat_prune_gc'				=> array('default' => strtotime('1 day', 0)),
-			'mchat_prune_mode'				=> array('default' => 0),
-			'mchat_prune_num'				=> array('default' => 0),
-			'mchat_refresh'					=> array('default' => 10,	'validation' => array('num', false, 5, 60)),
-			'mchat_timeout'					=> array('default' => 0,	'validation' => array('num', false, 0, (int) $this->cfg('session_length'))),
-			'mchat_whois_refresh'			=> array('default' => 60,	'validation' => array('num', false, 10, 300)),
-		);
+		$global_settings = [
+			'mchat_archive_sort'			=> ['default' => self::ARCHIVE_SORT_BOTTOM_TOP],
+			'mchat_bbcode_disallowed'		=> ['default' => '',	'validation' => ['string', false, 0, 255]],
+			'mchat_custom_height'			=> ['default' => 350,	'validation' => ['num', false, 50, 1000]],
+			'mchat_custom_page'				=> ['default' => 1],
+			'mchat_edit_delete_limit'		=> ['default' => 0],
+			'mchat_flood_time'				=> ['default' => 0,		'validation' => ['num', false, 0, 60]],
+			'mchat_index_height'			=> ['default' => 250,	'validation' => ['num', false, 50, 1000]],
+			'mchat_live_updates'			=> ['default' => 1],
+			'mchat_max_message_lngth'		=> ['default' => 500,	'validation' => ['num', false, 0, 1000]],
+			'mchat_message_num_archive'		=> ['default' => 25,	'validation' => ['num', false, 10, 100]],
+			'mchat_message_num_custom'		=> ['default' => 10,	'validation' => ['num', false, 5, 50]],
+			'mchat_message_num_index'		=> ['default' => 10,	'validation' => ['num', false, 5, 50]],
+			'mchat_navbar_link'				=> ['default' => 1],
+			'mchat_navbar_link_count'		=> ['default' => 1],
+			'mchat_override_min_post_chars' => ['default' => 0],
+			'mchat_override_smilie_limit'	=> ['default' => 0],
+			'mchat_posts_auth_check'		=> ['default' => 0],
+			'mchat_posts_edit'				=> ['default' => 0],
+			'mchat_posts_quote'				=> ['default' => 0],
+			'mchat_posts_reply'				=> ['default' => 0],
+			'mchat_posts_topic'				=> ['default' => 0],
+			'mchat_posts_login'				=> ['default' => 0],
+			'mchat_prune'					=> ['default' => 0],
+			'mchat_prune_gc'				=> ['default' => strtotime('1 day', 0)],
+			'mchat_prune_mode'				=> ['default' => 0],
+			'mchat_prune_num'				=> ['default' => 0],
+			'mchat_refresh'					=> ['default' => 10,	'validation' => ['num', false, 5, 60]],
+			'mchat_timeout'					=> ['default' => 0,		'validation' => ['num', false, 0, (int) $this->cfg('session_length')]],
+			'mchat_whois_refresh'			=> ['default' => 60,	'validation' => ['num', false, 10, 300]],
+		];
 
 		/**
 		 * Event to modify global settings data
@@ -165,9 +165,9 @@ class settings
 		 * @var array	global_settings		Array containing global settings data
 		 * @since 2.0.0-RC7
 		 */
-		$vars = array(
+		$vars = [
 			'global_settings',
-		);
+		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.global_settings_modify', compact($vars)));
 
 		return $global_settings;
@@ -178,10 +178,10 @@ class settings
 	 */
 	public function initialize_global_text_settings()
 	{
-		$global_text_settings = array(
-			'mchat_rules'					=> array('default' => ''),
-			'mchat_static_message'			=> array('default' => ''),
-		);
+		$global_text_settings = [
+			'mchat_rules'					=> ['default' => ''],
+			'mchat_static_message'			=> ['default' => ''],
+		];
 
 		/**
 		 * Event to modify global text settings data
@@ -190,9 +190,9 @@ class settings
 		 * @var array	global_text_settings	Array containing global text settings data
 		 * @since 2.0.2
 		 */
-		$vars = array(
+		$vars = [
 			'global_text_settings',
-		);
+		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.global_text_settings_modify', compact($vars)));
 
 		return $global_text_settings;
@@ -203,22 +203,22 @@ class settings
 	 */
 	public function initialize_ucp_settings()
 	{
-		$ucp_settings = array(
-			'mchat_avatars'					=> array('default' => 1),
-			'mchat_capital_letter'			=> array('default' => 1),
-			'mchat_character_count'			=> array('default' => 1),
-			'mchat_date'					=> array('default' => 'D M d, Y g:i a', 'validation' => array('string', false, 0, 64)),
-			'mchat_index'					=> array('default' => 1),
-			'mchat_input_area'				=> array('default' => 1),
-			'mchat_location'				=> array('default' => 1),
-			'mchat_message_top'				=> array('default' => 1),
-			'mchat_pause_on_input'			=> array('default' => 0),
-			'mchat_posts'					=> array('default' => 1),
-			'mchat_relative_time'			=> array('default' => 1),
-			'mchat_sound'					=> array('default' => 1),
-			'mchat_stats_index'				=> array('default' => 0),
-			'mchat_whois_index'				=> array('default' => 1),
-		);
+		$ucp_settings = [
+			'mchat_avatars'					=> ['default' => 1],
+			'mchat_capital_letter'			=> ['default' => 1],
+			'mchat_character_count'			=> ['default' => 1],
+			'mchat_date'					=> ['default' => 'D M d, Y g:i a', 'validation' => ['string', false, 0, 64]],
+			'mchat_index'					=> ['default' => 1],
+			'mchat_input_area'				=> ['default' => 1],
+			'mchat_location'				=> ['default' => 1],
+			'mchat_message_top'				=> ['default' => 1],
+			'mchat_pause_on_input'			=> ['default' => 0],
+			'mchat_posts'					=> ['default' => 1],
+			'mchat_relative_time'			=> ['default' => 1],
+			'mchat_sound'					=> ['default' => 1],
+			'mchat_stats_index'				=> ['default' => 0],
+			'mchat_whois_index'				=> ['default' => 1],
+		];
 
 		/**
 		 * Event to modify UCP settings data
@@ -227,9 +227,9 @@ class settings
 		 * @var	array	ucp_settings		Array containing UCP settings data
 		 * @since 2.0.0-RC7
 		 */
-		$vars = array(
+		$vars = [
 			'ucp_settings',
-		);
+		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.ucp_settings_modify', compact($vars)));
 
 		return $ucp_settings;
@@ -277,9 +277,9 @@ class settings
 			 * @var array	global_text_values	Array containing global text values
 			 * @since 2.0.2
 			 */
-			$vars = array(
+			$vars = [
 				'global_text_values',
-			);
+			];
 			extract($this->dispatcher->trigger_event('dmzx.mchat.global_text_values_modify', compact($vars)));
 
 			$this->global_text_values = $global_text_values;
@@ -399,11 +399,11 @@ class settings
 
 		$ucp_settings = $this->ucp_settings();
 
-		return array(
+		return [
 			'S_MCHAT_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 			'MCHAT_DEFAULT_DATEFORMAT'		=> $ucp_settings['mchat_date']['default'],
 			'S_MCHAT_CUSTOM_DATEFORMAT'		=> $s_custom,
-		);
+		];
 	}
 
 	/**
@@ -411,9 +411,9 @@ class settings
 	 */
 	public function get_enabled_post_notifications_lang()
 	{
-		$enabled_notifications_lang = array();
+		$enabled_notifications_lang = [];
 
-		foreach (array('topic', 'reply', 'quote', 'edit', 'login') as $notification)
+		foreach (['topic', 'reply', 'quote', 'edit', 'login'] as $notification)
 		{
 			if ($this->cfg('mchat_posts_' . $notification))
 			{

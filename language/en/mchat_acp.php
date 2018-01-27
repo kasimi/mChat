@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -34,7 +34,7 @@ if (empty($lang) || !is_array($lang))
 // Some characters for use
 // ’ » “ ” …
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	// ACP Configuration sections
 	'MCHAT_SETTINGS_INDEX'							=> 'Index page settings',
 	'MCHAT_SETTINGS_CUSTOM'							=> 'Custom page settings',
@@ -156,4 +156,4 @@ $lang = array_merge($lang, array(
 	'TOO_LARGE_MCHAT_WHOIS_REFRESH'					=> 'The whois refresh value is too large.',
 
 	'MCHAT_30X_REMNANTS'							=> 'The installation has been aborted.<br>There are remnant modules from the mChat MOD for phpBB 3.0.x in the database. The mChat extension does not work correctly with these modules present.<br>You need to entirely uninstall the mChat MOD before being able to install the mChat extension. Specifically, the modules with the following IDs need to be deleted from the %1$smodules table: %2$s',
-));
+]);
