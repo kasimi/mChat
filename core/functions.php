@@ -15,6 +15,8 @@ use phpbb\auth\auth;
 use phpbb\cache\driver\driver_interface as cache_interface;
 use phpbb\db\driver\driver_interface as db_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\group\helper;
+use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
 
@@ -25,6 +27,9 @@ class functions
 
 	/** @var user */
 	protected $user;
+
+	/** @var language */
+	protected $lang;
 
 	/** @var auth */
 	protected $auth;
@@ -40,6 +45,9 @@ class functions
 
 	/** @var dispatcher_interface */
 	protected $dispatcher;
+
+	/** @var helper */
+	protected $group_helper;
 
 	/** @var string */
 	protected $mchat_table;
@@ -76,11 +84,13 @@ class functions
 	*
 	* @param settings				$settings
 	* @param user					$user
+	* @param language				$lang
 	* @param auth					$auth
 	* @param log_interface			$log
 	* @param db_interface			$db
 	* @param cache_interface		$cache
 	* @param dispatcher_interface	$dispatcher
+	* @param helper					$group_helper
 	* @param string					$mchat_table
 	* @param string					$mchat_log_table
 	* @param string					$mchat_sessions_table
@@ -88,11 +98,13 @@ class functions
 	function __construct(
 		settings $settings,
 		user $user,
+		language $lang,
 		auth $auth,
 		log_interface $log,
 		db_interface $db,
 		cache_interface $cache,
 		dispatcher_interface $dispatcher,
+		helper $group_helper,
 		$mchat_table,
 		$mchat_log_table,
 		$mchat_sessions_table
@@ -100,11 +112,13 @@ class functions
 	{
 		$this->settings				= $settings;
 		$this->user					= $user;
+		$this->lang					= $lang;
 		$this->auth					= $auth;
 		$this->log					= $log;
 		$this->db					= $db;
 		$this->cache				= $cache;
 		$this->dispatcher			= $dispatcher;
+		$this->group_helper			= $group_helper;
 		$this->mchat_table			= $mchat_table;
 		$this->mchat_log_table		= $mchat_log_table;
 		$this->mchat_sessions_table	= $mchat_sessions_table;
@@ -124,23 +138,23 @@ class functions
 		if ($hours)
 		{
 			$time -= $hours * 3600;
-			$times[] = $this->user->lang('MCHAT_HOURS', $hours);
+			$times[] = $this->lang->lang('MCHAT_HOURS', $hours);
 		}
 
 		$minutes = floor($time / 60);
 		if ($minutes)
 		{
 			$time -= $minutes * 60;
-			$times[] = $this->user->lang('MCHAT_MINUTES', $minutes);
+			$times[] = $this->lang->lang('MCHAT_MINUTES', $minutes);
 		}
 
 		$seconds = ceil($time);
 		if ($seconds)
 		{
-			$times[] = $this->user->lang('MCHAT_SECONDS', $seconds);
+			$times[] = $this->lang->lang('MCHAT_SECONDS', $seconds);
 		}
 
-		return $this->user->lang('MCHAT_ONLINE_EXPLAIN', implode('&nbsp;', $times));
+		return $this->lang->lang('MCHAT_ONLINE_EXPLAIN', implode('&nbsp;', $times));
 	}
 
 	/**
@@ -231,13 +245,13 @@ class functions
 				$row['username'] = '<em>' . $row['username'] . '</em>';
 			}
 
-			$mchat_users[$row['user_id']] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
+			$mchat_users[$row['user_id']] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->lang->lang('GUEST'));
 		}
 
 		$active_users = [
-			'online_userlist'	=> implode($this->user->lang('COMMA_SEPARATOR'), $mchat_users),
-			'users_count_title'	=> $this->user->lang('MCHAT_TITLE_COUNT', count($mchat_users)),
-			'users_total'		=> $this->user->lang('MCHAT_ONLINE_USERS_TOTAL', count($mchat_users)),
+			'online_userlist'	=> implode($this->lang->lang('COMMA_SEPARATOR'), $mchat_users),
+			'users_count_title'	=> $this->lang->lang('MCHAT_TITLE_COUNT', count($mchat_users)),
+			'users_total'		=> $this->lang->lang('MCHAT_ONLINE_USERS_TOTAL', count($mchat_users)),
 			'refresh_message'	=> $this->mchat_format_seconds($this->mchat_session_time()),
 		];
 
@@ -624,7 +638,7 @@ class functions
 		$order_legend = $this->settings->cfg('legend_sort_groupname') ? 'group_name' : 'group_legend';
 
 		$sql_array = [
-			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type',
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour',
 			'FROM'		=> [GROUPS_TABLE => 'g'],
 			'WHERE'		=> 'group_legend <> 0',
 			'ORDER_BY'	=> 'g.' . $order_legend . ' ASC',
@@ -651,7 +665,7 @@ class functions
 		foreach ($rows as $row)
 		{
 			$colour_text = $row['group_colour'] ? ' style="color:#' . $row['group_colour'] . '"' : '';
-			$group_name = $row['group_type'] == GROUP_SPECIAL ? $this->user->lang('G_' . $row['group_name']) : $row['group_name'];
+			$group_name = $this->group_helper->get_name($row['group_name']);
 			if ($row['group_name'] == 'BOTS' || $this->user->data['user_id'] != ANONYMOUS && !$this->auth->acl_get('u_viewprofile'))
 			{
 				$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';

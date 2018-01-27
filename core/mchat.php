@@ -17,6 +17,7 @@ use phpbb\controller\helper;
 use phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
 use phpbb\extension\manager;
+use phpbb\language\language;
 use phpbb\pagination;
 use phpbb\request\request_interface;
 use phpbb\template\template;
@@ -40,6 +41,9 @@ class mchat
 
 	/** @var user */
 	protected $user;
+
+	/** @var language */
+	protected $lang;
 
 	/** @var auth */
 	protected $auth;
@@ -82,6 +86,7 @@ class mchat
 	 * @param helper				$helper
 	 * @param template				$template
 	 * @param user					$user
+	 * @param language				$lang
 	 * @param auth					$auth
 	 * @param pagination			$pagination
 	 * @param request_interface		$request
@@ -96,6 +101,7 @@ class mchat
 		helper $helper,
 		template $template,
 		user $user,
+		language $lang,
 		auth $auth,
 		pagination $pagination,
 		request_interface $request,
@@ -110,6 +116,7 @@ class mchat
 		$this->helper				= $helper;
 		$this->template				= $template;
 		$this->user					= $user;
+		$this->lang					= $lang;
 		$this->auth					= $auth;
 		$this->pagination			= $pagination;
 		$this->request				= $request;
@@ -141,7 +148,7 @@ class mchat
 			return;
 		}
 
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->lang->add_lang('mchat', 'dmzx/mchat');
 
 		$this->assign_bbcodes_smilies();
 
@@ -165,7 +172,7 @@ class mchat
 			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->lang->add_lang('mchat', 'dmzx/mchat');
 
 		if (!$this->settings->cfg('mchat_custom_page'))
 		{
@@ -182,11 +189,11 @@ class mchat
 
 		// Add to navlinks
 		$this->template->assign_block_vars('navlinks', [
-			'FORUM_NAME'	=> $this->user->lang('MCHAT_TITLE'),
+			'FORUM_NAME'	=> $this->lang->lang('MCHAT_TITLE'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_mchat_page_custom_controller'),
 		]);
 
-		return $this->helper->render('mchat_body.html', $this->user->lang('MCHAT_TITLE'));
+		return $this->helper->render('mchat_body.html', $this->lang->lang('MCHAT_TITLE'));
 	}
 
 	/**
@@ -196,7 +203,7 @@ class mchat
 	 */
 	public function page_archive()
 	{
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->lang->add_lang('mchat', 'dmzx/mchat');
 
 		if (!$this->auth->acl_get('u_mchat_view') || !$this->auth->acl_get('u_mchat_archive'))
 		{
@@ -213,16 +220,16 @@ class mchat
 		// Add to navlinks
 		$this->template->assign_block_vars_array('navlinks', [
 			[
-				'FORUM_NAME'	=> $this->user->lang('MCHAT_TITLE'),
+				'FORUM_NAME'	=> $this->lang->lang('MCHAT_TITLE'),
 				'U_VIEW_FORUM'	=> $this->helper->route('dmzx_mchat_page_custom_controller'),
 			],
 			[
-				'FORUM_NAME'	=> $this->user->lang('MCHAT_ARCHIVE'),
+				'FORUM_NAME'	=> $this->lang->lang('MCHAT_ARCHIVE'),
 				'U_VIEW_FORUM'	=> $this->helper->route('dmzx_mchat_page_archive_controller'),
 			],
 		]);
 
-		return $this->helper->render('mchat_body.html', $this->user->lang('MCHAT_ARCHIVE_PAGE'));
+		return $this->helper->render('mchat_body.html', $this->lang->lang('MCHAT_ARCHIVE_PAGE'));
 	}
 
 	/**
@@ -243,13 +250,13 @@ class mchat
 			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->lang->add_lang('mchat', 'dmzx/mchat');
 
 		$this->settings->include_functions('user', 'user_ipwhois');
 
 		$this->template->assign_var('WHOIS', user_ipwhois($ip));
 
-		return $this->helper->render('viewonline_whois.html', $this->user->lang('WHO_IS_ONLINE'));
+		return $this->helper->render('viewonline_whois.html', $this->lang->lang('WHO_IS_ONLINE'));
 	}
 
 	/**
@@ -269,23 +276,22 @@ class mchat
 			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->lang->add_lang('mchat', 'dmzx/mchat');
 
-		$lang_rules = $this->user->lang('MCHAT_RULES_MESSAGE');
+		// If the rules are defined in the language file use them, else just use the entry in the database
+		$mchat_rules = $this->lang->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules');
 
-		if (!$lang_rules && !$this->settings->cfg('mchat_rules'))
+		if (!$mchat_rules)
 		{
 			throw new http_exception(404, 'MCHAT_NO_RULES');
 		}
 
-		// If the rules are defined in the language file use them, else just use the entry in the database
-		$mchat_rules = $lang_rules ?: $this->settings->cfg('mchat_rules');
 		$mchat_rules = htmlspecialchars_decode($mchat_rules);
 		$mchat_rules = str_replace("\n", '<br>', $mchat_rules);
 
 		$this->template->assign_var('MCHAT_RULES', $mchat_rules);
 
-		return $this->helper->render('mchat_rules.html', $this->user->lang('MCHAT_RULES'));
+		return $this->helper->render('mchat_rules.html', $this->lang->lang('MCHAT_RULES'));
 	}
 
 	/**
@@ -307,7 +313,7 @@ class mchat
 			define('PHPBB_USE_BOARD_URL_PATH', true);
 		}
 
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat');
+		$this->lang->add_lang('mchat', 'dmzx/mchat');
 	}
 
 	/**
@@ -732,8 +738,8 @@ class mchat
 		$template_data = [
 			'MCHAT_NAVBAR_LINK'	=> $navbar_link,
 			'MCHAT_CUSTOM_PAGE'	=> $custom_page,
-			'MCHAT_TITLE'		=> $this->user->lang('MCHAT_TITLE'),
-			'MCHAT_TITLE_HINT'	=> $this->user->lang('MCHAT_TITLE'),
+			'MCHAT_TITLE'		=> $this->lang->lang('MCHAT_TITLE'),
+			'MCHAT_TITLE_HINT'	=> $this->lang->lang('MCHAT_TITLE'),
 			'U_MCHAT'			=> $this->helper->route('dmzx_mchat_page_custom_controller'),
 		];
 
@@ -767,11 +773,10 @@ class mchat
 		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_before', compact($vars)));
 
 		// Add lang file
-		$this->user->add_lang('posting');
+		$this->lang->add_lang('posting');
 
 		// If the static message is defined in the language file use it, else the entry in the database is used
-		$lang_static_message = $this->user->lang('MCHAT_STATIC_MESSAGE');
-		$static_message = $lang_static_message ?: $this->settings->cfg('mchat_static_message');
+		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') || $this->settings->cfg('mchat_static_message');
 		$whois_refresh = $this->settings->cfg('mchat_whois_index') || ($this->settings->cfg('mchat_custom_page') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_navbar_link_count'));
 
 		$this->template->assign_vars([
@@ -793,8 +798,8 @@ class mchat
 			'MCHAT_WHOIS_REFRESH'			=> $whois_refresh ? $this->settings->cfg('mchat_whois_refresh') * 1000 : 0,
 			'MCHAT_REFRESH_JS'				=> $this->settings->cfg('mchat_refresh') * 1000,
 			'MCHAT_ARCHIVE'					=> $this->auth->acl_get('u_mchat_archive'),
-			'MCHAT_RULES'					=> $this->user->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules'),
-			'MCHAT_SESSION_TIMELEFT'		=> $this->user->lang('MCHAT_SESSION_ENDS', gmdate($this->settings->cfg('mchat_timeout') >= 3600 ? 'H:i:s' : 'i:s', $this->settings->cfg('mchat_timeout'))),
+			'MCHAT_RULES'					=> $this->lang->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules'),
+			'MCHAT_SESSION_TIMELEFT'		=> $this->lang->lang('MCHAT_SESSION_ENDS', gmdate($this->settings->cfg('mchat_timeout') >= 3600 ? 'H:i:s' : 'i:s', $this->settings->cfg('mchat_timeout'))),
 			'MCHAT_LOG_ID'					=> $this->functions->get_latest_log_id(),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'MCHAT_MAX_MESSAGE_LENGTH'		=> $this->settings->cfg('mchat_max_message_lngth'),
@@ -860,14 +865,14 @@ class mchat
 			extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_pagination_before', compact($vars)));
 
 			$this->pagination->generate_template_pagination($archive_url, 'pagination', 'start', $total_messages, $limit, $start);
-			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', $this->user->lang('MCHAT_TOTALMESSAGES', $total_messages));
+			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', $this->lang->lang('MCHAT_TOTALMESSAGES', $total_messages));
 		}
 
 		// Render legend
 		if ($page !== 'index')
 		{
 			$legend = $this->functions->mchat_legend();
-			$this->template->assign_var('LEGEND', implode($this->user->lang('COMMA_SEPARATOR'), $legend));
+			$this->template->assign_var('LEGEND', implode($this->lang->lang('COMMA_SEPARATOR'), $legend));
 		}
 
 		// Make mChat collapsible
@@ -1042,7 +1047,7 @@ class mchat
 
 		foreach ($rows as $row)
 		{
-			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST'));
+			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->lang->lang('GUEST'));
 
 			// Fix profile link root path by replacing relative paths with absolute board URL
 			if ($this->request->is_ajax())
@@ -1052,7 +1057,7 @@ class mchat
 
 			if (in_array($row['user_id'], $this->foes))
 			{
-				$row['message'] = $this->user->lang('MCHAT_FOE', $username_full);
+				$row['message'] = $this->lang->lang('MCHAT_FOE', $username_full);
 			}
 
 			$message_age = time() - $row['message_time'];
@@ -1083,13 +1088,13 @@ class mchat
 				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
 				'MCHAT_USERNAME_FULL'		=> $username_full,
-				'MCHAT_USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
-				'MCHAT_USERNAME_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->user->lang('GUEST')),
-				'MCHAT_WHOIS_USER'			=> $this->user->lang('MCHAT_WHOIS_USER', $row['user_ip']),
+				'MCHAT_USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->lang->lang('GUEST')),
+				'MCHAT_USERNAME_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->lang->lang('GUEST')),
+				'MCHAT_WHOIS_USER'			=> $this->lang->lang('MCHAT_WHOIS_USER', $row['user_ip']),
 				'MCHAT_U_IP'				=> $this->helper->route('dmzx_mchat_page_whois_controller', ['ip' => $row['user_ip']]),
 				'MCHAT_U_PERMISSIONS'		=> append_sid($this->settings->url('adm/index', true), ['i' => 'permissions', 'mode' => 'setting_user_global', 'user_id[0]' => $row['user_id']], true, $this->user->session_id),
 				'MCHAT_MESSAGE'				=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
-				'MCHAT_TIME'				=> $minutes_ago === -1 ? $datetime : $this->user->lang('MCHAT_MINUTES_AGO', $minutes_ago),
+				'MCHAT_TIME'				=> $minutes_ago === -1 ? $datetime : $this->lang->lang('MCHAT_MINUTES_AGO', $minutes_ago),
 				'MCHAT_DATETIME'			=> $absolute_datetime,
 				'MCHAT_MINUTES_AGO'			=> $minutes_ago,
 				'MCHAT_RELATIVE_UPDATE'		=> 60 - $message_age % 60,

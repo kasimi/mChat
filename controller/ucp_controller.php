@@ -15,6 +15,7 @@ use dmzx\mchat\core\settings;
 use phpbb\auth\auth;
 use phpbb\db\driver\driver_interface as db_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\user;
@@ -26,6 +27,9 @@ class ucp_controller
 
 	/** @var user */
 	protected $user;
+
+	/** @var language */
+	protected $lang;
 
 	/** @var auth */
 	protected $auth;
@@ -47,6 +51,7 @@ class ucp_controller
 	 *
 	 * @param template				$template
 	 * @param user					$user
+	 * @param language				$lang
 	 * @param auth					$auth
 	 * @param db_interface			$db
 	 * @param request_interface		$request
@@ -56,6 +61,7 @@ class ucp_controller
 	public function __construct(
 		template $template,
 		user $user,
+		language $lang,
 		auth $auth,
 		db_interface $db,
 		request_interface $request,
@@ -65,6 +71,7 @@ class ucp_controller
 	{
 		$this->template		= $template;
 		$this->user			= $user;
+		$this->lang			= $lang;
 		$this->auth			= $auth;
 		$this->db			= $db;
 		$this->request		= $request;
@@ -133,12 +140,12 @@ class ucp_controller
 				$this->db->sql_query($sql);
 
 				meta_refresh(3, $u_action);
-				$message = $this->user->lang('PROFILE_UPDATED') . '<br><br>' . $this->user->lang('RETURN_UCP', '<a href="' . $u_action . '">', '</a>');
+				$message = $this->lang->lang('PROFILE_UPDATED') . '<br><br>' . $this->lang->lang('RETURN_UCP', '<a href="' . $u_action . '">', '</a>');
 				trigger_error($message);
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = array_map([$this->user, 'lang'], $error);
+			$error = array_map([$this->lang, 'lang'], $error);
 		}
 
 		$selected_date = $this->settings->cfg('mchat_date');

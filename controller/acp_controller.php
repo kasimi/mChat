@@ -16,6 +16,7 @@ use dmzx\mchat\core\settings;
 use phpbb\cache\driver\driver_interface as cache_interface;
 use phpbb\db\driver\driver_interface as db_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\request\request_interface;
 use phpbb\template\template;
@@ -34,6 +35,9 @@ class acp_controller
 
 	/** @var user */
 	protected $user;
+
+	/** @var language */
+	protected $lang;
 
 	/** @var db_interface */
 	protected $db;
@@ -63,6 +67,7 @@ class acp_controller
 	 * @param template				$template
 	 * @param log_interface			$log
 	 * @param user					$user
+	 * @param language				$lang
 	 * @param db_interface			$db
 	 * @param cache_interface		$cache
 	 * @param request_interface		$request
@@ -76,6 +81,7 @@ class acp_controller
 		template $template,
 		log_interface $log,
 		user $user,
+		language $lang,
 		db_interface $db,
 		cache_interface $cache,
 		request_interface $request,
@@ -89,6 +95,7 @@ class acp_controller
 		$this->template			= $template;
 		$this->log				= $log;
 		$this->user				= $user;
+		$this->lang				= $lang;
 		$this->db				= $db;
 		$this->cache			= $cache;
 		$this->request			= $request;
@@ -174,11 +181,11 @@ class acp_controller
 				// Add an entry into the log table
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, [$this->user->data['username']]);
 
-				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
+				trigger_error($this->lang->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = array_map([$this->user, 'lang'], $error);
+			$error = array_map([$this->lang, 'lang'], $error);
 		}
 
 		if (!$error)
@@ -189,12 +196,12 @@ class acp_controller
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_log_table);
 				$this->cache->destroy('sql', $this->mchat_log_table);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, [$this->user->data['username']]);
-				trigger_error($this->user->lang('MCHAT_PURGED') . adm_back_link($u_action));
+				trigger_error($this->lang->lang('MCHAT_PURGED') . adm_back_link($u_action));
 			}
 			else if ($is_founder && $this->request->is_set_post('mchat_prune_now') && $this->request->variable('mchat_prune_now_confirm', false) && check_form_key('acp_mchat'))
 			{
 				$num_pruned_messages = count($this->functions->mchat_prune());
-				trigger_error($this->user->lang('MCHAT_PRUNED', $num_pruned_messages) . adm_back_link($u_action));
+				trigger_error($this->lang->lang('MCHAT_PRUNED', $num_pruned_messages) . adm_back_link($u_action));
 			}
 		}
 
@@ -203,8 +210,8 @@ class acp_controller
 			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
 			'MCHAT_FOUNDER'							=> $is_founder,
 			'S_MCHAT_PRUNE_MODE_OPTIONS'			=> $this->get_prune_mode_options($this->settings->cfg('mchat_prune_mode')),
-			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->user->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'bbcodes'], true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->user->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'board', 'mode' => 'load'], true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
+			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->lang->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'bbcodes'], true, $this->user->session_id) . '">', '</a>'),
+			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->lang->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'board', 'mode' => 'load'], true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
 			'U_ACTION'								=> $u_action,
 		];
 
@@ -307,11 +314,11 @@ class acp_controller
 				// Add an entry into the log table
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_CONFIG_UPDATE', false, [$this->user->data['username']]);
 
-				trigger_error($this->user->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
+				trigger_error($this->lang->lang('MCHAT_CONFIG_SAVED') . adm_back_link($u_action));
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = array_map([$this->user, 'lang'], $error);
+			$error = array_map([$this->lang, 'lang'], $error);
 		}
 
 		// Force global date format for $selected_date value, not user-specific
@@ -363,7 +370,7 @@ class acp_controller
 		foreach ($this->settings->prune_modes as $i => $prune_mode)
 		{
 			$prune_mode_options .= '<option value="' . $i . '"' . (($i == $selected) ? ' selected="selected"' : '') . '>';
-			$prune_mode_options .= $this->user->lang('MCHAT_ACP_' . strtoupper($prune_mode));
+			$prune_mode_options .= $this->lang->lang('MCHAT_ACP_' . strtoupper($prune_mode));
 			$prune_mode_options .= '</option>';
 		}
 

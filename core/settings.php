@@ -15,12 +15,16 @@ use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\config\db_text;
 use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
 use phpbb\user;
 
 class settings
 {
 	/** @var user */
 	protected $user;
+
+	/** @var language */
+	protected $lang;
 
 	/** @var config */
 	protected $config;
@@ -107,6 +111,7 @@ class settings
 	 * Constructor
 	 *
 	 * @param user					$user
+	 * @param language				$lang
 	 * @param config				$config
 	 * @param db_text				$config_text
 	 * @param auth					$auth
@@ -116,6 +121,7 @@ class settings
 	 */
 	public function __construct(
 		user $user,
+		language $lang,
 		config $config,
 		db_text $config_text,
 		auth $auth,
@@ -125,6 +131,7 @@ class settings
 	)
 	{
 		$this->user			= $user;
+		$this->lang			= $lang;
 		$this->config		= $config;
 		$this->config_text	= $config_text;
 		$this->auth			= $auth;
@@ -394,23 +401,24 @@ class settings
 	public function get_date_template_data($selected)
 	{
 		$dateformat_options = '';
+		$dateformats = $this->lang->lang_raw('dateformats');
 
-		foreach ($this->user->lang['dateformats'] as $format => $null)
+		foreach (array_keys($dateformats) as $format)
 		{
 			$dateformat_options .= '<option value="' . $format . '"' . (($format == $selected) ? ' selected="selected"' : '') . '>';
-			$dateformat_options .= $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->user->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '');
+			$dateformat_options .= $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->lang->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '');
 			$dateformat_options .= '</option>';
 		}
 
 		$s_custom = false;
 
 		$dateformat_options .= '<option value="custom"';
-		if (!isset($this->user->lang['dateformats'][$selected]))
+		if (!isset($dateformats[$selected]))
 		{
 			$dateformat_options .= ' selected="selected"';
 			$s_custom = true;
 		}
-		$dateformat_options .= '>' . $this->user->lang('MCHAT_CUSTOM_DATEFORMAT') . '</option>';
+		$dateformat_options .= '>' . $this->lang->lang('MCHAT_CUSTOM_DATEFORMAT') . '</option>';
 
 		$ucp_settings = $this->ucp_settings();
 
@@ -432,11 +440,11 @@ class settings
 		{
 			if ($this->cfg('mchat_posts_' . $notification))
 			{
-				$enabled_notifications_lang[] = $this->user->lang('MCHAT_POSTS_' . strtoupper($notification));
+				$enabled_notifications_lang[] = $this->lang->lang('MCHAT_POSTS_' . strtoupper($notification));
 			}
 		}
 
-		return implode($this->user->lang('COMMA_SEPARATOR'), $enabled_notifications_lang);
+		return implode($this->lang->lang('COMMA_SEPARATOR'), $enabled_notifications_lang);
 	}
 
 	/**

@@ -14,8 +14,8 @@ namespace dmzx\mchat\event;
 use dmzx\mchat\core\mchat;
 use phpbb\controller\helper;
 use phpbb\event\data;
+use phpbb\language\language;
 use phpbb\request\request_interface;
-use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class main_listener implements EventSubscriberInterface
@@ -26,8 +26,8 @@ class main_listener implements EventSubscriberInterface
 	/** @var helper */
 	protected $helper;
 
-	/** @var user */
-	protected $user;
+	/** @var language */
+	protected $lang;
 
 	/** @var request_interface */
 	protected $request;
@@ -40,21 +40,21 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param mchat				$mchat
 	 * @param helper			$helper
-	 * @param user				$user
+	 * @param language			$lang
 	 * @param request_interface	$request
 	 * @param string			$php_ext
 	 */
 	public function __construct(
 		mchat $mchat,
 		helper $helper,
-		user $user,
+		language $lang,
 		request_interface $request,
 		$php_ext
 	)
 	{
 		$this->mchat	= $mchat;
 		$this->helper	= $helper;
-		$this->user		= $user;
+		$this->lang		= $lang;
 		$this->request	= $request;
 		$this->php_ext	= $php_ext;
 	}
@@ -85,7 +85,7 @@ class main_listener implements EventSubscriberInterface
 	{
 		if (strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/mchat') === 0)
 		{
-			$event['location'] = $this->user->lang('MCHAT_TITLE');
+			$event['location'] = $this->lang->lang('MCHAT_TITLE');
 			$event['location_url'] = $this->helper->route('dmzx_mchat_page_custom_controller');
 		}
 	}

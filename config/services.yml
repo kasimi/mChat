@@ -9,6 +9,7 @@ services:
             - '@template'
             - '@log'
             - '@user'
+            - '@language'
             - '@dbal.conn'
             - '@cache.driver'
             - '@request'
@@ -21,6 +22,7 @@ services:
         arguments:
             - '@template'
             - '@user'
+            - '@language'
             - '@auth'
             - '@dbal.conn'
             - '@request'
@@ -34,6 +36,7 @@ services:
             - '@controller.helper'
             - '@template'
             - '@user'
+            - '@language'
             - '@auth'
             - '@pagination'
             - '@request'
@@ -46,11 +49,13 @@ services:
         arguments:
             - '@dmzx.mchat.settings'
             - '@user'
+            - '@language'
             - '@auth'
             - '@log'
             - '@dbal.conn'
             - '@cache.driver'
             - '@dispatcher'
+            - '@group_helper'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_log%'
             - '%dmzx.mchat.table.mchat_sessions%'
@@ -58,6 +63,7 @@ services:
         class: dmzx\mchat\core\settings
         arguments:
             - '@user'
+            - '@language'
             - '@config'
             - '@config_text'
             - '@auth'
@@ -69,7 +75,7 @@ services:
         arguments:
             - '@template'
             - '@request'
-            - '@user'
+            - '@language'
             - '@dmzx.mchat.settings'
             - '@dmzx.mchat.functions'
         tags:
@@ -79,7 +85,7 @@ services:
         arguments:
             - '@dmzx.mchat.core'
             - '@controller.helper'
-            - '@user'
+            - '@language'
             - '@request'
             - '%core.php_ext%'
         tags:

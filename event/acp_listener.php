@@ -15,9 +15,9 @@ use dmzx\mchat\core\functions;
 use dmzx\mchat\core\settings;
 use phpbb\auth\auth;
 use phpbb\event\data;
+use phpbb\language\language;
 use phpbb\request\request_interface;
 use phpbb\template\template;
-use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class acp_listener implements EventSubscriberInterface
@@ -28,8 +28,8 @@ class acp_listener implements EventSubscriberInterface
 	/** @var request_interface */
 	protected $request;
 
-	/** @var user */
-	protected $user;
+	/** @var language */
+	protected $lang;
 
 	/** @var settings */
 	protected $settings;
@@ -42,21 +42,21 @@ class acp_listener implements EventSubscriberInterface
 	*
 	* @param template			$template
 	* @param request_interface	$request
-	* @param user				$user
+	* @param language			$lang
 	* @param settings			$settings
 	* @param functions			$functions
 	*/
 	public function __construct(
 		template $template,
 		request_interface $request,
-		user $user,
+		language $lang,
 		settings $settings,
 		functions $functions
 	)
 	{
 		$this->template		= $template;
 		$this->request		= $request;
-		$this->user			= $user;
+		$this->lang			= $lang;
 		$this->settings		= $settings;
 		$this->functions	= $functions;
 	}
@@ -170,7 +170,7 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	public function acp_users_prefs_modify_template_data(data $event)
 	{
-		$this->user->add_lang_ext('dmzx/mchat', ['mchat_acp', 'mchat_ucp']);
+		$this->lang->add_lang(['mchat_acp', 'mchat_ucp'], 'dmzx/mchat');
 
 		$user_id = (int) $event['user_row']['user_id'];
 
@@ -200,11 +200,11 @@ class acp_listener implements EventSubscriberInterface
 	 */
 	public function acp_users_overview_before()
 	{
-		$this->user->add_lang_ext('dmzx/mchat', 'mchat_acp');
+		$this->lang->add_lang('mchat_acp', 'dmzx/mchat');
 
 		$this->template->assign_vars([
-			'L_RETAIN_POSTS'	=> $this->user->lang('MCHAT_RETAIN_MESSAGES', $this->user->lang('RETAIN_POSTS')),
-			'L_DELETE_POSTS'	=> $this->user->lang('MCHAT_DELETE_MESSAGES', $this->user->lang('DELETE_POSTS')),
+			'L_RETAIN_POSTS'	=> $this->lang->lang('MCHAT_RETAIN_MESSAGES', $this->lang->lang('RETAIN_POSTS')),
+			'L_DELETE_POSTS'	=> $this->lang->lang('MCHAT_DELETE_MESSAGES', $this->lang->lang('DELETE_POSTS')),
 		]);
 	}
 
