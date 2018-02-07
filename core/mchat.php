@@ -22,6 +22,7 @@ use phpbb\pagination;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\textformatter\parser_interface;
+use phpbb\textformatter\utils_interface;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -61,7 +62,7 @@ class mchat
 	protected $extension_manager;
 
 	/** @var parser_interface */
-	protected $parser;
+	protected $textformatter_parser;
 
 	/** @var cc_operator */
 	protected $cc_operator;
@@ -92,7 +93,7 @@ class mchat
 	 * @param request_interface		$request
 	 * @param dispatcher_interface	$dispatcher
 	 * @param manager				$extension_manager
-	 * @param parser_interface		$parser
+	 * @param parser_interface		$textformatter_parser
 	 * @param cc_operator			$cc_operator
 	 */
 	public function __construct(
@@ -107,7 +108,7 @@ class mchat
 		request_interface $request,
 		dispatcher_interface $dispatcher,
 		manager $extension_manager,
-		parser_interface $parser,
+		parser_interface $textformatter_parser,
 		cc_operator $cc_operator = null
 	)
 	{
@@ -122,7 +123,7 @@ class mchat
 		$this->request				= $request;
 		$this->dispatcher			= $dispatcher;
 		$this->extension_manager	= $extension_manager;
-		$this->parser				= $parser;
+		$this->textformatter_parser	= $textformatter_parser;
 		$this->cc_operator			= $cc_operator;
 	}
 
@@ -1038,7 +1039,7 @@ class mchat
 
 		$board_url = generate_board_url() . '/';
 
-		$this->process_notifications($rows);
+		$rows = $this->process_notifications($rows);
 
 		foreach ($rows as $row)
 		{
@@ -1158,13 +1159,13 @@ class mchat
 	 * Checks the post rows for notifications and converts their language keys
 	 *
 	 * @param array $rows The rows to modify
+	 * @return array
 	 */
-	protected function process_notifications(&$rows)
+	protected function process_notifications($rows)
 	{
-		$notification_post_ids = [];
-
-		// All language keys of valid notifications. We need to check for them here because
-		// notifications in < 2.0.0-RC6 are plain text and don't need to be processed here.
+		// All language keys of valid notifications for which we need to fetch post information
+		// from the database. We need to check for them here because notifications in < 2.0.0-RC6
+		// are plain text and don't need to be processed.
 		$notification_lang = [
 			'MCHAT_NEW_POST',
 			'MCHAT_NEW_QUOTE',
@@ -1173,46 +1174,48 @@ class mchat
 			'MCHAT_NEW_LOGIN',
 		];
 
+		$notifications = array_combine(array_map([$this->textformatter_parser, 'parse'], $notification_lang), $notification_lang);
+
+		$notification_post_ids = [];
+
 		foreach ($rows as $i => $row)
 		{
 			// If post_id is 0 it's not a notification.
-			if ($row['post_id'] && in_array($row['message'], $notification_lang))
+			if ($row['post_id'] && isset($notifications[$row['message']]))
 			{
+				// If forum_id is 0 it's a login notification.
 				if ($row['forum_id'])
 				{
 					$notification_post_ids[] = $row['post_id'];
 				}
 				else
 				{
-					$rows[$i] = $this->process_notification($row);
+					$rows[$i] = $this->process_notification($row, $notifications[$row['message']]);
 				}
 			}
 		}
 
 		$notification_post_data = $this->functions->mchat_get_post_data($notification_post_ids);
 
-		if ($notification_post_data)
+		foreach ($notification_post_ids as $i => $post_id)
 		{
-			foreach ($rows as $i => $row)
-			{
-				if (in_array($row['post_id'], $notification_post_ids))
-				{
-					$rows[$i] = $this->process_notification($row, $notification_post_data[$row['post_id']]);
-				}
-			}
+			$rows[$i] = $this->process_notification($rows[$i], $notifications[$rows[$i]['message']], $notification_post_data[$post_id]);
 		}
+
+		return $rows;
 	}
 
 	/**
 	 * Converts the message field of the post row so that it can be passed to generate_text_for_display()
 	 *
 	 * @param array $row
+	 * @param string $lang_key
 	 * @param array $post_data
 	 * @return array
 	 */
-	protected function process_notification($row, $post_data = null)
+	protected function process_notification($row, $lang_key, $post_data = null)
 	{
-		$args = [$row['message']];
+		$lang_args = [];
 
 		// If forum_id is 0 it's a login notification.
 		// If forum_id is not 0 it's a post notification, we need to fetch forum name and post subject.
@@ -1233,12 +1236,12 @@ class mchat
 
 			if ($post_data)
 			{
-				$args[] = '[url=' . $viewtopic_url . ']' . $post_data['post_subject'] . '[/url]';
-				$args[] = '[url=' . $viewforum_url . ']' . $post_data['forum_name'] . '[/url]';
+				$lang_args[] = '[url=' . $viewtopic_url . ']' . $post_data['post_subject'] . '[/url]';
+				$lang_args[] = '[url=' . $viewforum_url . ']' . $post_data['forum_name'] . '[/url]';
 			}
 			else
 			{
-				$args[0] .= '_DELETED';
+				$lang_key .= '_DELETED';
 			}
 		}
 		else if ($row['post_id'] == functions::LOGIN_HIDDEN)
@@ -1246,7 +1249,7 @@ class mchat
 			$row['username'] = '<em>' . $row['username'] . '</em>';
 		}
 
-		$row['message'] = call_user_func_array([$this->user, 'lang'], $args);
+		$row['message'] = $this->lang->lang_array($lang_key, $lang_args);
 
 		// Quick'n'dirty check if BBCodes are in the message
 		if (strpos($row['message'], '[') !== false)
@@ -1418,8 +1421,7 @@ class mchat
 
 		if ($row['post_id'])
 		{
-			$rows = [$row];
-			$this->process_notifications($rows);
+			$rows = $this->process_notifications([$row]);
 			$row = reset($rows);
 		}
 
@@ -1532,7 +1534,7 @@ class mchat
 
 			foreach ($disallowed_bbcodes as $bbcode)
 			{
-				$this->parser->disable_bbcode($bbcode);
+				$this->textformatter_parser->disable_bbcode($bbcode);
 			}
 		}
 

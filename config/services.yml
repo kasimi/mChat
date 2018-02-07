@@ -2,6 +2,7 @@ imports:
     - { resource: tables.yml }
 
 services:
+
     dmzx.mchat.acp.controller:
         class: dmzx\mchat\controller\acp_controller
         arguments:
@@ -17,6 +18,7 @@ services:
             - '@dmzx.mchat.settings'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_log%'
+
     dmzx.mchat.ucp.controller:
         class: dmzx\mchat\controller\ucp_controller
         arguments:
@@ -28,6 +30,7 @@ services:
             - '@request'
             - '@dmzx.mchat.settings'
             - '@dispatcher'
+
     dmzx.mchat.core:
         class: dmzx\mchat\core\mchat
         arguments:
@@ -42,8 +45,9 @@ services:
             - '@request'
             - '@dispatcher'
             - '@ext.manager'
-            - '@text_formatter.s9e.parser'
+            - '@text_formatter.parser'
             - '@?phpbb.collapsiblecategories.operator'
+
     dmzx.mchat.functions:
         class: dmzx\mchat\core\functions
         arguments:
@@ -56,9 +60,11 @@ services:
             - '@cache.driver'
             - '@dispatcher'
             - '@group_helper'
+            - '@text_formatter.parser'
             - '%dmzx.mchat.table.mchat%'
             - '%dmzx.mchat.table.mchat_log%'
             - '%dmzx.mchat.table.mchat_sessions%'
+
     dmzx.mchat.settings:
         class: dmzx\mchat\core\settings
         arguments:
@@ -70,6 +76,7 @@ services:
             - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
+
     dmzx.mchat.acp.listener:
         class: dmzx\mchat\event\acp_listener
         arguments:
@@ -80,6 +87,7 @@ services:
             - '@dmzx.mchat.functions'
         tags:
             - { name: event.listener }
+
     dmzx.mchat.main.listener:
         class: dmzx\mchat\event\main_listener
         arguments:
@@ -90,6 +98,7 @@ services:
             - '%core.php_ext%'
         tags:
             - { name: event.listener }
+
     dmzx.mchat.cron.task.mchat_prune:
         class: dmzx\mchat\cron\mchat_prune
         arguments:
@@ -97,5 +106,29 @@ services:
             - '@dmzx.mchat.settings'
         calls:
             - [set_name, [cron.task.mchat_prune]]
+        tags:
+            - { name: cron.task }
+
+    dmzx.mchat.text_reparser.mchat_messages:
+        class: dmzx\mchat\textreparser\plugins\mchat_messages
+        arguments:
+            - '@dbal.conn'
+            - '%dmzx.mchat.table.mchat%'
+        calls:
+            - [set_name, [dmzx.mchat.text_reparser.mchat_messages]]
+        tags:
+            - { name: text_reparser.plugin }
+
+    dmzx.mchat.text_reparser.reparser:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
+        calls:
+            - [set_name, [dmzx.mchat.text_reparser.reparser]]
+            - [set_reparser, [dmzx.mchat.text_reparser.mchat_messages]]
         tags:
             - { name: cron.task }

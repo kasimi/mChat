@@ -15,6 +15,7 @@ use phpbb\auth\auth;
 use phpbb\cache\driver\driver_interface as cache_interface;
 use phpbb\db\driver\driver_interface as db_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\textformatter\parser_interface;
 use phpbb\group\helper;
 use phpbb\language\language;
 use phpbb\log\log_interface;
@@ -49,6 +50,9 @@ class functions
 	/** @var helper */
 	protected $group_helper;
 
+	/** @var parser_interface */
+	protected $textformatter_parser;
+
 	/** @var string */
 	protected $mchat_table;
 
@@ -80,21 +84,22 @@ class functions
 	const LOGIN_HIDDEN	= 2;
 
 	/**
-	* Constructor
-	*
-	* @param settings				$settings
-	* @param user					$user
-	* @param language				$lang
-	* @param auth					$auth
-	* @param log_interface			$log
-	* @param db_interface			$db
-	* @param cache_interface		$cache
-	* @param dispatcher_interface	$dispatcher
-	* @param helper					$group_helper
-	* @param string					$mchat_table
-	* @param string					$mchat_log_table
-	* @param string					$mchat_sessions_table
-	*/
+	 * Constructor
+	 *
+	 * @param settings				$settings
+	 * @param user					$user
+	 * @param language				$lang
+	 * @param auth					$auth
+	 * @param log_interface			$log
+	 * @param db_interface			$db
+	 * @param cache_interface		$cache
+	 * @param dispatcher_interface	$dispatcher
+	 * @param helper				$group_helper
+	 * @param parser_interface		$textformatter_parser
+	 * @param string				$mchat_table
+	 * @param string				$mchat_log_table
+	 * @param string				$mchat_sessions_table
+	 */
 	function __construct(
 		settings $settings,
 		user $user,
@@ -105,6 +110,7 @@ class functions
 		cache_interface $cache,
 		dispatcher_interface $dispatcher,
 		helper $group_helper,
+		parser_interface $textformatter_parser,
 		$mchat_table,
 		$mchat_log_table,
 		$mchat_sessions_table
@@ -119,6 +125,7 @@ class functions
 		$this->cache				= $cache;
 		$this->dispatcher			= $dispatcher;
 		$this->group_helper			= $group_helper;
+		$this->textformatter_parser	= $textformatter_parser;
 		$this->mchat_table			= $mchat_table;
 		$this->mchat_log_table		= $mchat_log_table;
 		$this->mchat_sessions_table	= $mchat_sessions_table;
@@ -705,7 +712,7 @@ class functions
 	}
 
 	/**
-	 * Fetches post subjects and their forum names
+	 * Fetches post subjects and their forum names. If a post_id can't be found the value for the post_id is set to null.
 	 *
 	 * @param array $post_ids
 	 * @return array
@@ -798,7 +805,7 @@ class functions
 			'post_id'			=> (int) $post_id,
 			'user_id'			=> (int) $this->user->data['user_id'],
 			'user_ip'			=> $this->user->ip,
-			'message'			=> 'MCHAT_NEW_' . strtoupper($mode),
+			'message'			=> $this->textformatter_parser->parse('MCHAT_NEW_' . strtoupper($mode)),
 			'message_time'		=> time(),
 		];
 
