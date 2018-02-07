@@ -54,12 +54,6 @@ class acp_controller
 	/** @var settings */
 	protected $settings;
 
-	/** @var string */
-	protected $mchat_table;
-
-	/** @var string */
-	protected $mchat_log_table;
-
 	/**
 	 * Constructor
 	 *
@@ -73,8 +67,6 @@ class acp_controller
 	 * @param request_interface		$request
 	 * @param dispatcher_interface 	$dispatcher
 	 * @param settings				$settings
-	 * @param string				$mchat_table
-	 * @param string				$mchat_log_table
 	 */
 	public function __construct(
 		functions $functions,
@@ -86,9 +78,7 @@ class acp_controller
 		cache_interface $cache,
 		request_interface $request,
 		dispatcher_interface $dispatcher,
-		settings $settings,
-		$mchat_table,
-		$mchat_log_table
+		settings $settings
 	)
 	{
 		$this->functions		= $functions;
@@ -101,8 +91,6 @@ class acp_controller
 		$this->request			= $request;
 		$this->dispatcher		= $dispatcher;
 		$this->settings			= $settings;
-		$this->mchat_table		= $mchat_table;
-		$this->mchat_log_table	= $mchat_log_table;
 	}
 
 	/**
@@ -192,9 +180,9 @@ class acp_controller
 		{
 			if ($is_founder && $this->request->is_set_post('mchat_purge') && $this->request->variable('mchat_purge_confirm', false) && check_form_key('acp_mchat'))
 			{
-				$this->db->sql_query('DELETE FROM ' . $this->mchat_table);
-				$this->db->sql_query('DELETE FROM ' . $this->mchat_log_table);
-				$this->cache->destroy('sql', $this->mchat_log_table);
+				$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat());
+				$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat_log());
+				$this->cache->destroy('sql', $this->settings->get_table_mchat_log());
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, [$this->user->data['username']]);
 				trigger_error($this->lang->lang('MCHAT_PURGED') . adm_back_link($u_action));
 			}

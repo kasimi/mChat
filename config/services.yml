@@ -16,8 +16,6 @@ services:
             - '@request'
             - '@dispatcher'
             - '@dmzx.mchat.settings'
-            - '%dmzx.mchat.table.mchat%'
-            - '%dmzx.mchat.table.mchat_log%'
 
     dmzx.mchat.ucp.controller:
         class: dmzx\mchat\controller\ucp_controller
@@ -31,10 +29,22 @@ services:
             - '@dmzx.mchat.settings'
             - '@dispatcher'
 
+    dmzx.mchat.notifications:
+        class: dmzx\mchat\core\notifications
+        arguments:
+            - '@dmzx.mchat.settings'
+            - '@user'
+            - '@language'
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@text_formatter.parser'
+
     dmzx.mchat.core:
         class: dmzx\mchat\core\mchat
         arguments:
             - '@dmzx.mchat.functions'
+            - '@dmzx.mchat.notifications'
             - '@dmzx.mchat.settings'
             - '@controller.helper'
             - '@template'
@@ -52,6 +62,7 @@ services:
         class: dmzx\mchat\core\functions
         arguments:
             - '@dmzx.mchat.settings'
+            - '@dmzx.mchat.notifications'
             - '@user'
             - '@language'
             - '@auth'
@@ -61,9 +72,6 @@ services:
             - '@dispatcher'
             - '@group_helper'
             - '@text_formatter.parser'
-            - '%dmzx.mchat.table.mchat%'
-            - '%dmzx.mchat.table.mchat_log%'
-            - '%dmzx.mchat.table.mchat_sessions%'
 
     dmzx.mchat.settings:
         class: dmzx\mchat\core\settings
@@ -76,6 +84,9 @@ services:
             - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '%dmzx.mchat.table.mchat%'
+            - '%dmzx.mchat.table.mchat_log%'
+            - '%dmzx.mchat.table.mchat_sessions%'
 
     dmzx.mchat.acp.listener:
         class: dmzx\mchat\event\acp_listener
@@ -92,7 +103,9 @@ services:
         class: dmzx\mchat\event\main_listener
         arguments:
             - '@dmzx.mchat.core'
+            - '@dmzx.mchat.notifications'
             - '@controller.helper'
+            - '@user'
             - '@language'
             - '@request'
             - '%core.php_ext%'

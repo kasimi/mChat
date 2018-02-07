@@ -45,6 +45,15 @@ class settings
 	protected $php_ext;
 
 	/** @var string */
+	protected $mchat_table;
+
+	/** @var string */
+	protected $mchat_log_table;
+
+	/** @var string */
+	protected $mchat_sessions_table;
+
+	/** @var string */
 	protected $board_url;
 
 	/**
@@ -112,6 +121,9 @@ class settings
 	 * @param dispatcher_interface	$dispatcher
 	 * @param string				$root_path
 	 * @param string				$php_ext
+	 * @param string				$mchat_table
+	 * @param string				$mchat_log_table
+	 * @param string				$mchat_sessions_table
 	 */
 	public function __construct(
 		user $user,
@@ -121,17 +133,23 @@ class settings
 		auth $auth,
 		dispatcher_interface $dispatcher,
 		$root_path,
-		$php_ext
+		$php_ext,
+		$mchat_table,
+		$mchat_log_table,
+		$mchat_sessions_table
 	)
 	{
-		$this->user			= $user;
-		$this->lang			= $lang;
-		$this->config		= $config;
-		$this->config_text	= $config_text;
-		$this->auth			= $auth;
-		$this->dispatcher	= $dispatcher;
-		$this->root_path	= $root_path;
-		$this->php_ext		= $php_ext;
+		$this->user					= $user;
+		$this->lang					= $lang;
+		$this->config				= $config;
+		$this->config_text			= $config_text;
+		$this->auth					= $auth;
+		$this->dispatcher			= $dispatcher;
+		$this->root_path			= $root_path;
+		$this->php_ext				= $php_ext;
+		$this->mchat_table			= $mchat_table;
+		$this->mchat_log_table		= $mchat_log_table;
+		$this->mchat_sessions_table	= $mchat_sessions_table;
 	}
 
 	/**
@@ -383,6 +401,30 @@ class settings
 		{
 			$this->config->set($config, $value);
 		}
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_table_mchat()
+	{
+		return $this->mchat_table;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_table_mchat_log()
+	{
+		return $this->mchat_log_table;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_table_mchat_sessions()
+	{
+		return $this->mchat_sessions_table;
 	}
 
 	/**

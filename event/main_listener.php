@@ -12,10 +12,12 @@
 namespace dmzx\mchat\event;
 
 use dmzx\mchat\core\mchat;
+use dmzx\mchat\core\notifications;
 use phpbb\controller\helper;
 use phpbb\event\data;
 use phpbb\language\language;
 use phpbb\request\request_interface;
+use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class main_listener implements EventSubscriberInterface
@@ -23,8 +25,14 @@ class main_listener implements EventSubscriberInterface
 	/** @var mchat */
 	protected $mchat;
 
+	/** @var notifications */
+	protected $notifications;
+
 	/** @var helper */
 	protected $helper;
+
+	/** @var user */
+	protected $user;
 
 	/** @var language */
 	protected $lang;
@@ -39,24 +47,30 @@ class main_listener implements EventSubscriberInterface
 	 * Constructor
 	 *
 	 * @param mchat				$mchat
+	 * @param notifications		$notifications
 	 * @param helper			$helper
+	 * @param user				$user
 	 * @param language			$lang
 	 * @param request_interface	$request
 	 * @param string			$php_ext
 	 */
 	public function __construct(
 		mchat $mchat,
+		notifications $notifications,
 		helper $helper,
+		user $user,
 		language $lang,
 		request_interface $request,
 		$php_ext
 	)
 	{
-		$this->mchat	= $mchat;
-		$this->helper	= $helper;
-		$this->lang		= $lang;
-		$this->request	= $request;
-		$this->php_ext	= $php_ext;
+		$this->mchat			= $mchat;
+		$this->notifications	= $notifications;
+		$this->helper			= $helper;
+		$this->user				= $user;
+		$this->lang				= $lang;
+		$this->request			= $request;
+		$this->php_ext			= $php_ext;
 	}
 
 	/**
@@ -124,7 +138,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function insert_posting(data $event)
 	{
-		$this->mchat->insert_posting($event['mode'], $event['data']['forum_id'], $event['data']['post_id']);
+		$this->notifications->insert_post($event['mode'], $event['data']['forum_id'], $event['data']['post_id']);
 	}
 
 	/**
@@ -160,7 +174,8 @@ class main_listener implements EventSubscriberInterface
 	{
 		if (!$event['admin'])
 		{
-			$this->mchat->insert_posting('login');
+			$is_hidden = $this->request->is_set_post('viewonline') || !$this->user->data['user_allow_viewonline'];
+			$this->notifications->insert_login($is_hidden);
 		}
 	}
 

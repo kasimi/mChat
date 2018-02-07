@@ -22,7 +22,6 @@ use phpbb\pagination;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\textformatter\parser_interface;
-use phpbb\textformatter\utils_interface;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -30,6 +29,9 @@ class mchat
 {
 	/** @var functions */
 	protected $functions;
+
+	/** @var notifications */
+	protected $notifications;
 
 	/** @var settings */
 	protected $settings;
@@ -83,6 +85,7 @@ class mchat
 	 * Constructor
 	 *
 	 * @param functions				$functions
+	 * @param notifications			$notifications
 	 * @param settings				$settings
 	 * @param helper				$helper
 	 * @param template				$template
@@ -98,6 +101,7 @@ class mchat
 	 */
 	public function __construct(
 		functions $functions,
+		notifications $notifications,
 		settings $settings,
 		helper $helper,
 		template $template,
@@ -113,6 +117,7 @@ class mchat
 	)
 	{
 		$this->functions			= $functions;
+		$this->notifications		= $notifications;
 		$this->settings				= $settings;
 		$this->helper				= $helper;
 		$this->template				= $template;
@@ -412,8 +417,8 @@ class mchat
 			throw new http_exception(410, 'MCHAT_MESSAGE_DELETED');
 		}
 
-		// If post_id is not 0 it's a notification and notifications can't be edited
-		if ($author['post_id'] || !$this->auth_message('edit', $author['user_id'], $author['message_time']))
+		// Notifications can't be edited
+		if ($this->notifications->is_notification($author) || !$this->auth_message('edit', $author['user_id'], $author['message_time']))
 		{
 			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
@@ -912,7 +917,7 @@ class mchat
 	 */
 	protected function assign_authors()
 	{
-		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/mchat', $this->template);
+		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/mchat');
 		$meta = $md_manager->get_metadata();
 
 		$author_homepages = [];
@@ -1039,7 +1044,7 @@ class mchat
 
 		$board_url = generate_board_url() . '/';
 
-		$rows = $this->process_notifications($rows);
+		$rows = $this->notifications->process($rows);
 
 		foreach ($rows as $row)
 		{
@@ -1060,14 +1065,7 @@ class mchat
 			$minutes_ago = $this->get_minutes_ago($message_age);
 			$absolute_datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
 			// If relative time is selected, also display "today" / "yesterday", else display absolute time.
-			if ($this->settings->cfg('mchat_relative_time'))
-			{
-				$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), false);
-			}
-			else
-			{
-				$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), true);
-			}
+			$datetime = $this->user->format_date($row['message_time'], $this->settings->cfg('mchat_date'), !$this->settings->cfg('mchat_relative_time'));
 
 			$is_poster = $row['user_id'] != ANONYMOUS && $this->user->data['user_id'] == $row['user_id'];
 
@@ -1079,7 +1077,7 @@ class mchat
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
 				'U_VIEWPROFILE'				=> $row['user_id'] != ANONYMOUS ? append_sid($this->settings->url('memberlist', true), ['mode' => 'viewprofile', 'u' => $row['user_id']]) : '',
 				'MCHAT_IS_POSTER'			=> $is_poster,
-				'MCHAT_IS_NOTIFICATION'		=> (bool) $row['post_id'],
+				'MCHAT_IS_NOTIFICATION'		=> $this->notifications->is_notification($row),
 				'MCHAT_PM'					=> !$is_poster && $this->settings->cfg('allow_privmsg') && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')) ? append_sid($this->settings->url('ucp', true), ['i' => 'pm', 'mode' => 'compose', 'mchat_pm_quote_message' => $row['message_id'], 'u' => $row['user_id']]) : '',
 				'MCHAT_MESSAGE_EDIT'		=> $message_for_edit['text'],
 				'MCHAT_MESSAGE_ID'			=> $row['message_id'],
@@ -1103,7 +1101,6 @@ class mchat
 			 * @event dmzx.mchat.message_modify_template_data
 			 * @var array	template_data		The data that is about to be assigned to the template
 			 * @var string	username_full		The link to the user profile, e.g. <a href="...">Username</a>
-			 * @var bool	is_notification		Whether or not this message is a notification
 			 * @var array	row					The raw message data as fetched from the database
 			 * @var int		message_age			The number of seconds that have passed since the message was posted
 			 * @var int		minutes_ago			The number of minutes that have passed since the message was posted, or -1
@@ -1115,7 +1112,6 @@ class mchat
 			$vars = [
 				'template_data',
 				'username_full',
-				'is_notification',
 				'row',
 				'message_age',
 				'minutes_ago',
@@ -1153,111 +1149,6 @@ class mchat
 		}
 
 		return true;
-	}
-
-	/**
-	 * Checks the post rows for notifications and converts their language keys
-	 *
-	 * @param array $rows The rows to modify
-	 * @return array
-	 */
-	protected function process_notifications($rows)
-	{
-		// All language keys of valid notifications for which we need to fetch post information
-		// from the database. We need to check for them here because notifications in < 2.0.0-RC6
-		// are plain text and don't need to be processed.
-		$notification_lang = [
-			'MCHAT_NEW_POST',
-			'MCHAT_NEW_QUOTE',
-			'MCHAT_NEW_EDIT',
-			'MCHAT_NEW_REPLY',
-			'MCHAT_NEW_LOGIN',
-		];
-
-		$notifications = array_combine(array_map([$this->textformatter_parser, 'parse'], $notification_lang), $notification_lang);
-
-		$notification_post_ids = [];
-
-		foreach ($rows as $i => $row)
-		{
-			// If post_id is 0 it's not a notification.
-			if ($row['post_id'] && isset($notifications[$row['message']]))
-			{
-				// If forum_id is 0 it's a login notification.
-				if ($row['forum_id'])
-				{
-					$notification_post_ids[] = $row['post_id'];
-				}
-				else
-				{
-					$rows[$i] = $this->process_notification($row, $notifications[$row['message']]);
-				}
-			}
-		}
-
-		$notification_post_data = $this->functions->mchat_get_post_data($notification_post_ids);
-
-		foreach ($notification_post_ids as $i => $post_id)
-		{
-			$rows[$i] = $this->process_notification($rows[$i], $notifications[$rows[$i]['message']], $notification_post_data[$post_id]);
-		}
-
-		return $rows;
-	}
-
-	/**
-	 * Converts the message field of the post row so that it can be passed to generate_text_for_display()
-	 *
-	 * @param array $row
-	 * @param string $lang_key
-	 * @param array $post_data
-	 * @return array
-	 */
-	protected function process_notification($row, $lang_key, $post_data = null)
-	{
-		$lang_args = [];
-
-		// If forum_id is 0 it's a login notification.
-		// If forum_id is not 0 it's a post notification, we need to fetch forum name and post subject.
-		if ($row['forum_id'])
-		{
-			$viewtopic_url = append_sid($this->settings->url('viewtopic', true), [
-				'p' => $row['post_id'],
-				'#' => 'p' . $row['post_id'],
-			]);
-
-			// We prefer $post_data because it was fetched from the forums table just now.
-			// $row might contain outdated data if a post was moved to a new forum.
-			$forum_id = isset($post_data['forum_id']) ? $post_data['forum_id'] : $row['forum_id'];
-
-			$viewforum_url = append_sid($this->settings->url('viewforum', true), [
-				'f' => $forum_id,
-			]);
-
-			if ($post_data)
-			{
-				$lang_args[] = '[url=' . $viewtopic_url . ']' . $post_data['post_subject'] . '[/url]';
-				$lang_args[] = '[url=' . $viewforum_url . ']' . $post_data['forum_name'] . '[/url]';
-			}
-			else
-			{
-				$lang_key .= '_DELETED';
-			}
-		}
-		else if ($row['post_id'] == functions::LOGIN_HIDDEN)
-		{
-			$row['username'] = '<em>' . $row['username'] . '</em>';
-		}
-
-		$row['message'] = $this->lang->lang_array($lang_key, $lang_args);
-
-		// Quick'n'dirty check if BBCodes are in the message
-		if (strpos($row['message'], '[') !== false)
-		{
-			generate_text_for_storage($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'], true, true, true);
-		}
-
-		return $row;
 	}
 
 	/**
@@ -1387,19 +1278,6 @@ class mchat
 	}
 
 	/**
-	 * Inserts a message with posting information into the database
-	 *
-	 * @param string $mode One of post|quote|edit|reply|login
-	 * @param int $forum_id Can be 0 if mode is login.
-	 * @param int $post_id Can be 0 if mode is login.
-	 */
-	public function insert_posting($mode, $forum_id = 0, $post_id = 0)
-	{
-		$is_hidden_login = $this->request->is_set_post('viewonline') || !$this->user->data['user_allow_viewonline'];
-		$this->functions->mchat_insert_posting($mode, $forum_id, $post_id, $is_hidden_login);
-	}
-
-	/**
 	 * Fetches the message text of the given ID, quotes it using the current user name and assigns it to the template
 	 *
 	 * @param int $mchat_message_id
@@ -1421,7 +1299,7 @@ class mchat
 
 		if ($row['post_id'])
 		{
-			$rows = $this->process_notifications([$row]);
+			$rows = $this->notifications->process([$row]);
 			$row = reset($rows);
 		}
 
