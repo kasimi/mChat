@@ -273,8 +273,8 @@ class mchat
 
 		$this->lang->add_lang('mchat', 'dmzx/mchat');
 
-		// If the rules are defined in the language file use them, else just use the entry in the database
-		$mchat_rules = $this->lang->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules');
+		// If the rules are not empty in the language file, use them, else use the entry in the database
+		$mchat_rules = $this->lang->lang('MCHAT_RULES_MESSAGE') ?: $this->settings->cfg('mchat_rules');
 
 		if (!$mchat_rules)
 		{
@@ -770,8 +770,8 @@ class mchat
 		// Add lang file
 		$this->lang->add_lang('posting');
 
-		// If the static message is defined in the language file use it, else the entry in the database is used
-		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') || $this->settings->cfg('mchat_static_message');
+		// If the static message is not empty in the language file, use it, else ise the static message in the database
+		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') ?: $this->settings->cfg('mchat_static_message');
 		$whois_refresh = $this->settings->cfg('mchat_whois_index') || ($this->settings->cfg('mchat_custom_page') && $this->settings->cfg('mchat_navbar_link') && $this->settings->cfg('mchat_navbar_link_count'));
 
 		$this->template->assign_vars([
@@ -793,7 +793,7 @@ class mchat
 			'MCHAT_WHOIS_REFRESH'			=> $whois_refresh ? $this->settings->cfg('mchat_whois_refresh') * 1000 : 0,
 			'MCHAT_REFRESH_JS'				=> $this->settings->cfg('mchat_refresh') * 1000,
 			'MCHAT_ARCHIVE'					=> $this->auth->acl_get('u_mchat_archive'),
-			'MCHAT_RULES'					=> $this->lang->lang('MCHAT_RULES_MESSAGE') || $this->settings->cfg('mchat_rules'),
+			'MCHAT_RULES'					=> $this->lang->lang('MCHAT_RULES_MESSAGE') ?: $this->settings->cfg('mchat_rules'),
 			'MCHAT_SESSION_TIMELEFT'		=> $this->lang->lang('MCHAT_SESSION_ENDS', gmdate($this->settings->cfg('mchat_timeout') >= 3600 ? 'H:i:s' : 'i:s', $this->settings->cfg('mchat_timeout'))),
 			'MCHAT_LOG_ID'					=> $this->functions->get_latest_log_id(),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
@@ -1449,7 +1449,7 @@ class mchat
 			$this->template->assign_vars([
 				'MCHAT_STATS_INDEX'		=> $this->settings->cfg('mchat_stats_index'),
 				'MCHAT_USERS_TOTAL'		=> $active_users['users_total'],
-				'MCHAT_USERS_LIST'		=> $active_users['online_userlist'] ?: '',
+				'MCHAT_USERS_LIST'		=> $active_users['online_userlist'],
 				'MCHAT_ONLINE_EXPLAIN'	=> $active_users['refresh_message'],
 			]);
 		}
