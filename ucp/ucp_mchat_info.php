@@ -15,12 +15,9 @@ class ucp_mchat_info
 {
 	function module()
 	{
-		global $config;
-
 		return [
 			'filename'	=> '\dmzx\mchat\ucp\ucp_mchat_module',
 			'title'		=> 'UCP_MCHAT_CONFIG',
-			'version'	=> $config['mchat_version'],
 			'modes'		=> [
 				'configuration'	=> [
 					'title' => 'UCP_MCHAT_CONFIG',
