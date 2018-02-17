@@ -26,7 +26,7 @@ class main_listener implements EventSubscriberInterface
 	protected $mchat;
 
 	/** @var notifications */
-	protected $notifications;
+	protected $mchat_notifications;
 
 	/** @var helper */
 	protected $helper;
@@ -47,7 +47,7 @@ class main_listener implements EventSubscriberInterface
 	 * Constructor
 	 *
 	 * @param mchat				$mchat
-	 * @param notifications		$notifications
+	 * @param notifications		$mchat_notifications
 	 * @param helper			$helper
 	 * @param user				$user
 	 * @param language			$lang
@@ -56,7 +56,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function __construct(
 		mchat $mchat,
-		notifications $notifications,
+		notifications $mchat_notifications,
 		helper $helper,
 		user $user,
 		language $lang,
@@ -64,13 +64,13 @@ class main_listener implements EventSubscriberInterface
 		$php_ext
 	)
 	{
-		$this->mchat			= $mchat;
-		$this->notifications	= $notifications;
-		$this->helper			= $helper;
-		$this->user				= $user;
-		$this->lang				= $lang;
-		$this->request			= $request;
-		$this->php_ext			= $php_ext;
+		$this->mchat				= $mchat;
+		$this->mchat_notifications	= $mchat_notifications;
+		$this->helper				= $helper;
+		$this->user					= $user;
+		$this->lang					= $lang;
+		$this->request				= $request;
+		$this->php_ext				= $php_ext;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function insert_posting(data $event)
 	{
-		$this->notifications->insert_post($event['mode'], $event['data']['forum_id'], $event['data']['post_id']);
+		$this->mchat_notifications->insert_post($event['mode'], $event['data']['forum_id'], $event['data']['post_id']);
 	}
 
 	/**
@@ -175,7 +175,7 @@ class main_listener implements EventSubscriberInterface
 		if (!$event['admin'])
 		{
 			$is_hidden = $this->request->is_set_post('viewonline') || !$this->user->data['user_allow_viewonline'];
-			$this->notifications->insert_login($is_hidden);
+			$this->mchat_notifications->insert_login($is_hidden);
 		}
 	}
 

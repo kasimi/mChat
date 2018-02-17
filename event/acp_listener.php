@@ -32,10 +32,10 @@ class acp_listener implements EventSubscriberInterface
 	protected $lang;
 
 	/** @var settings */
-	protected $settings;
+	protected $mchat_settings;
 
 	/** @var functions */
-	protected $functions;
+	protected $mchat_functions;
 
 	/**
 	* Constructor
@@ -43,22 +43,22 @@ class acp_listener implements EventSubscriberInterface
 	* @param template			$template
 	* @param request_interface	$request
 	* @param language			$lang
-	* @param settings			$settings
-	* @param functions			$functions
+	* @param settings			$mchat_settings
+	* @param functions			$mchat_functions
 	*/
 	public function __construct(
 		template $template,
 		request_interface $request,
 		language $lang,
-		settings $settings,
-		functions $functions
+		settings $mchat_settings,
+		functions $mchat_functions
 	)
 	{
-		$this->template		= $template;
-		$this->request		= $request;
-		$this->lang			= $lang;
-		$this->settings		= $settings;
-		$this->functions	= $functions;
+		$this->template			= $template;
+		$this->request			= $request;
+		$this->lang				= $lang;
+		$this->mchat_settings	= $mchat_settings;
+		$this->mchat_functions	= $mchat_functions;
 	}
 
 	/**
@@ -82,7 +82,7 @@ class acp_listener implements EventSubscriberInterface
 	{
 		$ucp_configs = [];
 
-		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
+		foreach (array_keys($this->mchat_settings->ucp_settings()) as $config_name)
 		{
 			$ucp_configs[] = 'u_' . $config_name;
 		}
@@ -144,7 +144,7 @@ class acp_listener implements EventSubscriberInterface
 		$userdata = $auth->obtain_user_data($user_id);
 		$auth->acl($userdata);
 
-		foreach ($this->settings->ucp_settings() as $config_name => $config_data)
+		foreach ($this->mchat_settings->ucp_settings() as $config_name => $config_data)
 		{
 			if ($auth->acl_get('u_' . $config_name))
 			{
@@ -159,7 +159,7 @@ class acp_listener implements EventSubscriberInterface
 			}
 		}
 
-		$this->settings->include_functions('user', 'validate_data');
+		$this->mchat_settings->include_functions('user', 'validate_data');
 
 		$event['error'] = array_merge($event['error'], validate_data($sql_ary, $validation));
 		$event['sql_ary'] = array_merge($event['sql_ary'], $sql_ary);
@@ -178,18 +178,18 @@ class acp_listener implements EventSubscriberInterface
 		$userdata = $auth->obtain_user_data($user_id);
 		$auth->acl($userdata);
 
-		$selected = $this->settings->cfg_user('mchat_date', $event['user_row'], $auth);
-		$date_template_data = $this->settings->get_date_template_data($selected);
+		$selected = $this->mchat_settings->cfg_user('mchat_date', $event['user_row'], $auth);
+		$date_template_data = $this->mchat_settings->get_date_template_data($selected);
 		$this->template->assign_vars($date_template_data);
 
-		$notifications_template_data = $this->settings->get_enabled_post_notifications_lang();
+		$notifications_template_data = $this->mchat_settings->get_enabled_post_notifications_lang();
 		$this->template->assign_var('MCHAT_POSTS_ENABLED_LANG', $notifications_template_data);
 
-		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
+		foreach (array_keys($this->mchat_settings->ucp_settings()) as $config_name)
 		{
 			$upper = strtoupper($config_name);
 			$this->template->assign_vars([
-				$upper				=> $this->settings->cfg_user($config_name, $event['user_row'], $auth),
+				$upper				=> $this->mchat_settings->cfg_user($config_name, $event['user_row'], $auth),
 				$upper . '_NOAUTH'	=> !$auth->acl_get('u_' . $config_name, $user_id),
 			]);
 		}
@@ -215,7 +215,7 @@ class acp_listener implements EventSubscriberInterface
 	{
 		if ($event['mode'] == 'remove')
 		{
-			$this->functions->mchat_prune($event['user_ids']);
+			$this->mchat_functions->mchat_prune($event['user_ids']);
 		}
 	}
 }

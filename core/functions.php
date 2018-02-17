@@ -23,10 +23,13 @@ use phpbb\user;
 class functions
 {
 	/** @var settings */
-	protected $settings;
+	protected $mchat_settings;
 
 	/** @var notifications */
-	protected $notifications;
+	protected $mchat_notifications;
+
+	/** @var log */
+	protected $mchat_log;
 
 	/** @var user */
 	protected $user;
@@ -55,17 +58,12 @@ class functions
 	/** @var array */
 	protected $active_users;
 
-	/** @var array */
-	public $log_types = [
-		1 => 'edit',
-		2 => 'del',
-	];
-
 	/**
 	 * Constructor
 	 *
-	 * @param settings				$settings
-	 * @param notifications			$notifications
+	 * @param settings				$mchat_settings
+	 * @param notifications			$mchat_notifications
+	 * @param log					$mchat_log
 	 * @param user					$user
 	 * @param language				$lang
 	 * @param auth					$auth
@@ -77,8 +75,9 @@ class functions
 
 	 */
 	function __construct(
-		settings $settings,
-		notifications $notifications,
+		settings $mchat_settings,
+		notifications $mchat_notifications,
+		log $mchat_log,
 		user $user,
 		language $lang,
 		auth $auth,
@@ -89,16 +88,17 @@ class functions
 		helper $group_helper
 	)
 	{
-		$this->settings			= $settings;
-		$this->notifications	= $notifications;
-		$this->user				= $user;
-		$this->lang				= $lang;
-		$this->auth				= $auth;
-		$this->log				= $log;
-		$this->db				= $db;
-		$this->cache			= $cache;
-		$this->dispatcher		= $dispatcher;
-		$this->group_helper		= $group_helper;
+		$this->mchat_settings		= $mchat_settings;
+		$this->mchat_notifications	= $mchat_notifications;
+		$this->mchat_log			= $mchat_log;
+		$this->user					= $user;
+		$this->lang					= $lang;
+		$this->auth					= $auth;
+		$this->log					= $log;
+		$this->db					= $db;
+		$this->cache				= $cache;
+		$this->dispatcher			= $dispatcher;
+		$this->group_helper			= $group_helper;
 	}
 
 	/**
@@ -141,19 +141,19 @@ class functions
 	 */
 	protected function mchat_session_time()
 	{
-		$mchat_timeout = $this->settings->cfg('mchat_timeout');
+		$mchat_timeout = $this->mchat_settings->cfg('mchat_timeout');
 		if ($mchat_timeout)
 		{
 			return $mchat_timeout;
 		}
 
-		$load_online_time = $this->settings->cfg('load_online_time');
+		$load_online_time = $this->mchat_settings->cfg('load_online_time');
 		if ($load_online_time)
 		{
 			return $load_online_time * 60;
 		}
 
-		return $this->settings->cfg('session_length');
+		return $this->mchat_settings->cfg('session_length');
 	}
 
 	/**
@@ -174,7 +174,7 @@ class functions
 		$sql_array = [
 			'SELECT'	=> 'u.user_id, u.username, u.user_colour, s.session_viewonline',
 			'FROM'		=> [
-				$this->settings->get_table_mchat_sessions() => 'ms'
+				$this->mchat_settings->get_table_mchat_sessions() => 'ms'
 			],
 			'LEFT_JOIN'	=> [
 				[
@@ -263,7 +263,7 @@ class functions
 			return false;
 		}
 
-		$sql = 'UPDATE ' . $this->settings->get_table_mchat_sessions() . '
+		$sql = 'UPDATE ' . $this->mchat_settings->get_table_mchat_sessions() . '
 			SET user_lastupdate = ' . time() . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'];
 		$this->db->sql_query($sql);
@@ -272,7 +272,7 @@ class functions
 
 		if ($is_new_session)
 		{
-			$sql = 'INSERT INTO ' . $this->settings->get_table_mchat_sessions() . ' ' . $this->db->sql_build_array('INSERT', [
+			$sql = 'INSERT INTO ' . $this->mchat_settings->get_table_mchat_sessions() . ' ' . $this->db->sql_build_array('INSERT', [
 				'user_id'			=> (int) $this->user->data['user_id'],
 				'user_ip'			=> $this->user->ip,
 				'user_lastupdate'	=> time(),
@@ -290,7 +290,7 @@ class functions
 	{
 		$check_time = time() - $this->mchat_session_time();
 
-		$sql = 'DELETE FROM ' . $this->settings->get_table_mchat_sessions() . '
+		$sql = 'DELETE FROM ' . $this->mchat_settings->get_table_mchat_sessions() . '
 			WHERE user_lastupdate <= ' . (int) $check_time;
 		$this->db->sql_query($sql);
 	}
@@ -303,17 +303,17 @@ class functions
 	 */
 	public function mchat_prune($user_ids = [])
 	{
-		$prune_num = (int) $this->settings->cfg('mchat_prune_num');
-		$prune_mode = (int) $this->settings->cfg('mchat_prune_mode');
+		$prune_num = (int) $this->mchat_settings->cfg('mchat_prune_num');
+		$prune_mode = (int) $this->mchat_settings->cfg('mchat_prune_mode');
 
-		if (empty($this->settings->prune_modes[$prune_mode]))
+		if (empty($this->mchat_settings->prune_modes[$prune_mode]))
 		{
 			return [];
 		}
 
 		$sql_array = [
 			'SELECT'	=> 'message_id',
-			'FROM'		=> [$this->settings->get_table_mchat() => 'm'],
+			'FROM'		=> [$this->mchat_settings->get_table_mchat() => 'm'],
 		];
 
 		if ($user_ids)
@@ -326,7 +326,7 @@ class functions
 			$sql_array['WHERE'] = $this->db->sql_in_set('m.user_id', $user_ids);
 			$offset = 0;
 		}
-		else if ($this->settings->prune_modes[$prune_mode] === 'messages')
+		else if ($this->mchat_settings->prune_modes[$prune_mode] === 'messages')
 		{
 			// Skip fixed number of messages, delete all others
 			$sql_array['ORDER_BY'] = 'm.message_id DESC';
@@ -382,9 +382,9 @@ class functions
 
 		if ($prune_ids)
 		{
-			$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat() . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
-			$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat_log() . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
-			$this->cache->destroy('sql', $this->settings->get_table_mchat_log());
+			$this->db->sql_query('DELETE FROM ' . $this->mchat_settings->get_table_mchat() . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
+			$this->db->sql_query('DELETE FROM ' . $this->mchat_settings->get_table_mchat_log() . ' WHERE ' . $this->db->sql_in_set('message_id', $prune_ids));
+			$this->cache->destroy('sql', $this->mchat_settings->get_table_mchat_log());
 
 			// Only add a log entry if message pruning was not triggered by user pruning
 			if (!$user_ids)
@@ -405,8 +405,8 @@ class functions
 	{
 		$sql_array = [
 			'SELECT'	=> 'COUNT(*) AS rows_total',
-			'FROM'		=> [$this->settings->get_table_mchat() => 'm'],
-			'WHERE'		=> $this->notifications->get_sql_where(),
+			'FROM'		=> [$this->mchat_settings->get_table_mchat() => 'm'],
+			'WHERE'		=> $this->mchat_notifications->get_sql_where(),
 		];
 
 		/**
@@ -461,12 +461,12 @@ class functions
 
 		$sql_where_ary = array_filter([
 			implode(' OR ', $sql_where_message_id),
-			$this->notifications->get_sql_where(),
+			$this->mchat_notifications->get_sql_where(),
 		]);
 
 		$sql_array = [
 			'SELECT'	=> 'm.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_allow_pm, p.post_visibility',
-			'FROM'		=> [$this->settings->get_table_mchat() => 'm'],
+			'FROM'		=> [$this->mchat_settings->get_table_mchat() => 'm'],
 			'LEFT_JOIN'	=> [
 				[
 					'FROM'	=> [USERS_TABLE => 'u'],
@@ -519,59 +519,6 @@ class functions
 	}
 
 	/**
-	 * Fetches log entries from the database and sorts them
-	 *
-	 * @param int $log_id The ID of the latest log entry that the user has
-	 * @return array
-	 */
-	public function mchat_get_logs($log_id)
-	{
-		$sql_array = [
-			'SELECT'	=> 'ml.*',
-			'FROM'		=> [$this->settings->get_table_mchat_log() => 'ml'],
-			'WHERE'		=> 'ml.log_id > ' . (int) $log_id,
-		];
-
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql, 3600);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		$logs = [
-			'id' => $log_id,
-		];
-
-		foreach ($rows as $row)
-		{
-			$logs['id'] = max((int) $logs['id'], (int) $row['log_id']);
-			$logs[] = $row;
-		}
-
-		return $logs;
-	}
-
-	/**
-	 * Fetches the highest log ID
-	 *
-	 * @return int
-	 */
-	public function get_latest_log_id()
-	{
-		$sql_array = [
-			'SELECT'	=> 'ml.log_id',
-			'FROM'		=> [$this->settings->get_table_mchat_log() => 'ml'],
-			'ORDER_BY'	=> 'log_id DESC',
-		];
-
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query_limit($sql, 1);
-		$max_log_id = (int) $this->db->sql_fetchfield('log_id');
-		$this->db->sql_freeresult($result);
-
-		return $max_log_id;
-	}
-
-	/**
 	 * Generates the user legend markup
 	 *
 	 * @return array Array of HTML markup for each group
@@ -579,7 +526,7 @@ class functions
 	public function mchat_legend()
 	{
 		// Grab group details for legend display for who is online on the custom page
-		$order_legend = $this->settings->cfg('legend_sort_groupname') ? 'group_name' : 'group_legend';
+		$order_legend = $this->mchat_settings->cfg('legend_sort_groupname') ? 'group_name' : 'group_legend';
 
 		$sql_array = [
 			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour',
@@ -616,7 +563,7 @@ class functions
 			}
 			else
 			{
-				$legend[] = '<a' . $colour_text . ' href="' . append_sid($this->settings->url('memberlist'), ['mode' => 'group', 'g' => $row['group_id']]) . '">' . $group_name . '</a>';
+				$legend[] = '<a' . $colour_text . ' href="' . append_sid($this->mchat_settings->url('memberlist'), ['mode' => 'group', 'g' => $row['group_id']]) . '">' . $group_name . '</a>';
 			}
 		}
 
@@ -656,7 +603,7 @@ class functions
 	 */
 	public function mchat_sql_append_forbidden_bbcodes($sql_where)
 	{
-		$disallowed_bbcodes = explode('|', $this->settings->cfg('mchat_bbcode_disallowed'));
+		$disallowed_bbcodes = explode('|', $this->mchat_settings->cfg('mchat_bbcode_disallowed'));
 
 		if (!empty($disallowed_bbcodes))
 		{
@@ -673,20 +620,20 @@ class functions
 	 */
 	public function mchat_is_user_flooding()
 	{
-		if (!$this->settings->cfg('mchat_flood_time') || $this->auth->acl_get('u_mchat_flood_ignore'))
+		if (!$this->mchat_settings->cfg('mchat_flood_time') || $this->auth->acl_get('u_mchat_flood_ignore'))
 		{
 			return false;
 		}
 
 		$sql = 'SELECT message_time
-			FROM ' . $this->settings->get_table_mchat() . '
+			FROM ' . $this->mchat_settings->get_table_mchat() . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'] . '
 			ORDER BY message_time DESC';
 		$result = $this->db->sql_query_limit($sql, 1);
 		$message_time = (int) $this->db->sql_fetchfield('message_time');
 		$this->db->sql_freeresult($result);
 
-		return $message_time && time() - $message_time < $this->settings->cfg('mchat_flood_time');
+		return $message_time && time() - $message_time < $this->mchat_settings->cfg('mchat_flood_time');
 	}
 
 	/**
@@ -698,7 +645,7 @@ class functions
 	public function mchat_author_for_message($message_id)
 	{
 		$sql = 'SELECT m.user_id, m.message_time, m.post_id
-			FROM ' . $this->settings->get_table_mchat() . ' m
+			FROM ' . $this->mchat_settings->get_table_mchat() . ' m
 			WHERE m.message_id = ' . (int) $message_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
@@ -748,7 +695,7 @@ class functions
 					$this->user->update_session_infos();
 				}
 				$is_new_session = $this->mchat_add_user_session();
-				$this->db->sql_query('INSERT INTO ' . $this->settings->get_table_mchat() . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
+				$this->db->sql_query('INSERT INTO ' . $this->mchat_settings->get_table_mchat() . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 				break;
 
 			// User edits a message
@@ -758,8 +705,8 @@ class functions
 					$this->user->update_session_infos();
 				}
 				$is_new_session = $this->mchat_add_user_session();
-				$this->db->sql_query('UPDATE ' . $this->settings->get_table_mchat() . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE message_id = ' . (int) $message_id);
-				$this->mchat_insert_log('edit', $message_id);
+				$this->db->sql_query('UPDATE ' . $this->mchat_settings->get_table_mchat() . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE message_id = ' . (int) $message_id);
+				$this->mchat_log->add_log('edit', $message_id);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EDITED_MCHAT', false, [$this->user->data['username']]);
 				break;
 
@@ -770,34 +717,12 @@ class functions
 					$this->user->update_session_infos();
 				}
 				$is_new_session = $this->mchat_add_user_session();
-				$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat() . ' WHERE message_id = ' . (int) $message_id);
-				$this->mchat_insert_log('del', $message_id);
+				$this->db->sql_query('DELETE FROM ' . $this->mchat_settings->get_table_mchat() . ' WHERE message_id = ' . (int) $message_id);
+				$this->mchat_log->add_log('del', $message_id);
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, [$this->user->data['username']]);
 				break;
 		}
 
 		return $is_new_session;
-	}
-
-	/**
-	 * @param string $log_type The log type, one of edit|del
-	 * @param int $message_id The ID of the message to which this log entry belongs
-	 * @return int The ID of the newly added log row
-	 */
-	public function mchat_insert_log($log_type, $message_id)
-	{
-		$this->db->sql_query('INSERT INTO ' . $this->settings->get_table_mchat_log() . ' ' . $this->db->sql_build_array('INSERT', [
-			'log_type'		=> array_search($log_type, $this->log_types),
-			'user_id'		=> (int) $this->user->data['user_id'],
-			'message_id'	=> (int) $message_id,
-			'log_ip'		=> $this->user->ip,
-			'log_time'		=> time(),
-			]));
-
-		$log_id = (int) $this->db->sql_nextid();
-
-		$this->cache->destroy('sql', $this->settings->get_table_mchat_log());
-
-		return $log_id;
 	}
 }

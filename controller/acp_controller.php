@@ -25,7 +25,7 @@ use phpbb\user;
 class acp_controller
 {
 	/** @var functions */
-	protected $functions;
+	protected $mchat_functions;
 
 	/** @var template */
 	protected $template;
@@ -57,7 +57,7 @@ class acp_controller
 	/**
 	 * Constructor
 	 *
-	 * @param functions				$functions
+	 * @param functions				$mchat_functions
 	 * @param template				$template
 	 * @param log_interface			$log
 	 * @param user					$user
@@ -69,7 +69,7 @@ class acp_controller
 	 * @param settings				$settings
 	 */
 	public function __construct(
-		functions $functions,
+		functions $mchat_functions,
 		template $template,
 		log_interface $log,
 		user $user,
@@ -81,7 +81,7 @@ class acp_controller
 		settings $settings
 	)
 	{
-		$this->functions		= $functions;
+		$this->mchat_functions	= $mchat_functions;
 		$this->template			= $template;
 		$this->log				= $log;
 		$this->user				= $user;
@@ -188,7 +188,7 @@ class acp_controller
 			}
 			else if ($is_founder && $this->request->is_set_post('mchat_prune_now') && $this->request->variable('mchat_prune_now_confirm', false) && check_form_key('acp_mchat'))
 			{
-				$num_pruned_messages = count($this->functions->mchat_prune());
+				$num_pruned_messages = count($this->mchat_functions->mchat_prune());
 				trigger_error($this->lang->lang('MCHAT_PRUNED', $num_pruned_messages) . adm_back_link($u_action));
 			}
 		}

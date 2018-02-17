@@ -41,7 +41,7 @@ class ucp_controller
 	protected $request;
 
 	/** @var settings */
-	protected $settings;
+	protected $mchat_settings;
 
 	/** @var dispatcher_interface */
 	protected $dispatcher;
@@ -55,7 +55,7 @@ class ucp_controller
 	 * @param auth					$auth
 	 * @param db_interface			$db
 	 * @param request_interface		$request
-	 * @param settings				$settings
+	 * @param settings				$mchat_settings
 	 * @param dispatcher_interface 	$dispatcher
 	 */
 	public function __construct(
@@ -65,18 +65,18 @@ class ucp_controller
 		auth $auth,
 		db_interface $db,
 		request_interface $request,
-		settings $settings,
+		settings $mchat_settings,
 		dispatcher_interface $dispatcher
 	)
 	{
-		$this->template		= $template;
-		$this->user			= $user;
-		$this->lang			= $lang;
-		$this->auth			= $auth;
-		$this->db			= $db;
-		$this->request		= $request;
-		$this->settings		= $settings;
-		$this->dispatcher	= $dispatcher;
+		$this->template			= $template;
+		$this->user				= $user;
+		$this->lang				= $lang;
+		$this->auth				= $auth;
+		$this->db				= $db;
+		$this->request			= $request;
+		$this->mchat_settings	= $mchat_settings;
+		$this->dispatcher		= $dispatcher;
 	}
 
 	/**
@@ -94,7 +94,7 @@ class ucp_controller
 		{
 			$mchat_new_config = [];
 			$validation = [];
-			foreach ($this->settings->ucp_settings() as $config_name => $config_data)
+			foreach ($this->mchat_settings->ucp_settings() as $config_name => $config_data)
 			{
 				if ($this->auth->acl_get('u_' . $config_name))
 				{
@@ -109,7 +109,7 @@ class ucp_controller
 				}
 			}
 
-			$this->settings->include_functions('user', 'validate_data');
+			$this->mchat_settings->include_functions('user', 'validate_data');
 
 			$error = array_merge($error, validate_data($mchat_new_config, $validation));
 
@@ -148,17 +148,17 @@ class ucp_controller
 			$error = array_map([$this->lang, 'lang'], $error);
 		}
 
-		$selected_date = $this->settings->cfg('mchat_date');
-		$template_data = $this->settings->get_date_template_data($selected_date);
+		$selected_date = $this->mchat_settings->cfg('mchat_date');
+		$template_data = $this->mchat_settings->get_date_template_data($selected_date);
 
 		$auth_count = 0;
 
-		foreach (array_keys($this->settings->ucp_settings()) as $config_name)
+		foreach (array_keys($this->mchat_settings->ucp_settings()) as $config_name)
 		{
 			$upper = strtoupper($config_name);
 			$auth = $this->auth->acl_get('u_' . $config_name);
 
-			$template_data[$upper] = $this->settings->cfg($config_name);
+			$template_data[$upper] = $this->mchat_settings->cfg($config_name);
 			$template_data[$upper . '_AUTH'] = $auth;
 
 			if ($auth)
@@ -169,7 +169,7 @@ class ucp_controller
 
 		$template_data = array_merge($template_data, [
 			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
-			'MCHAT_POSTS_ENABLED_LANG'		=> $this->settings->get_enabled_post_notifications_lang(),
+			'MCHAT_POSTS_ENABLED_LANG'		=> $this->mchat_settings->get_enabled_post_notifications_lang(),
 			'ERROR'							=> sizeof($error) ? implode('<br>', $error) : '',
 			'MCHAT_AUTH_COUNT'				=> $auth_count,
 			'S_UCP_ACTION'					=> $u_action,
