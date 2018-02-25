@@ -30,7 +30,7 @@
 		refreshTime		: {{ MCHAT_REFRESH_JS }},
 		whoisRefresh	: {{ MCHAT_WHOIS_REFRESH }},
 		timeout			: {{ MCHAT_TIMEOUT }},
-		mssgLngth		: {{ MCHAT_MESSAGE_LNGTH }},
+		mssgLngth		: {{ MCHAT_MAX_MESSAGE_LENGTH }},
 		editDeleteLimit	: {{ MCHAT_EDIT_DELETE_LIMIT }},
 		logId			: {{ MCHAT_LOG_ID }},
 		removeBBCodes	: '{{ MCHAT_DISALLOWED_BBCODES | escape('js') }}',
@@ -55,7 +55,7 @@
 			mention			: '{{ lang('MCHAT_MENTION') | escape('js') }}',
 			refreshYes		: '{{ lang('MCHAT_REFRESH_YES', MCHAT_REFRESH_RATE) | escape('js') }}',
 			refreshNo		: '{{ lang('MCHAT_REFRESH_NO') | escape('js') }}',
-			charCount		: '{{ lang(MCHAT_MESSAGE_LNGTH ? 'MCHAT_CHARACTER_COUNT_LIMIT' : 'MCHAT_CHARACTER_COUNT') | escape('js') }}',
+			charCount		: '{{ lang(MCHAT_MAX_MESSAGE_LENGTH ? 'MCHAT_CHARACTER_COUNT_LIMIT' : 'MCHAT_CHARACTER_COUNT') | escape('js') }}',
 			mssgLngthLong	: '{{ lang('MCHAT_MESS_LONG', MCHAT_MAX_MESSAGE_LENGTH) | escape('js') }}',
 			likes			: '{{ lang('MCHAT_LIKES') | escape('js') }}'
 		}
