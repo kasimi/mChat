@@ -64,10 +64,7 @@ $lang = array_merge($lang, [
 	'MCHAT_PAUSE'					=> 'Paused',
 	'MCHAT_PERMISSIONS'				=> 'Change user’s permissions',
 	'MCHAT_REFRESHING'				=> 'Refreshing…',
-	'MCHAT_REFRESH_NO'				=> 'Update is off',
-	'MCHAT_REFRESH_YES'				=> 'Updates every <strong>%1$d</strong> seconds',
 	'MCHAT_RESPOND'					=> 'Respond to user',
-	'MCHAT_SESSION_ENDS'			=> 'Chat session ends in %1$s',
 	'MCHAT_SESSION_OUT'				=> 'Chat session has expired',
 	'MCHAT_SMILES'					=> 'Smilies',
 	'MCHAT_TOTALMESSAGES'			=> 'Total messages: <strong>%1$d</strong>',
@@ -83,7 +80,6 @@ $lang = array_merge($lang, [
 	// These messages are formatted with JavaScript, hence {} and no %d
 	'MCHAT_CHARACTER_COUNT'			=> '<strong>{current}</strong> characters',
 	'MCHAT_CHARACTER_COUNT_LIMIT'	=> '<strong>{current}</strong> out of {max} characters',
-	'MCHAT_SESSION_ENDS_JS'			=> 'Chat session ends in {timeleft}',
 	'MCHAT_MENTION'					=> ' @{username} ',
 
 	// Custom translations for administrators

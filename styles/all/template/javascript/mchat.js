@@ -523,13 +523,8 @@ jQuery(function($) {
 			var selector = '.mchat-time[data-mchat-relative-update]';
 			clearInterval($message.find(selector).addBack(selector).data('mchat-relative-interval'));
 		},
-		timeLeftRegex: /\d\d:(\d\d:\d\d)/,
-		timeLeft: function(sessionTime) {
-			return (new Date(sessionTime * 1000)).toUTCString().match(mChat.timeLeftRegex)[mChat.timeout >= 3600000 ? 0 : 1];
-		},
 		countDown: function() {
 			mChat.sessionTime -= 1;
-			mChat.cached('session').html(mChat.lang.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
 			if (mChat.sessionTime < 1) {
 				mChat.endSession();
 			}
@@ -550,7 +545,6 @@ jQuery(function($) {
 				if (mChat.timeout) {
 					mChat.sessionTime = mChat.timeout / 1000;
 					clearInterval(mChat.sessionCountdown);
-					mChat.cached('session').html(mChat.lang.sessEnds.format({timeleft: mChat.timeLeft(mChat.sessionTime)}));
 					mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
 				}
 				if (mChat.whoisRefresh) {
@@ -559,7 +553,6 @@ jQuery(function($) {
 				}
 				mChat.cached('status-ok').show();
 				mChat.cached('status-load', 'status-error', 'status-paused').hide();
-				mChat.cached('refresh-text').html(mChat.lang.refreshYes);
 			}
 		},
 		endSession: function(skipUpdateWhois) {
@@ -567,7 +560,6 @@ jQuery(function($) {
 			mChat.refreshInterval = false;
 			if (mChat.timeout) {
 				clearInterval(mChat.sessionCountdown);
-				mChat.cached('session').html(mChat.lang.sessOut);
 			}
 			if (mChat.whoisRefresh) {
 				clearInterval(mChat.whoisInterval);
@@ -577,16 +569,13 @@ jQuery(function($) {
 			}
 			mChat.cached('status-load', 'status-ok', 'status-error').hide();
 			mChat.cached('status-paused').show();
-			mChat.cached('refresh-text').html(mChat.lang.refreshNo);
 		},
 		pauseStart: function() {
 			mChat.isPaused = true;
-			mChat.cached('refresh-text').html(mChat.lang.refreshNo);
 			mChat.cached('status-load', 'status-ok', 'status-error').hide();
 			mChat.cached('status-paused').show();
 		},
 		pauseEnd: function() {
-			mChat.cached('refresh-text').html(mChat.lang.refreshYes);
 			mChat.cached('status-load', 'status-error', 'status-paused').hide();
 			mChat.cached('status-ok').show();
 			mChat.isPaused = false;

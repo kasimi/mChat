@@ -65,9 +65,7 @@
 							<i id="mchat-status-paused" class="fa fa-pause icon icon-orange" title="{{ lang('MCHAT_PAUSE') }}"></i>
 							<i id="mchat-status-error" class="fa fa-times icon icon-red" title="{{ lang('ERROR') }}"></i>
 						</span>
-						<span id="mchat-refresh-text">{{ MCHAT_REFRESH_YES }}</span>
 					</li>
-					{% if MCHAT_TIMEOUT %}<li><span id="mchat-session">{{ MCHAT_SESSION_TIMELEFT }}</span></li>{% endif %}
 					{% if not MCHAT_SOUND_DISABLED %}<li class="mchat-sound"><input type="checkbox" id="mchat-user-sound"{% if MCHAT_SOUND %} checked="checked"{% endif %} /><label for="mchat-user-sound">{{ lang('MCHAT_USESOUND') }}</label></li>{% endif %}
 				</ul>
 			</div>
