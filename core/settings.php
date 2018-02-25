@@ -170,7 +170,6 @@ class settings
 			'mchat_message_num_archive'		=> ['default' => 25,	'validation' => ['num', false, 10, 100]],
 			'mchat_message_num_custom'		=> ['default' => 10,	'validation' => ['num', false, 5, 50]],
 			'mchat_message_num_index'		=> ['default' => 10,	'validation' => ['num', false, 5, 50]],
-			'mchat_navbar_link'				=> ['default' => 1],
 			'mchat_navbar_link_count'		=> ['default' => 1],
 			'mchat_override_min_post_chars' => ['default' => 0],
 			'mchat_override_smilie_limit'	=> ['default' => 0],

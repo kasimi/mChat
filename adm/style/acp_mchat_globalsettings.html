@@ -55,11 +55,6 @@
 			<dd><input type="text" name="mchat_message_num_custom" id="mchat_message_num_custom" size="10" value="{{ MCHAT_MESSAGE_NUM_CUSTOM }}" />&nbsp;<span>{{ lang('MCHAT_ACP_MESSAGES') }}</span></dd>
 		</dl>
 		<dl>
-			<dt><label for="mchat_navbar_link">{{ lang('MCHAT_NAVBAR_LINK') ~ lang('COLON') }}</label></dt>
-			<dd><label><input type="radio" class="radio" name="mchat_navbar_link" value="1"{% if MCHAT_NAVBAR_LINK %} id="mchat_navbar_link" checked="checked"{% endif %} /> {{ lang('YES') }}</label>
-				<label><input type="radio" class="radio" name="mchat_navbar_link" value="0"{% if not MCHAT_NAVBAR_LINK %} id="mchat_navbar_link" checked="checked"{% endif %} /> {{ lang('NO') }}</label></dd>
-		</dl>
-		<dl>
 			<dt><label for="mchat_navbar_link_count">{{ lang('MCHAT_NAVBAR_LINK_COUNT') ~ lang('COLON') }}</label></dt>
 			<dd><label><input type="radio" class="radio" name="mchat_navbar_link_count" value="1"{% if MCHAT_NAVBAR_LINK_COUNT %} id="mchat_navbar_link_count" checked="checked"{% endif %} /> {{ lang('YES') }}</label>
 				<label><input type="radio" class="radio" name="mchat_navbar_link_count" value="0"{% if not MCHAT_NAVBAR_LINK_COUNT %} id="mchat_navbar_link_count" checked="checked"{% endif %} /> {{ lang('NO') }}</label></dd>

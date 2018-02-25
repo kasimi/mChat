@@ -674,7 +674,7 @@ class mchat
 			$response['container'] = $this->render_template('mchat_whois.html');
 		}
 
-		if ($this->mchat_settings->cfg('mchat_custom_page') && $this->mchat_settings->cfg('mchat_navbar_link') && $this->mchat_settings->cfg('mchat_navbar_link_count'))
+		if ($this->mchat_settings->cfg('mchat_custom_page') && $this->mchat_settings->cfg('mchat_navbar_link_count'))
 		{
 			$active_users = $this->mchat_functions->mchat_active_users();
 			$response['navlink'] = $active_users['users_count_title'];
@@ -708,18 +708,16 @@ class mchat
 			return;
 		}
 
-		$navbar_link = $this->mchat_settings->cfg('mchat_navbar_link');
 		$custom_page = $this->mchat_settings->cfg('mchat_custom_page');
 
 		$template_data = [
-			'MCHAT_NAVBAR_LINK'	=> $navbar_link,
 			'MCHAT_CUSTOM_PAGE'	=> $custom_page,
 			'MCHAT_TITLE'		=> $this->lang->lang('MCHAT_TITLE'),
 			'MCHAT_TITLE_HINT'	=> $this->lang->lang('MCHAT_TITLE'),
 			'U_MCHAT'			=> $this->helper->route('dmzx_mchat_page_custom_controller'),
 		];
 
-		if ($navbar_link && $custom_page && $this->mchat_settings->cfg('mchat_navbar_link_count'))
+		if ($custom_page && $this->mchat_settings->cfg('mchat_navbar_link_count'))
 		{
 			$active_users = $this->mchat_functions->mchat_active_users();
 			$template_data['MCHAT_TITLE'] = $active_users['users_count_title'];
@@ -753,7 +751,7 @@ class mchat
 
 		// If the static message is not empty in the language file, use it, else ise the static message in the database
 		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') ?: $this->mchat_settings->cfg('mchat_static_message');
-		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || ($this->mchat_settings->cfg('mchat_custom_page') && $this->mchat_settings->cfg('mchat_navbar_link') && $this->mchat_settings->cfg('mchat_navbar_link_count'));
+		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || ($this->mchat_settings->cfg('mchat_custom_page') && $this->mchat_settings->cfg('mchat_navbar_link_count'));
 
 		$this->template->assign_vars([
 			'MCHAT_PAGE'					=> $page,

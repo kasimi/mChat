@@ -14,7 +14,7 @@ use phpbb\db\migration\migration;
 
 class mchat_2_1_0_rc1 extends migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\dmzx\mchat\migrations\mchat_2_0_3',
@@ -25,6 +25,8 @@ class mchat_2_1_0_rc1 extends migration
 	{
 		return [
 			['config.update', ['mchat_version', '2.1.0-RC1']],
+
+			['config.remove', ['mchat_navbar_link']],
 
 			// Message reparser
 			['config.add', ['dmzx.mchat.text_reparser.mchat_messages_cron_interval', 10]],
