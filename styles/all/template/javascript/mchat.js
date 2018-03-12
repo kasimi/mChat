@@ -346,6 +346,9 @@ jQuery(function($) {
 				$(mChat).trigger('mchat_response_handle_data_after', [json]);
 			});
 		},
+		rules: function() {
+			popup(mChat.urlRules, 450, 275);
+		},
 		whois: function() {
 			if (mChat.page === 'custom') {
 				mChat.cached('refresh-pending').show();
@@ -627,6 +630,9 @@ jQuery(function($) {
 		},
 		ip: function() {
 			popup(this.href, 750, 500);
+		},
+		archive: function() {
+			window.location.href = mChat.urlArchive;
 		},
 		cached: function() {
 			return $($.map(arguments, function(name) {

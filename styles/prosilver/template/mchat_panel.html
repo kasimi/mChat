@@ -22,12 +22,12 @@
 						<input type="button" class="button" data-mchat-toggle="bbcodes" value="{{ lang('MCHAT_BBCODES') }}" />
 					{% endif %}
 					{% if MCHAT_RULES %}
-						<input type="button" class="button" onclick="popup('{{ U_MCHAT_RULES }}', 450, 275); return false;" value="{{ lang('MCHAT_RULES') }}" />
+						<input type="button" class="button" data-mchat-action="rules" value="{{ lang('MCHAT_RULES') }}" />
 					{% endif %}
 				{% endif %}
 				{% EVENT dmzx_mchat_buttons_mid %}
 				{% if MCHAT_ARCHIVE %}
-					<input type="button" class="button" onclick="window.location.href = '{{ U_MCHAT_ARCHIVE_URL }}';" value="{{ lang('MCHAT_ARCHIVE') }}" />
+					<input type="button" class="button" data-mchat-action="archive" value="{{ lang('MCHAT_ARCHIVE') }}" />
 				{% endif %}
 				{% EVENT dmzx_mchat_buttons_after %}
 			</div>
