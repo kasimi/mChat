@@ -21,14 +21,8 @@
 					{% if S_BBCODE_ALLOWED %}
 						<input type="button" class="button" data-mchat-toggle="bbcodes" value="{{ lang('MCHAT_BBCODES') }}" />
 					{% endif %}
-					{% if MCHAT_RULES %}
-						<input type="button" class="button" data-mchat-action="rules" value="{{ lang('MCHAT_RULES') }}" />
-					{% endif %}
 				{% endif %}
 				{% EVENT dmzx_mchat_buttons_mid %}
-				{% if MCHAT_ARCHIVE %}
-					<input type="button" class="button" data-mchat-action="archive" value="{{ lang('MCHAT_ARCHIVE') }}" />
-				{% endif %}
 				{% EVENT dmzx_mchat_buttons_after %}
 			</div>
 			{% EVENT dmzx_mchat_buttons_container_after %}
@@ -58,7 +52,6 @@
 							<i id="mchat-status-error" class="fa fa-times icon icon-red" title="{{ lang('ERROR') }}"></i>
 						</span>
 					</li>
-					{% if not MCHAT_SOUND_DISABLED %}<li class="mchat-sound"><input type="checkbox" id="mchat-user-sound"{% if MCHAT_SOUND %} checked="checked"{% endif %} /><label for="mchat-user-sound">{{ lang('MCHAT_USESOUND') }}</label></li>{% endif %}
 				</ul>
 			</div>
 		{% endif %}

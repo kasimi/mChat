@@ -12,6 +12,11 @@
 	visibility: hidden;
 }
 
+.mchat-nav-container .dropdown-trigger i {
+	margin-left: 2px;
+	vertical-align: text-bottom;
+}
+
 .mchat-wrapper li.header dd {
 	width: 0;
 }
@@ -24,7 +29,6 @@
 #mchat-main {
 	position: relative;
 }
-
 
 .mchat-ucp fieldset hr:first-child, .mchat-ucp fieldset hr:last-child, .mchat-ucp fieldset hr + hr {
 	display: none;
@@ -215,6 +219,10 @@ textarea#mchat-input {
 
 #mchat-buttons {
 	margin-bottom: 5px;
+
+.mchat-sound-on .mchat-sound-icon-off,
+.mchat-sound-off .mchat-sound-icon-on {
+	display: none;
 }
 
 #mchat-bbcodes {

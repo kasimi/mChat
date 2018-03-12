@@ -57,7 +57,7 @@
 		{% EVENT dmzx_mchat_body_before %}
 
 		<div id="mchat-body"{% if MCHAT_IS_COLLAPSIBLE %} class="collapsible"{% endif %}>
-			{% if not MCHAT_SOUND_DISABLED %}
+			{% if MCHAT_SOUND_ENABLED %}
 				<audio id="mchat-sound-add" class="hidden" src="{{ EXT_URL }}sounds/add.mp3" preload="auto"></audio>
 				<audio id="mchat-sound-edit" class="hidden" src="{{ EXT_URL }}sounds/edit.mp3" preload="auto"></audio>
 				<audio id="mchat-sound-del" class="hidden" src="{{ EXT_URL }}sounds/del.mp3" preload="auto"></audio>

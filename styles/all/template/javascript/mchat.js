@@ -182,11 +182,19 @@ jQuery(function($) {
 			}
 			data.updateSession();
 		},
+		toggleSound: function(e) {
+			e.stopPropagation();
+			if (mChat.cached('sound').toggleClass('mchat-sound-on mchat-sound-off').hasClass('mchat-sound-on')) {
+				mChat.storage.remove('no_sound');
+			} else {
+				mChat.storage.set('no_sound', 'yes');
+			}
+		},
 		sound: function(file) {
 			var data = {
 				audio: mChat.cached('sound-' + file).get(0),
 				file: file,
-				play: !mChat.pageIsUnloading && mChat.cached('user-sound').is(':checked')
+				play: !mChat.pageIsUnloading && mChat.cached('sound').hasClass('mchat-sound-on')
 			};
 			$(mChat).trigger('mchat_sound_before', [data]);
 			if (data.play && data.audio && data.audio.duration) {
@@ -667,13 +675,8 @@ jQuery(function($) {
 			}, 1);
 		}
 
-		mChat.cached('user-sound').prop('checked', mChat.playSound && !mChat.storage.get('no_sound')).change(function() {
-			if (this.checked) {
-				mChat.storage.remove('no_sound');
-			} else {
-				mChat.storage.set('no_sound', 'yes');
-			}
-		});
+		var playSound = mChat.playSound && !mChat.storage.get('no_sound');
+		mChat.cached('sound').toggleClass('mchat-sound-on', playSound).toggleClass('mchat-sound-off', !playSound);
 
 		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
 			var bbCodeClass = '.bbcode-' + bbcode.replaceMany({

@@ -764,7 +764,7 @@ class mchat
 			'MCHAT_LOCATION'				=> $this->mchat_settings->cfg('mchat_location'),
 			'MCHAT_CHARACTER_COUNT'			=> $this->mchat_settings->cfg('mchat_character_count'),
 			'MCHAT_SOUND'					=> $this->mchat_settings->cfg('mchat_sound'),
-			'MCHAT_SOUND_DISABLED'			=> !$this->mchat_settings->cfg('mchat_sound') && !$this->mchat_settings->cfg('mchat_sound', true),
+			'MCHAT_SOUND_ENABLED'			=> $this->mchat_settings->cfg('mchat_sound') || $this->mchat_settings->cfg('mchat_sound', true),
 			'MCHAT_INDEX'					=> $this->mchat_settings->cfg('mchat_index'),
 			'MCHAT_PAUSE_ON_INPUT'			=> $this->mchat_settings->cfg('mchat_pause_on_input'),
 			'MCHAT_WHOIS_INDEX'				=> $this->mchat_settings->cfg('mchat_whois_index'),
