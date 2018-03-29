@@ -692,6 +692,7 @@ jQuery(function($) {
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
 			if (mChat.storage.get('show_' + elem)) {
+				$('.mchat-button-' + elem).addClass('mchat-button-is-down');
 				mChat.cached(elem).toggle();
 			}
 		});
@@ -758,10 +759,14 @@ jQuery(function($) {
 	$('#phpbb').on('click', '[data-mchat-action]', function(e) {
 		e.preventDefault();
 		var action = $(this).data('mchat-action');
-		mChat[action].call(this);
-	}).on('click', '[data-mchat-toggle]', function(e) {
-		e.preventDefault();
+		mChat[action].call(this, e);
+	}).on('click', '[data-mchat-toggle]', function() {
 		var elem = $(this).data('mchat-toggle');
 		mChat.toggle(elem);
+	}).on('click', '.mchat-panel-buttons button', function() {
+		var $this = $(this).blur();
+		if ($this.hasClass('mchat-button-down')) {
+			$this.toggleClass('mchat-button-is-down');
+		}
 	});
 });
