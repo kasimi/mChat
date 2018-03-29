@@ -162,8 +162,7 @@ jQuery(function($) {
 			};
 			$(mChat).trigger('mchat_ajax_fail_before', [data]);
 			mChat.sound('error');
-			mChat.cached('status-load', 'status-ok', 'status-paused').hide();
-			mChat.cached('status-error').show();
+			mChat.status('error');
 			var title = mChat.lang.err;
 			var responseText;
 			try {
@@ -323,8 +322,7 @@ jQuery(function($) {
 			if (mChat.liveUpdates) {
 				data.log = mChat.logId;
 			}
-			mChat.cached('status-ok', 'status-error', 'status-paused').hide();
-			mChat.cached('status-load').show();
+			mChat.status('loading');
 			return mChat.ajaxRequest(message ? 'add' : 'refresh', !!message, data).done(function(json) {
 				$(mChat).trigger('mchat_response_handle_data_before', [json]);
 				if (json.add) {
@@ -343,8 +341,7 @@ jQuery(function($) {
 					mChat.logId = json.log;
 				}
 				if (mChat.refreshInterval) {
-					mChat.cached('status-load', 'status-error', 'status-paused').hide();
-					mChat.cached('status-ok').show();
+					mChat.status('ok');
 				}
 				$(mChat).trigger('mchat_response_handle_data_after', [json]);
 			});
@@ -529,6 +526,22 @@ jQuery(function($) {
 				mChat.endSession();
 			}
 		},
+		status: function(status) {
+			var data = {
+				status: status,
+				all: ['ok', 'loading', 'idle', 'error'],
+				container: mChat.cached('body')
+			};
+			$(mChat).trigger('mchat_status_before', [data]);
+			var i = data.all.indexOf(data.status);
+			if (i > -1) {
+				data.all.splice(i, 1);
+				data.container.addClass('mchat-status-' + data.status);
+				for (var j = 0; j < data.all.length; j++) {
+					data.container.removeClass('mchat-status-' + data.all[j]);
+				}
+			}
+		},
 		pauseSession: function() {
 			clearInterval(mChat.refreshInterval);
 			if (mChat.timeout) {
@@ -551,8 +564,7 @@ jQuery(function($) {
 					clearInterval(mChat.whoisInterval);
 					mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
 				}
-				mChat.cached('status-ok').show();
-				mChat.cached('status-load', 'status-error', 'status-paused').hide();
+				mChat.status('ok');
 			}
 		},
 		endSession: function(skipUpdateWhois) {
@@ -567,18 +579,15 @@ jQuery(function($) {
 					mChat.whois();
 				}
 			}
-			mChat.cached('status-load', 'status-ok', 'status-error').hide();
-			mChat.cached('status-paused').show();
+			mChat.status('idle');
 		},
 		pauseStart: function() {
 			mChat.isPaused = true;
-			mChat.cached('status-load', 'status-ok', 'status-error').hide();
-			mChat.cached('status-paused').show();
+			mChat.status('idle');
 		},
 		pauseEnd: function() {
-			mChat.cached('status-load', 'status-error', 'status-paused').hide();
-			mChat.cached('status-ok').show();
 			mChat.isPaused = false;
+			mChat.status('ok');
 		},
 		updateCharCount: function() {
 			var count = mChat.cached('input').val().length;
