@@ -697,11 +697,17 @@ jQuery(function($) {
 			}
 		});
 
-		mChat.isTextarea = mChat.cached('input').is('textarea');
+		mChat.cached('input').one('focus', function() {
+			autosize(mChat.cached('input'));
+		}).on('autosize:resized', function(e) {
+  			mChat.cached('input').toggleClass('mchat-has-scrollbar', this.scrollHeight > this.clientHeight);
+		});
+
 		mChat.cached('form').submit(function(e){
 			e.preventDefault();
 		}).keypress(function(e) {
-			if ((e.which === 10 || e.which === 13) && (!mChat.isTextarea || e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
+			if ((e.which === 10 || e.which === 13) && (e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
+				e.preventDefault();
 				mChat.add();
 			}
 		});
