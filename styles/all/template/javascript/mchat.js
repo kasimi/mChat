@@ -602,11 +602,17 @@ jQuery(function($) {
 		},
 		updateCharCount: function() {
 			var count = mChat.cached('input').val().length;
-			var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
-			var $elem = mChat.cached('character-count').html(charCount).toggleClass('invisible', count === 0);
-			if (mChat.mssgLngth) {
-				$elem.toggleClass('error', count > mChat.mssgLngth);
+			var exceedCount = Math.max(mChat.mssgLngth - count, -999);
+			if (mChat.showCharCount) {
+				var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
+				var $elem = mChat.cached('character-count').html(charCount).toggleClass('invisible', count === 0);
+				if (mChat.mssgLngth) {
+					$elem.toggleClass('error', count > mChat.mssgLngth);
+				}
 			}
+			mChat.cached('exceed-character-count').text(exceedCount).toggleClass('hidden', exceedCount >= 0);
+			mChat.cached('input').toggleClass('mchat-input-error', exceedCount < 0);
+			mChat.cached('add').toggleClass('hidden', exceedCount < 0);
 		},
 		mention: function() {
 			var $container = $(this).closest('.mchat-message');
@@ -725,7 +731,7 @@ jQuery(function($) {
 			});
 		}
 
-		if (mChat.showCharCount) {
+		if (mChat.showCharCount || mChat.mssgLngth) {
 			mChat.cached('form').on('input', mChat.updateCharCount);
 			mChat.cached('input').on('focus', function() {
 				setTimeout(function() {
