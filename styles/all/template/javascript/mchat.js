@@ -247,7 +247,7 @@ jQuery(function($) {
 			if (mChat.cached('add').prop('disabled')) {
 				return;
 			}
-			var messageLength = mChat.cached('input').val().length;
+			var messageLength = mChat.cached('input').val().trim().length;
 			if (!messageLength) {
 				phpbb.alert(mChat.lang.err, mChat.lang.noMessageInput);
 				return;
@@ -258,7 +258,7 @@ jQuery(function($) {
 			}
 			mChat.cached('add').prop('disabled', true);
 			mChat.pauseSession();
-			var originalInputValue = mChat.cached('input').val();
+			var originalInputValue = mChat.cached('input').val().trim();
 			var inputValue = originalInputValue;
 			var color = mChat.storage.get('color');
 			if (color && inputValue.indexOf('[color=') === -1) {
