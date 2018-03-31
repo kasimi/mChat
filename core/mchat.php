@@ -766,7 +766,6 @@ class mchat
 			'MCHAT_SOUND'					=> $this->mchat_settings->cfg('mchat_sound'),
 			'MCHAT_SOUND_ENABLED'			=> $this->mchat_settings->cfg('mchat_sound') || $this->mchat_settings->cfg('mchat_sound', true),
 			'MCHAT_INDEX'					=> $this->mchat_settings->cfg('mchat_index'),
-			'MCHAT_PAUSE_ON_INPUT'			=> $this->mchat_settings->cfg('mchat_pause_on_input'),
 			'MCHAT_WHOIS_INDEX'				=> $this->mchat_settings->cfg('mchat_whois_index'),
 			'MCHAT_WHOIS_REFRESH'			=> $whois_refresh ? $this->mchat_settings->cfg('mchat_whois_refresh') * 1000 : 0,
 			'MCHAT_REFRESH_JS'				=> $this->mchat_settings->cfg('mchat_refresh') * 1000,

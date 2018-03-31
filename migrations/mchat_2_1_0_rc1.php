@@ -33,6 +33,32 @@ class mchat_2_1_0_rc1 extends migration
 			// Message reparser
 			['config.add', ['dmzx.mchat.text_reparser.mchat_messages_cron_interval', 10]],
 			['config.add', ['dmzx.mchat.text_reparser.mchat_messages_last_cron', 0]],
+
+			// Remove pause on input
+			['config.remove', ['mchat_pause_on_input']],
+			['permission.remove', ['u_mchat_pause_on_input', true]],
+		];
+	}
+
+	public function update_schema()
+	{
+		return [
+			'drop_columns' => [
+				$this->table_prefix . 'users' => [
+					'user_mchat_pause_on_input',
+				],
+			],
+		];
+	}
+
+	public function revert_schema()
+	{
+		return [
+			'add_columns' => [
+				$this->table_prefix . 'users' => [
+					'user_mchat_pause_on_input' => ['BOOL', 0],
+				],
+			],
 		];
 	}
 }

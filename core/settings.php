@@ -243,7 +243,6 @@ class settings
 			'mchat_input_area'				=> ['default' => 1],
 			'mchat_location'				=> ['default' => 1],
 			'mchat_message_top'				=> ['default' => 1],
-			'mchat_pause_on_input'			=> ['default' => 0],
 			'mchat_posts'					=> ['default' => 1],
 			'mchat_relative_time'			=> ['default' => 1],
 			'mchat_sound'					=> ['default' => 1],

@@ -59,7 +59,6 @@ $lang = array_merge($lang, [
 	'ACL_U_MCHAT_INPUT_AREA'				=> 'Can customise <em>Input type</em>',
 	'ACL_U_MCHAT_LOCATION'					=> 'Can customise <em>Location of mChat on the index page</em>',
 	'ACL_U_MCHAT_MESSAGE_TOP'				=> 'Can customise <em>Location of new chat messages</em>',
-	'ACL_U_MCHAT_PAUSE_ON_INPUT'			=> 'Can customise <em>Pause on input</em>',
 	'ACL_U_MCHAT_POSTS'						=> 'Can customise <em>Display new posts</em>',
 	'ACL_U_MCHAT_RELATIVE_TIME'				=> 'Can customise <em>Display relative time</em>',
 	'ACL_U_MCHAT_SOUND'						=> 'Can customise <em>Play sounds</em>',

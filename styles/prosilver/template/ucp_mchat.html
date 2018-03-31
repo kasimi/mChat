@@ -115,15 +115,6 @@
 					</dd>
 				</dl>
 				{% endif %}
-				{% if MCHAT_PAUSE_ON_INPUT_AUTH and MCHAT_ALLOW_USE %}
-				<dl>
-					<dt><label for="user_mchat_pause_on_input">{{ lang('MCHAT_PAUSE_ON_INPUT') ~ lang('COLON') }}</label><br><span>{{ lang('MCHAT_PAUSE_ON_INPUT_EXPLAIN') }}</span></dt>
-					<dd>
-						<label><input type="radio" name="user_mchat_pause_on_input" value="1"{% if MCHAT_PAUSE_ON_INPUT %} id="user_mchat_pause_on_input" checked="checked"{% endif %} /> {{ lang('YES') }}</label>
-						<label><input type="radio" name="user_mchat_pause_on_input" value="0"{% if not MCHAT_PAUSE_ON_INPUT %} id="user_mchat_pause_on_input" checked="checked"{% endif %} /> {{ lang('NO') }}</label>
-					</dd>
-				</dl>
-				{% endif %}
 				{% if MCHAT_DATE_AUTH %}
 				<dl>
 					<dt><label for="user_mchat_dateoptions">{{ lang('MCHAT_DATE_FORMAT') ~ lang('COLON') }}</label><br><span>{{ lang('MCHAT_DATE_FORMAT_EXPLAIN') }}</span></dt>

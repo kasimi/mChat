@@ -602,14 +602,6 @@ jQuery(function($) {
 			}
 			mChat.status('idle');
 		},
-		pauseStart: function() {
-			mChat.isPaused = true;
-			mChat.status('idle');
-		},
-		pauseEnd: function() {
-			mChat.isPaused = false;
-			mChat.status('ok');
-		},
 		updateCharCount: function() {
 			var count = mChat.cached('input').val().length;
 			var exceedCount = Math.max(mChat.mssgLngth - count, -999);
@@ -739,19 +731,6 @@ jQuery(function($) {
 				}
 			}
 		});
-
-		if (mChat.pause) {
-			mChat.cached('form').on('input', function() {
-				if (mChat.refreshInterval !== false) {
-					var val = mChat.cached('input').val();
-					if (mChat.isPaused && val === '') {
-						mChat.pauseEnd();
-					} else if (!mChat.isPaused && val !== '') {
-						mChat.pauseStart();
-					}
-				}
-			});
-		}
 
 		if (mChat.showCharCount || mChat.mssgLngth) {
 			mChat.cached('form').on('input', mChat.updateCharCount);

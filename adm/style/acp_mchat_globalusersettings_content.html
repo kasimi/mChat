@@ -78,13 +78,6 @@
 	</dd>
 </dl>
 <dl>
-	<dt><label for="user_mchat_pause_on_input">{{ lang('MCHAT_PAUSE_ON_INPUT') ~ lang('COLON') }}</label><br><span>{{ lang('MCHAT_PAUSE_ON_INPUT_EXPLAIN') }}</span></dt>
-	<dd>
-		<label><input type="radio" name="user_mchat_pause_on_input" value="1"{% if MCHAT_PAUSE_ON_INPUT %} id="user_mchat_pause_on_input" checked="checked"{% endif %}{% if MCHAT_PAUSE_ON_INPUT_NOAUTH %} disabled{% endif %} /> {{ lang('YES') }}</label>
-		<label><input type="radio" name="user_mchat_pause_on_input" value="0"{% if not MCHAT_PAUSE_ON_INPUT %} id="user_mchat_pause_on_input" checked="checked"{% endif %}{% if MCHAT_PAUSE_ON_INPUT_NOAUTH %} disabled{% endif %} /> {{ lang('NO') }}</label>
-	</dd>
-</dl>
-<dl>
 	<dt><label for="user_mchat_dateoptions">{{ lang('MCHAT_DATE_FORMAT') ~ lang('COLON') }}</label><br><span>{{ lang('MCHAT_DATE_FORMAT_EXPLAIN') }}</span></dt>
 	<dd>
 		<select name="user_mchat_dateoptions" id="user_mchat_dateoptions" onchange="phpbb.toggleDisplay('user_mchat_custom_date', this.value == 'custom' ? 1 : -1); document.getElementById('user_mchat_date').value = this.value == 'custom' ? '{{ MCHAT_DEFAULT_DATEFORMAT | escape('js') }}' : this.value;"{% if MCHAT_DATE_NOAUTH %} disabled{% endif %}>
