@@ -27,6 +27,15 @@
 						</li>
 					{% endif %}
 					{% EVENT dmzx_mchat_nav_item_sound_after %}
+					{% if MCHAT_ALLOW_USE and MCHAT_MAX_INPUT_HEIGHT %}
+						<li id="mchat-enter" class="mchat-enter mchat-enter-submit" data-mchat-action="toggleEnter">
+							<a href="#" title="{{ lang('MCHAT_ENTER') }}" role="menuitem">
+								<span class="mchat-enter-icon-submit"><i class="icon fa fa-chevron-right fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_SUBMIT') }}</span>
+								<span class="mchat-enter-icon-linebreak"><i class="icon fa fa-chevron-down fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_LINEBREAK') }}</span>
+							</a>
+						</li>
+					{% endif %}
+					{% EVENT dmzx_mchat_nav_item_enter_after %}
 					<li class="separator"></li>
 					{% if MCHAT_RULES %}
 						<li class="mchat-nav-rules">

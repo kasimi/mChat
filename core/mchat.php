@@ -774,6 +774,7 @@ class mchat
 			'MCHAT_RULES'					=> $this->lang->lang('MCHAT_RULES_MESSAGE') ?: $this->mchat_settings->cfg('mchat_rules'),
 			'MCHAT_LOG_ID'					=> $this->mchat_log->get_latest_id(),
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
+			'MCHAT_MAX_INPUT_HEIGHT'		=> $this->mchat_settings->cfg('mchat_max_input_height'),
 			'MCHAT_MAX_MESSAGE_LENGTH'		=> $this->mchat_settings->cfg('mchat_max_message_lngth'),
 			'COOKIE_NAME'					=> $this->mchat_settings->cfg('cookie_name', true) . '_',
 			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_page_custom_controller'),

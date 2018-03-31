@@ -122,6 +122,11 @@
 			<dd><input type="text" name="mchat_max_message_lngth" id="mchat_max_message_lngth" size="10" value="{{ MCHAT_MAX_MESSAGE_LNGTH }}" />&nbsp;<span>{{ lang('MCHAT_ACP_CHARACTERS') }}</span></dd>
 		</dl>
 		<dl>
+			<dt><label for="mchat_max_input_height">{{ lang('MCHAT_MAX_INPUT_HEIGHT') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('MCHAT_MAX_INPUT_HEIGHT_EXPLAIN') }}</span></dt>
+			<dd><input type="text" name="mchat_max_input_height" id="mchat_max_input_height" size="10" value="{{ MCHAT_MAX_INPUT_HEIGHT }}" />&nbsp;<span>{{ lang('PIXEL') }}</span></dd>
+		</dl>
+		<dl>
 			<dt><label for="mchat_override_min_post_chars">{{ lang('MCHAT_OVERRIDE_MIN_POST_CHARS') ~ lang('COLON') }}</label><br>
 				<span>{{ lang('MCHAT_OVERRIDE_MIN_POST_CHARS_EXPLAIN') }}</span></dt>
 			<dd><label><input type="radio" class="radio" name="mchat_override_min_post_chars" value="1"{% if MCHAT_OVERRIDE_MIN_POST_CHARS %} id="mchat_override_min_post_chars" checked="checked"{% endif %} /> {{ lang('YES') }}</label>

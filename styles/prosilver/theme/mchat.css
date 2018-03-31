@@ -294,7 +294,6 @@
 }
 
 #mchat-input {
-	max-height: 250px;
 	overflow-x: hidden;
 }
 
@@ -317,6 +316,11 @@
 
 .mchat-sound-on .mchat-sound-icon-off,
 .mchat-sound-off .mchat-sound-icon-on {
+	display: none;
+}
+
+.mchat-enter-submit .mchat-enter-icon-linebreak,
+.mchat-enter-linebreak .mchat-enter-icon-submit {
 	display: none;
 }
 

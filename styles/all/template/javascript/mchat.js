@@ -182,6 +182,14 @@ jQuery(function($) {
 			}
 			data.updateSession();
 		},
+		toggleEnter: function(e) {
+			e.stopPropagation();
+			if (mChat.cached('enter').toggleClass('mchat-enter-submit mchat-enter-linebreak').hasClass('mchat-enter-submit')) {
+				mChat.storage.remove('no_submit');
+			} else {
+				mChat.storage.set('no_submit', 'yes');
+			}
+		},
 		toggleSound: function(e) {
 			e.stopPropagation();
 			if (mChat.cached('sound').toggleClass('mchat-sound-on mchat-sound-off').hasClass('mchat-sound-on')) {
@@ -244,10 +252,13 @@ jQuery(function($) {
 			});
 		},
 		add: function() {
-			if (mChat.cached('add').prop('disabled')) {
+			var $add = mChat.cached('add');
+			if ($add.prop('disabled')) {
 				return;
 			}
-			var messageLength = mChat.cached('input').val().trim().length;
+			var $input = mChat.cached('input');
+			var originalInputValue = $input.val().trim();
+			var messageLength = originalInputValue.length;
 			if (!messageLength) {
 				phpbb.alert(mChat.lang.err, mChat.lang.noMessageInput);
 				return;
@@ -256,24 +267,23 @@ jQuery(function($) {
 				phpbb.alert(mChat.lang.err, mChat.lang.mssgLngthLong);
 				return;
 			}
-			mChat.cached('add').prop('disabled', true);
+			$add.prop('disabled', true);
 			mChat.pauseSession();
-			var originalInputValue = mChat.cached('input').val().trim();
 			var inputValue = originalInputValue;
 			var color = mChat.storage.get('color');
 			if (color && inputValue.indexOf('[color=') === -1) {
 				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
 			}
-			mChat.cached('input').val('').focus();
+			$input.val('').focus();
+			autosize.update($input);
 			mChat.refresh(inputValue).done(function() {
 				mChat.resetSession();
 			}).fail(function() {
-				mChat.cached('input').val(originalInputValue);
+				$input.val(originalInputValue);
+				autosize.update($input);
 			}).always(function() {
-				mChat.cached('add').prop('disabled', false);
-				setTimeout(function() {
-					mChat.cached('input').focus();
-				}, 1);
+				$add.prop('disabled', false);
+				$input.delay(1).focus();
 			});
 		},
 		edit: function() {
@@ -676,13 +686,14 @@ jQuery(function($) {
 		mChat.resetSession();
 
 		if (!mChat.messageTop) {
-			setTimeout(function() {
-				mChat.cached('messages').scrollTop(mChat.cached('messages')[0].scrollHeight);
-			}, 1);
+			mChat.cached('messages').delay(1).scrollTop(mChat.cached('messages')[0].scrollHeight);
 		}
 
 		var playSound = mChat.playSound && !mChat.storage.get('no_sound');
 		mChat.cached('sound').toggleClass('mchat-sound-on', playSound).toggleClass('mchat-sound-off', !playSound);
+
+		var enterSubmits = mChat.maxInputHeight && !mChat.storage.get('no_enter');
+		mChat.cached('enter').toggleClass('mchat-enter-submit', enterSubmits).toggleClass('mchat-enter-linebreak', !enterSubmits);
 
 		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
 			var bbCodeClass = '.bbcode-' + bbcode.replaceMany({
@@ -703,18 +714,29 @@ jQuery(function($) {
 			}
 		});
 
-		mChat.cached('input').one('focus', function() {
-			autosize(mChat.cached('input'));
-		}).on('autosize:resized', function(e) {
-  			mChat.cached('input').toggleClass('mchat-has-scrollbar', this.scrollHeight > this.clientHeight);
-		});
+		if (mChat.maxInputHeight) {
+			mChat.cached('input').one('focus', function() {
+				autosize(mChat.cached('input'));
+			}).on('autosize:resized', function(e) {
+				mChat.cached('input').toggleClass('mchat-has-scrollbar', this.scrollHeight > this.clientHeight);
+			});
+		}
 
-		mChat.cached('form').submit(function(e){
+		mChat.cached('form').submit(function(e) {
 			e.preventDefault();
 		}).keypress(function(e) {
-			if ((e.which === 10 || e.which === 13) && (e.ctrlKey || e.metaKey) && mChat.cached('input').is(e.target)) {
-				e.preventDefault();
-				mChat.add();
+			if (e.which === 10 || e.which === 13) {
+				var $input = mChat.cached('input');
+				if ($input.is(e.target)) {
+					var isCtrl = e.ctrlKey || e.metaKey;
+					if (!mChat.maxInputHeight || !isCtrl === !mChat.storage.get('no_submit')) {
+						e.preventDefault();
+						mChat.add();
+					} else if (mChat.maxInputHeight && isCtrl) {
+						$input.val($input.val() + '\n');
+						autosize.update($input);
+					}
+				}
 			}
 		});
 
@@ -734,9 +756,7 @@ jQuery(function($) {
 		if (mChat.showCharCount || mChat.mssgLngth) {
 			mChat.cached('form').on('input', mChat.updateCharCount);
 			mChat.cached('input').on('focus', function() {
-				setTimeout(function() {
-					mChat.updateCharCount();
-				}, 1);
+				setTimeout(mChat.updateCharCount, 1);
 			});
 		}
 	}

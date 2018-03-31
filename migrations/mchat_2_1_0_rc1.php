@@ -28,6 +28,8 @@ class mchat_2_1_0_rc1 extends migration
 
 			['config.remove', ['mchat_navbar_link']],
 
+			['config.add', ['mchat_max_input_height', 150]],
+
 			// Message reparser
 			['config.add', ['dmzx.mchat.text_reparser.mchat_messages_cron_interval', 10]],
 			['config.add', ['dmzx.mchat.text_reparser.mchat_messages_last_cron', 0]],
