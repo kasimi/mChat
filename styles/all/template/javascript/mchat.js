@@ -365,7 +365,7 @@ jQuery(function($) {
 			});
 		},
 		rules: function() {
-			popup(mChat.urlRules, 450, 275);
+			popup(this.href, 450, 275);
 		},
 		whois: function() {
 			if (mChat.page === 'custom') {
@@ -373,6 +373,12 @@ jQuery(function($) {
 				mChat.cached('refresh-explain').hide();
 			}
 			mChat.ajaxRequest('whois', false, {}).done(mChat.handleWhoisResponse);
+		},
+		smiley: function() {
+			insert_text($(this).data('smiley-code'), true);
+		},
+		smileyPopup: function() {
+			popup(this.href, 300, 350, '_phpbbsmilies');
 		},
 		handleWhoisResponse: function(json) {
 			var $whois = $(json.container);
@@ -648,7 +654,7 @@ jQuery(function($) {
 			popup(this.href, 750, 500);
 		},
 		archive: function() {
-			window.location.href = mChat.urlArchive;
+			window.location.href = this.href;
 		},
 		cached: function() {
 			return $($.map(arguments, function(name) {

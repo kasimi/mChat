@@ -39,7 +39,7 @@
 					<li class="separator"></li>
 					{% if MCHAT_RULES %}
 						<li class="mchat-nav-rules">
-							<a href="#" title="{{ lang('MCHAT_RULES') }}" role="menuitem" data-mchat-action="rules">
+							<a href="{{ U_MCHAT_RULES }}" title="{{ lang('MCHAT_RULES') }}" role="menuitem" data-mchat-action="rules">
 								<i class="icon fa fa-exclamation fa-fw" aria-hidden="true"></i><span class="text-strong">{{ lang('MCHAT_RULES') }}</span>
 							</a>
 						</li>
@@ -47,7 +47,7 @@
 					{% EVENT dmzx_mchat_nav_item_rules_after %}
 					{% if MCHAT_ARCHIVE %}
 						<li class="mchat-nav-archive">
-							<a href="#" title="{{ lang('MCHAT_ARCHIVE') }}" role="menuitem" data-mchat-action="archive">
+							<a href="{{ U_MCHAT_ARCHIVE_URL }}" title="{{ lang('MCHAT_ARCHIVE') }}" role="menuitem" data-mchat-action="archive">
 								<i class="icon fa fa-history fa-fw" aria-hidden="true"></i><span>{{ lang('MCHAT_ARCHIVE') }}</span>
 							</a>
 						</li>

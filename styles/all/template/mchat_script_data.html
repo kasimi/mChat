@@ -6,8 +6,7 @@
 {% INCLUDEJS '@dmzx_mchat/javascript/autosize.min.js' %}
 {% INCLUDEJS '@dmzx_mchat/javascript/mchat.js' %}
 
-<script type="text/javascript">
-	// <![CDATA[
+<script>
 	var form_name = 'postform';
 	var text_name = 'message';
 	var mChat = {
@@ -19,8 +18,6 @@
 		},
 		page			: '{{ MCHAT_PAGE | escape('js') }}',
 		cookie			: '{{ COOKIE_NAME | escape('js') }}',
-		urlArchive		: '{{ U_MCHAT_ARCHIVE_URL }}',
-		urlRules		: '{{ U_MCHAT_RULES }}',
 		playSound		: {{ MCHAT_SOUND ? 'true' : 'false' }},
 		messageTop		: {{ MCHAT_MESSAGE_TOP ? 'true' : 'false' }},
 		allowBBCodes	: {{ S_BBCODE_ALLOWED ? 'true' : 'false' }},
@@ -61,5 +58,4 @@
 			likes			: '{{ lang('MCHAT_LIKES') | escape('js') }}'
 		}
 	};
-// ]]>
 </script>
