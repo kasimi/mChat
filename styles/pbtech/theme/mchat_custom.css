@@ -17,7 +17,7 @@
 }
 
 #mChat + .forabg .collapse-box a:before {
-  content: '';
+	content: '';
 }
 
 @keyframes flash-message {

@@ -160,7 +160,7 @@ class notifications
 		foreach ($notifications as $i => $type)
 		{
 			$lang_key = $notification_langs[$rows[$i]['message']];
-			$post_data = $type == self::POST  ? $notification_post_data[$post_ids[$i]] : null;
+			$post_data = $type == self::POST ? $notification_post_data[$post_ids[$i]] : null;
 			$rows[$i] = $this->process_notification($rows[$i], $type, $lang_key, $post_data);
 		}
 

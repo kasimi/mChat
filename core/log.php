@@ -116,7 +116,7 @@ class log
 			'message_id'	=> (int) $message_id,
 			'log_ip'		=> $this->user->ip,
 			'log_time'		=> time(),
-			]));
+		]));
 
 		$log_id = (int) $this->db->sql_nextid();
 
