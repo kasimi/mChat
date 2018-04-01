@@ -126,13 +126,16 @@ class acp_controller
 			// Remove leading & trailing | characters to not break allowed BBCodes
 			$mchat_new_config['mchat_bbcode_disallowed'] = trim($mchat_new_config['mchat_bbcode_disallowed'], '|');
 
-			// Don't allow changing pruning settings for non founders
 			if (!$is_founder)
 			{
+				// Don't allow changing pruning settings for non founders
 				unset($mchat_new_config['mchat_prune']);
 				unset($mchat_new_config['mchat_prune_gc']);
 				unset($mchat_new_config['mchat_prune_mode']);
 				unset($mchat_new_config['mchat_prune_num']);
+
+				// Don't allow changing log settings for non founders
+				unset($mchat_new_config['mchat_log_enabled']);
 			}
 
 			$this->settings->include_functions('user', 'validate_data');
@@ -183,7 +186,7 @@ class acp_controller
 				$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat());
 				$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat_log());
 				$this->cache->destroy('sql', $this->settings->get_table_mchat_log());
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PURGED', false, [$this->user->data['username']]);
+				$this->mchat_functions->phpbb_log('LOG_MCHAT_TABLE_PURGED');
 				trigger_error($this->lang->lang('MCHAT_PURGED') . adm_back_link($u_action));
 			}
 			else if ($is_founder && $this->request->is_set_post('mchat_prune_now') && $this->request->variable('mchat_prune_now_confirm', false) && check_form_key('acp_mchat'))

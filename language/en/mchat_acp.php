@@ -42,6 +42,7 @@ $lang = array_merge($lang, [
 	'MCHAT_SETTINGS_POSTS'							=> 'New posts settings',
 	'MCHAT_SETTINGS_MESSAGES'						=> 'Message settings',
 	'MCHAT_SETTINGS_PRUNE'							=> 'Pruning settings (adjustable for founders only)',
+	'MCHAT_SETTINGS_LOG'							=> 'Log settings (adjustable for founders only)',
 	'MCHAT_SETTINGS_STATS'							=> 'Who is chatting settings',
 
 	'MCHAT_GLOBALUSERSETTINGS_EXPLAIN'				=> 'Settings for which a user does <strong>not</strong> have permission to customise are applied as configured below.<br>New user accounts will have initial settings as configured below.<br><br>Go to the <em>mChat in UCP</em> tab of the user permissions section to adjust customisation permissions.<br>Go to the <em>Preferences</em> form in the <em>user management</em> section to see the status of each user’s settings.',
@@ -115,6 +116,8 @@ $lang = array_merge($lang, [
 	'MCHAT_OVERRIDE_SMILIE_LIMIT_EXPLAIN'			=> 'Set to yes to override the forums smilie limit setting for chat messages',
 	'MCHAT_OVERRIDE_MIN_POST_CHARS'					=> 'Override minimum characters limit',
 	'MCHAT_OVERRIDE_MIN_POST_CHARS_EXPLAIN'			=> 'Set to yes to override the forums minimum characters setting for chat messages',
+	'MCHAT_LOG_ENABLED'								=> 'Add entries to the admin log',
+	'MCHAT_LOG_ENABLED_EXPLAIN'						=> 'This affects message editing, deleting, pruning and purging.',
 
 	'MCHAT_POSTS_AUTH_CHECK'						=> 'Require user permission',
 	'MCHAT_POSTS_AUTH_CHECK_EXPLAIN'				=> 'If set to yes, users who can not use mChat will not generate any post/login notification messages.',

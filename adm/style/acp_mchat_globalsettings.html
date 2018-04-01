@@ -271,6 +271,22 @@
 		{% EVENT dmzx_mchat_acp_purge_after %}
 
 	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('MCHAT_SETTINGS_LOG') }}</legend>
+
+		{% EVENT dmzx_mchat_acp_log_before %}
+
+		<dl>
+			<dt><label for="mchat_log_enabled">{{ lang('MCHAT_LOG_ENABLED') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('MCHAT_LOG_ENABLED_EXPLAIN') }}</span></dt>
+			<dd><label><input type="radio" class="radio" name="mchat_log_enabled" value="1"{% if MCHAT_LOG_ENABLED %} id="mchat_log_enabled" checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" class="radio" name="mchat_log_enabled" value="0"{% if not MCHAT_LOG_ENABLED %} id="mchat_log_enabled" checked="checked"{% endif %} /> {{ lang('NO') }}</label></dd>
+		</dl>
+
+		{% EVENT dmzx_mchat_acp_log_after %}
+
+	</fieldset>
 	{% endif %}
 
 	{% EVENT acp_dmzx_mchat_globalsettings_after %}

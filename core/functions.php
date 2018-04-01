@@ -389,7 +389,7 @@ class functions
 			// Only add a log entry if message pruning was not triggered by user pruning
 			if (!$user_ids)
 			{
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MCHAT_TABLE_PRUNED', false, [$this->user->data['username'], count($prune_ids)]);
+				$this->phpbb_log('LOG_MCHAT_TABLE_PRUNED', [count($prune_ids)]);
 			}
 		}
 
@@ -655,6 +655,42 @@ class functions
 	}
 
 	/**
+	 * Adds an entry to phpBB's admin log
+	 *
+	 * @param string $log_lang_key
+	 * @param array $additional_data
+	 */
+	public function phpbb_log($log_lang_key, $additional_data = [])
+	{
+		$mode = 'admin';
+		$log_enabled = $this->mchat_settings->cfg('mchat_log_enabled');
+		$additional_data = array_merge([$this->user->data['username']], $additional_data);
+
+		/**
+		 * Event to modify the phpBB log data before it is added to the log table
+		 *
+		 * @event dmzx.mchat.phpbb_log_add_before
+		 * @var string	mode					The log mode, one of admin|mod|user|critical
+		 * @var	string	log_lang_key			The language key of the log entry
+		 * @var bool	log_enabled				Flag indicating whether this log entry should be added or not
+		 * @var array	additional_data			Array with additional data for the log message
+		 * @since 2.1.0-RC1
+		 */
+		$vars = [
+			'mode',
+			'log_lang_key',
+			'log_enabled',
+			'additional_data',
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.phpbb_log_add_before', compact($vars)));
+
+		if ($log_enabled)
+		{
+			$this->log->add($mode, $this->user->data['user_id'], $this->user->ip, $log_lang_key, false, $additional_data);
+		}
+	}
+
+	/**
 	 * Performs AJAX actions
 	 *
 	 * @param string $action One of add|edit|del
@@ -707,7 +743,7 @@ class functions
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('UPDATE ' . $this->mchat_settings->get_table_mchat() . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE message_id = ' . (int) $message_id);
 				$this->mchat_log->add_log('edit', $message_id);
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EDITED_MCHAT', false, [$this->user->data['username']]);
+				$this->phpbb_log('LOG_EDITED_MCHAT');
 				break;
 
 			// User deletes a message
@@ -719,7 +755,7 @@ class functions
 				$is_new_session = $this->mchat_add_user_session();
 				$this->db->sql_query('DELETE FROM ' . $this->mchat_settings->get_table_mchat() . ' WHERE message_id = ' . (int) $message_id);
 				$this->mchat_log->add_log('del', $message_id);
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DELETED_MCHAT', false, [$this->user->data['username']]);
+				$this->phpbb_log('LOG_DELETED_MCHAT');
 				break;
 		}
 
