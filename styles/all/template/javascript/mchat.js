@@ -185,9 +185,9 @@ jQuery(function($) {
 		toggleEnter: function(e) {
 			e.stopPropagation();
 			if (mChat.cached('enter').toggleClass('mchat-enter-submit mchat-enter-linebreak').hasClass('mchat-enter-submit')) {
-				mChat.storage.remove('no_submit');
+				mChat.storage.remove('no_enter');
 			} else {
-				mChat.storage.set('no_submit', 'yes');
+				mChat.storage.set('no_enter', 'yes');
 			}
 		},
 		toggleSound: function(e) {
@@ -745,7 +745,7 @@ jQuery(function($) {
 			if (e.which === 10 || e.which === 13) {
 				if (mChat.cached('input').is(e.target)) {
 					var isCtrl = e.ctrlKey || e.metaKey;
-					if (!mChat.maxInputHeight || !isCtrl === !mChat.storage.get('no_submit')) {
+					if (!mChat.maxInputHeight || !isCtrl === !mChat.storage.get('no_enter')) {
 						e.preventDefault();
 						mChat.add();
 					} else if (mChat.maxInputHeight && isCtrl) {
