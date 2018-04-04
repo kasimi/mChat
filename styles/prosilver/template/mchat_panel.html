@@ -1,12 +1,13 @@
-<div id="mchat-panel" class="panel cp-mini{% if MCHAT_PAGE == 'archive' %} hidden{% endif %}">
+{% set MCHAT_DISPLAY_INDEX_WHOIS = MCHAT_PAGE == 'index' and MCHAT_WHOIS_REFRESH and MCHAT_WHOIS_INDEX %}
+<div id="mchat-panel" class="panel cp-mini{% if MCHAT_PAGE == 'archive' %} hidden{% endif %}{% if MCHAT_ALLOW_USE or MCHAT_DISPLAY_INDEX_WHOIS %} mchat-panel-content{% endif %}">
 	<form id="mchat-form" name="postform" action="{{ U_MCHAT_CUSTOM_PAGE }}" method="POST">
 		{{ S_FORM_TOKEN }}
 		{% if MCHAT_ALLOW_USE and MCHAT_PAGE != 'archive' %}
 			<noscript><div class="error">{{ lang('MCHAT_NOJAVASCRIPT') }}</div></noscript>
 			{% EVENT dmzx_mchat_controls_before %}
 			<div class="mchat-controls">
-				<div class="mchat-input-container">
-					<textarea id="mchat-input" name="message" class="inputbox medium no-auto-resize {{ MCHAT_MAX_INPUT_HEIGHT ? 'mchat-multi-line' : 'mchat-single-line' }}" rows="1" autocomplete="off"></textarea>
+				<div class="mchat-input-container inputbox">
+					<textarea id="mchat-input" name="message" class="no-auto-resize {{ MCHAT_MAX_INPUT_HEIGHT ? 'mchat-multi-line' : 'mchat-single-line' }}" rows="1" autocomplete="off"></textarea>
 					<div class="mchat-input-control">
 						<button class="mchat-button-add" id="mchat-add" data-mchat-action="add" title="{{ lang('MCHAT_ADD') }}">
 							<i class="icon icon-lightgray fa fa-chevron-right fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('MCHAT_ADD') }}</span>
@@ -57,7 +58,7 @@
 			{% EVENT dmzx_mchat_body_smiley_after %}
 		{% endif %}
 	</form>
-	{% if MCHAT_PAGE == 'index' and MCHAT_WHOIS_REFRESH and MCHAT_WHOIS_INDEX %}
+	{% if MCHAT_DISPLAY_INDEX_WHOIS %}
 		{% INCLUDE '@dmzx_mchat/mchat_whois.html' %}
 	{% endif %}
 	{% if MCHAT_ALLOW_USE and MCHAT_CHARACTER_COUNT and MCHAT_PAGE != 'archive' %}

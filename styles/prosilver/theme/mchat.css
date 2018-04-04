@@ -197,9 +197,13 @@
 	text-align: center;
 	max-height: initial;
 	overflow: hidden;
-	padding: 0 5px 5px 5px;
+	padding: 5px;
 	margin: 0;
 	border-radius: 0;
+}
+
+#mchat-panel:not(.mchat-panel-content) {
+	display: none;
 }
 
 #mchat-form {
@@ -208,28 +212,37 @@
 
 .mchat-controls {
 	display: flex;
-	margin: 10px 0 5px;
+	margin: 5px 0;
 }
 
 .mchat-avatars .mchat-controls {
-	margin: 20px 43px 15px;
+	margin: 10px 43px;
 }
 
 .mchat-input-container {
 	flex: 1;
 	position: relative;
+	max-width: 100%;
+	border-radius: 4px;
+	padding: 0;
 }
 
 #mchat-input {
 	font-size: 1.2em;
-	padding: 6px 38px 5px 6px;
+	padding: 6px 6px 5px;
 	min-width: 100%;
 	border-radius: 4px;
 	overflow: hidden;
 	resize: none;
+	border: none;
+	border-right: 35px solid transparent;
 }
 
-#mchat-input.mchat-single-line {
+#mchat-input:focus, .mchat-input-control > *:focus {
+	outline: none;
+}
+
+.mchat-single-line {
 	white-space: nowrap;
 }
 
@@ -240,15 +253,12 @@
 .mchat-input-control {
 	position: absolute;
 	display: flex;
+	justify-content: center;
+	align-items: center;
 	width: 32px;
 	height: 100%;
 	top: 0;
 	right: 0;
-}
-
-#mchat-input.mchat-has-scrollbar ~ .mchat-input-control {
-	right: 20px;
-	overflow-y: visible;
 }
 
 .mchat-input-control::before {
@@ -281,15 +291,13 @@
 	background: #F00;
 }
 
-.mchat-input-control > * {
-	margin: 0 auto;
-	align-self: center;
-	outline: none !important;
+.mchat-button-add {
+	margin: 3px 0 0 3px;
+	padding: 5px;
 }
 
-.mchat-button-add {
-	margin: 5px 3px 3px;
-	padding: 5px;
+.mchat-button-add .icon {
+	font-size: 15px;
 }
 
 #mchat-exceed-character-count {
@@ -299,11 +307,11 @@
 
 .mchat-panel-buttons {
 	display: flex;
-	margin-left: 3px;
+	margin-left: 5px;
 }
 
 .mchat-panel-buttons .button:not(:last-child) {
-	margin-right: 3px;
+	margin-right: 5px;
 }
 
 .mchat-panel-buttons .icon {
@@ -325,12 +333,16 @@
 }
 
 #mchat-bbcodes {
-	padding: 0 5px;
 	display: none;
 }
 
-#mchat-bbcodes #format-buttons {
+#mchat-bbcodes #format-buttons,
+#mchat-bbcodes #format-postingbuttons {
 	margin: 0 0 5px;
+}
+
+#mchat-colour {
+	display: none;
 }
 
 #mchat-bbcodes #colour_palette label {
@@ -374,10 +386,6 @@
 	padding: 5px 5px 7px !important;
 }
 
-#mchat-colour {
-	display: none;
-}
-
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
 
 	#mchat-body {
@@ -390,10 +398,6 @@
 
 	.mchat-controls {
 		flex-direction: column;
-	}
-
-	#mchat-input {
-		font-size: 16px;
 	}
 
 	.mchat-panel-buttons {
