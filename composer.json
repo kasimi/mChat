@@ -6,7 +6,7 @@
 	"version": "2.0.3",
 	"time": "2017-12-31",
 	"keywords": ["phpbb", "extension", "mchat"],
-	"license": "GPL-2.0",
+	"license": "GPL-2.0-only",
 	"authors": [
 		{
 			"name": "kasimi",
