@@ -257,7 +257,7 @@ jQuery(function($) {
 				return;
 			}
 			var $input = mChat.cached('input');
-			var originalInputValue = $input.val().trim();
+			var originalInputValue = mChat.cleanMessage($input.val());
 			var messageLength = originalInputValue.length;
 			if (!messageLength) {
 				phpbb.alert(mChat.lang.err, mChat.lang.noMessageInput);
@@ -274,13 +274,11 @@ jQuery(function($) {
 			if (color && inputValue.indexOf('[color=') === -1) {
 				inputValue = '[color=#' + color + '] ' + inputValue + ' [/color]';
 			}
-			$input.val('').focus();
-			autosize.update($input);
+			mChat.setText('');
 			mChat.refresh(inputValue).done(function() {
 				mChat.resetSession();
 			}).fail(function() {
-				$input.val(originalInputValue);
-				autosize.update($input);
+				mChat.setText(originalInputValue);
 			}).always(function() {
 				$add.prop('disabled', false);
 				$input.delay(1).focus();
@@ -375,7 +373,7 @@ jQuery(function($) {
 			mChat.ajaxRequest('whois', false, {}).done(mChat.handleWhoisResponse);
 		},
 		smiley: function() {
-			insert_text($(this).data('smiley-code'), true);
+			mChat.appendText($(this).data('smiley-code'), true);
 		},
 		smileyPopup: function() {
 			popup(this.href, 300, 350, '_phpbbsmilies');
@@ -609,7 +607,7 @@ jQuery(function($) {
 			mChat.status('idle');
 		},
 		updateCharCount: function() {
-			var count = mChat.cached('input').val().length;
+			var count = mChat.cleanMessage(mChat.cached('input').val()).length;
 			var exceedCount = Math.max(mChat.mssgLngth - count, -999);
 			if (mChat.showCharCount) {
 				var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
@@ -621,6 +619,12 @@ jQuery(function($) {
 			mChat.cached('exceed-character-count').text(exceedCount).toggleClass('hidden', exceedCount >= 0);
 			mChat.cached('input').toggleClass('mchat-input-error', exceedCount < 0);
 			mChat.cached('add').toggleClass('hidden', exceedCount < 0);
+		},
+		cleanMessage: function(message) {
+			if (!mChat.maxInputHeight) {
+				message = message.replace(/\s+/g, ' ');
+			}
+			return message.trim();
 		},
 		mention: function() {
 			var $container = $(this).closest('.mchat-message');
@@ -636,25 +640,40 @@ jQuery(function($) {
 					}
 				}
 			}
-			insert_text(mChat.lang.mention.format({username: username}));
+			mChat.appendText(mChat.lang.mention.format({username: username}));
 		},
 		quote: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
 			var quote = $container.data('mchat-message');
-			insert_text('[quote="' + username + '"] ' + quote + '[/quote]');
+			mChat.appendText('[quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		like: function() {
 			var $container = $(this).closest('.mchat-message');
 			var username = $container.data('mchat-username');
 			var quote = $container.data('mchat-message');
-			insert_text('[i]' + mChat.lang.likes + '[/i][quote="' + username + '"] ' + quote + '[/quote]');
+			mChat.appendText('[i]' + mChat.lang.likes + '[/i][quote="' + username + '"] ' + quote + '[/quote]');
 		},
 		ip: function() {
 			popup(this.href, 750, 500);
 		},
 		archive: function() {
 			window.location.href = this.href;
+		},
+		setText: function(text) {
+			mChat.cached('input').val('');
+			mChat.appendText(text)
+		},
+		appendText: function(text, spaces, popup) {
+			var $input = mChat.cached('input');
+			if (text) {
+				insert_text(text, spaces, popup);
+			}
+			if (mChat.maxInputHeight) {
+				autosize.update($input);
+			} else {
+				$input.scrollLeft($input[0].scrollWidth - $input[0].clientWidth);
+			}
 		},
 		cached: function() {
 			return $($.map(arguments, function(name) {
@@ -724,15 +743,13 @@ jQuery(function($) {
 			e.preventDefault();
 		}).keypress(function(e) {
 			if (e.which === 10 || e.which === 13) {
-				var $input = mChat.cached('input');
-				if ($input.is(e.target)) {
+				if (mChat.cached('input').is(e.target)) {
 					var isCtrl = e.ctrlKey || e.metaKey;
 					if (!mChat.maxInputHeight || !isCtrl === !mChat.storage.get('no_submit')) {
 						e.preventDefault();
 						mChat.add();
 					} else if (mChat.maxInputHeight && isCtrl) {
-						$input.val($input.val() + '\n');
-						autosize.update($input);
+						mChat.appendText('\n');
 					}
 				}
 			}

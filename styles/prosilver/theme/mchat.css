@@ -225,7 +225,12 @@
 	padding: 6px 38px 5px 6px;
 	min-width: 100%;
 	border-radius: 4px;
+	overflow: hidden;
 	resize: none;
+}
+
+#mchat-input.mchat-single-line {
+	white-space: nowrap;
 }
 
 .mchat-input-error {
@@ -237,13 +242,13 @@
 	display: flex;
 	width: 32px;
 	height: 100%;
+	top: 0;
 	right: 0;
-	top: 50%;
-	transform: translateY(-50%);
 }
 
 #mchat-input.mchat-has-scrollbar ~ .mchat-input-control {
 	right: 20px;
+	overflow-y: visible;
 }
 
 .mchat-input-control::before {
@@ -277,23 +282,19 @@
 }
 
 .mchat-input-control > * {
-	margin: auto auto;
+	margin: 0 auto;
+	align-self: center;
 	outline: none !important;
 }
 
 .mchat-button-add {
-	margin: 3px;
+	margin: 5px 3px 3px;
 	padding: 5px;
-	outline: none;
 }
 
 #mchat-exceed-character-count {
 	color: #F00;
 	font-weight: bold;
-}
-
-#mchat-input {
-	overflow-x: hidden;
 }
 
 .mchat-panel-buttons {

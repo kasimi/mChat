@@ -340,6 +340,11 @@ class mchat
 
 		$message = $this->request->variable('message', '', true);
 
+		if (!$this->mchat_settings->cfg('mchat_max_input_height'))
+		{
+			$message = preg_replace('/\s+/', ' ', $message);
+		}
+
 		if ($this->mchat_settings->cfg('mchat_capital_letter'))
 		{
 			$message = utf8_ucfirst($message);

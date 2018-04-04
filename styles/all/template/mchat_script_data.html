@@ -3,7 +3,9 @@
 {% endif %}
 
 {% INCLUDEJS '@dmzx_mchat/javascript/jquery.titlealert.min.js' %}
-{% INCLUDEJS '@dmzx_mchat/javascript/autosize.min.js' %}
+{% if MCHAT_MAX_INPUT_HEIGHT %}
+	{% INCLUDEJS '@dmzx_mchat/javascript/autosize.min.js' %}
+{% endif %}
 {% INCLUDEJS '@dmzx_mchat/javascript/mchat.js' %}
 
 <script>
