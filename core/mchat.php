@@ -897,7 +897,7 @@ class mchat
 
 		$author_homepages = [];
 
-		foreach (array_slice($meta['authors'], 0, 2) as $author)
+		foreach (array_slice($meta['authors'], 0, 1) as $author)
 		{
 			$author_homepages[] = sprintf('<a href="%1$s" title="%2$s">%2$s</a>', $author['homepage'], $author['name']);
 		}
