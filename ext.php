@@ -49,7 +49,7 @@ class ext extends base
 			}
 		}
 
-		return phpbb_version_compare(PHPBB_VERSION, '3.2.0', '>=');
+		return phpbb_version_compare(PHPBB_VERSION, '3.2.0', '>=') && phpbb_version_compare(PHP_VERSION, '5.4.7', '>=');
 	}
 
 	/**
