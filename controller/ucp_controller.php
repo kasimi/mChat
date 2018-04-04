@@ -168,11 +168,11 @@ class ucp_controller
 		}
 
 		$template_data = array_merge($template_data, [
-			'MCHAT_ALLOW_USE'				=> $this->auth->acl_get('u_mchat_use'),
-			'MCHAT_POSTS_ENABLED_LANG'		=> $this->mchat_settings->get_enabled_post_notifications_lang(),
-			'ERROR'							=> sizeof($error) ? implode('<br>', $error) : '',
-			'MCHAT_AUTH_COUNT'				=> $auth_count,
-			'S_UCP_ACTION'					=> $u_action,
+			'MCHAT_ALLOW_USE'			=> $this->auth->acl_get('u_mchat_use'),
+			'MCHAT_POSTS_ENABLED_LANG'	=> $this->mchat_settings->get_enabled_post_notifications_lang(),
+			'ERROR'						=> sizeof($error) ? implode('<br>', $error) : '',
+			'MCHAT_AUTH_COUNT'			=> $auth_count,
+			'S_UCP_ACTION'				=> $u_action,
 		]);
 
 		/**

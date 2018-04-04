@@ -65,7 +65,6 @@ $lang = array_merge($lang, [
 	'MCHAT_PERMISSIONS'				=> 'Change user’s permissions',
 	'MCHAT_REFRESHING'				=> 'Refreshing…',
 	'MCHAT_RESPOND'					=> 'Respond to user',
-	'MCHAT_SESSION_OUT'				=> 'Chat session has expired',
 	'MCHAT_SMILES'					=> 'Smilies',
 	'MCHAT_TOTALMESSAGES'			=> 'Total messages: <strong>%1$d</strong>',
 	'MCHAT_USESOUND'				=> 'Play sound',
