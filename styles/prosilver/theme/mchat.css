@@ -17,6 +17,10 @@
 	vertical-align: text-bottom;
 }
 
+.mchat-nav-caret {
+	padding-left: 3px;
+}
+
 .mchat-wrapper li.header dd {
 	width: 0;
 }

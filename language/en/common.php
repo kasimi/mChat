@@ -40,6 +40,9 @@ $lang = array_merge($lang, [
 		0 => 'mChat',
 		1 => 'mChat [<strong>%1$d</strong>]',
 	],
+	'MCHAT_NAVBAR_CUSTOM_PAGE'		=> 'mChat page',
+	'MCHAT_NAVBAR_ARCHIVE'			=> 'Archive',
+	'MCHAT_NAVBAR_RULES'			=> 'Rules',
 
 	// Who is chatting
 	'MCHAT_WHO_IS_CHATTING'			=> 'Who is chatting',
@@ -61,6 +64,10 @@ $lang = array_merge($lang, [
 		1 => '%1$d second',
 		2 => '%1$d seconds',
 	],
+
+	// Custom translations for administrators
+	'MCHAT_RULES_MESSAGE'			=> '',
+	'MCHAT_STATIC_MESSAGE'			=> '',
 
 	// Post notification messages (%1$s is replaced with a link to the new/edited post, %2$s is replaced with a link to the forum)
 	'MCHAT_NEW_POST'				=> 'posted a new topic: %1$s in %2$s',

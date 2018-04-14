@@ -85,8 +85,4 @@ $lang = array_merge($lang, [
 	'MCHAT_CHARACTER_COUNT'			=> '<strong>{current}</strong> characters',
 	'MCHAT_CHARACTER_COUNT_LIMIT'	=> '<strong>{current}</strong> out of {max} characters',
 	'MCHAT_MENTION'					=> ' @{username} ',
-
-	// Custom translations for administrators
-	'MCHAT_RULES_MESSAGE'			=> '',
-	'MCHAT_STATIC_MESSAGE'			=> '',
 ]);

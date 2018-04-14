@@ -679,7 +679,7 @@ class mchat
 			$response['container'] = $this->render_template('mchat_whois.html');
 		}
 
-		if ($this->mchat_settings->cfg('mchat_custom_page') && $this->mchat_settings->cfg('mchat_navbar_link_count'))
+		if ($this->mchat_settings->cfg('mchat_navbar_link_count'))
 		{
 			$active_users = $this->mchat_functions->mchat_active_users();
 			$response['navlink'] = $active_users['users_count_title'];
@@ -714,15 +714,18 @@ class mchat
 		}
 
 		$custom_page = $this->mchat_settings->cfg('mchat_custom_page');
+		$archive = $this->auth->acl_get('u_mchat_archive');
+		$rules = $this->lang->lang('MCHAT_RULES_MESSAGE') ?: $this->mchat_settings->cfg('mchat_rules');
 
 		$template_data = [
-			'MCHAT_CUSTOM_PAGE'	=> $custom_page,
-			'MCHAT_TITLE'		=> $this->lang->lang('MCHAT_TITLE'),
-			'MCHAT_TITLE_HINT'	=> $this->lang->lang('MCHAT_TITLE'),
-			'U_MCHAT'			=> $this->helper->route('dmzx_mchat_page_custom_controller'),
+			'MCHAT_TITLE'			=> $this->lang->lang('MCHAT_TITLE'),
+			'MCHAT_TITLE_HINT'		=> $this->lang->lang('MCHAT_TITLE'),
+			'U_MCHAT_CUSTOM_PAGE'	=> $custom_page ? $this->helper->route('dmzx_mchat_page_custom_controller') : false,
+			'U_MCHAT_ARCHIVE'		=> $archive ? $this->helper->route('dmzx_mchat_page_archive_controller') : false,
+			'U_MCHAT_RULES'			=> $rules ? $this->helper->route('dmzx_mchat_page_rules_controller') : false,
 		];
 
-		if ($custom_page && $this->mchat_settings->cfg('mchat_navbar_link_count'))
+		if ($this->mchat_settings->cfg('mchat_navbar_link_count'))
 		{
 			$active_users = $this->mchat_functions->mchat_active_users();
 			$template_data['MCHAT_TITLE'] = $active_users['users_count_title'];
@@ -756,7 +759,7 @@ class mchat
 
 		// If the static message is not empty in the language file, use it, else ise the static message in the database
 		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') ?: $this->mchat_settings->cfg('mchat_static_message');
-		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || ($this->mchat_settings->cfg('mchat_custom_page') && $this->mchat_settings->cfg('mchat_navbar_link_count'));
+		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || $this->mchat_settings->cfg('mchat_navbar_link_count');
 
 		$this->template->assign_vars([
 			'MCHAT_PAGE'					=> $page,
@@ -781,9 +784,6 @@ class mchat
 			'MCHAT_MAX_INPUT_HEIGHT'		=> $this->mchat_settings->cfg('mchat_max_input_height'),
 			'MCHAT_MAX_MESSAGE_LENGTH'		=> $this->mchat_settings->cfg('mchat_max_message_lngth'),
 			'COOKIE_NAME'					=> $this->mchat_settings->cfg('cookie_name', true) . '_',
-			'U_MCHAT_CUSTOM_PAGE'			=> $this->helper->route('dmzx_mchat_page_custom_controller'),
-			'U_MCHAT_RULES'					=> $this->helper->route('dmzx_mchat_page_rules_controller'),
-			'U_MCHAT_ARCHIVE_URL'			=> $this->helper->route('dmzx_mchat_page_archive_controller'),
 		]);
 
 		// The template needs some language variables if we display relative time for messages
