@@ -326,13 +326,8 @@
 	border-style: inset;
 }
 
-.mchat-sound-on .mchat-sound-icon-off,
-.mchat-sound-off .mchat-sound-icon-on {
-	display: none;
-}
-
-.mchat-enter-submit .mchat-enter-icon-linebreak,
-.mchat-enter-linebreak .mchat-enter-icon-submit {
+.mchat-nav-item-enabled .mchat-nav-item-disabled,
+.mchat-nav-item-disabled .mchat-nav-item-enabled {
 	display: none;
 }
 

@@ -40,19 +40,19 @@
 					<li class="separator"></li>
 					{% EVENT dmzx_mchat_nav_items_sound_before %}
 					{% if MCHAT_SOUND_ENABLED %}
-						<li id="mchat-sound" class="mchat-nav-sound mchat-sound-on" data-mchat-action="toggleSound">
+						<li id="mchat-sound" class="mchat-nav-item-enabled" data-mchat-action="toggleSound">
 							<a href="#" title="{{ lang('MCHAT_USESOUND') }}" role="menuitem">
-								<span class="mchat-sound-icon-on"><i class="icon fa fa-volume-up fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_SOUND_ON') }}</span>
-								<span class="mchat-sound-icon-off"><i class="icon fa fa-volume-off fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_SOUND_OFF') }}</span>
+								<span class="mchat-nav-item-enabled"><i class="icon fa fa-volume-up fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_SOUND_ON') }}</span>
+								<span class="mchat-nav-item-disabled"><i class="icon fa fa-volume-off fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_SOUND_OFF') }}</span>
 							</a>
 						</li>
 					{% endif %}
 					{% EVENT dmzx_mchat_nav_items_sound_after %}
 					{% if MCHAT_ALLOW_USE and MCHAT_MAX_INPUT_HEIGHT %}
-						<li id="mchat-enter" class="mchat-enter mchat-enter-submit" data-mchat-action="toggleEnter">
+						<li id="mchat-enter" class="mchat-nav-item-enabled" data-mchat-action="toggleEnter">
 							<a href="#" title="{{ lang('MCHAT_ENTER') }}" role="menuitem">
-								<span class="mchat-enter-icon-submit"><i class="icon fa fa-chevron-right fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_SUBMIT') }}</span>
-								<span class="mchat-enter-icon-linebreak"><i class="icon fa fa-chevron-down fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_LINEBREAK') }}</span>
+								<span class="mchat-nav-item-enabled"><i class="icon fa fa-chevron-right fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_SUBMIT') }}</span>
+								<span class="mchat-nav-item-disabled"><i class="icon fa fa-chevron-down fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_LINEBREAK') }}</span>
 							</a>
 						</li>
 					{% endif %}

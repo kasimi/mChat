@@ -64,6 +64,10 @@ String.prototype.replaceMany = function() {
 	return result;
 };
 
+String.prototype.capitalizeFirst = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
 RegExp.escape = function(s) {
 	return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 };
@@ -182,27 +186,32 @@ jQuery(function($) {
 			}
 			data.updateSession();
 		},
-		toggleEnter: function(e) {
-			e.stopPropagation();
-			if (mChat.cached('enter').toggleClass('mchat-enter-submit mchat-enter-linebreak').hasClass('mchat-enter-submit')) {
-				mChat.storage.remove('no_enter');
-			} else {
-				mChat.storage.set('no_enter', 'yes');
+		registerNavItem: function(id, canEnable, onToggle) {
+			var isEnabled = canEnable && !mChat.storage.get('no_' + id);
+			var classEnabled = 'mchat-nav-item-enabled';
+			var classDisabled = 'mchat-nav-item-disabled';
+			mChat.cached(id).toggleClass(classEnabled, isEnabled).toggleClass(classDisabled, !isEnabled);
+			if (typeof onToggle === 'function') {
+				onToggle(isEnabled);
 			}
-		},
-		toggleSound: function(e) {
-			e.stopPropagation();
-			if (mChat.cached('sound').toggleClass('mchat-sound-on mchat-sound-off').hasClass('mchat-sound-on')) {
-				mChat.storage.remove('no_sound');
-			} else {
-				mChat.storage.set('no_sound', 'yes');
-			}
+			mChat['toggle' + id.capitalizeFirst()] = function(e) {
+				e.preventDefault();
+				var hasClass = mChat.cached(id).toggleClass(classEnabled + ' ' + classDisabled).hasClass(classEnabled);
+				if (hasClass) {
+					mChat.storage.remove('no_' + id);
+				} else {
+					mChat.storage.set('no_' + id, 'yes');
+				}
+				if (typeof onToggle === 'function') {
+					onToggle(hasClass);
+				}
+			};
 		},
 		sound: function(file) {
 			var data = {
 				audio: mChat.cached('sound-' + file).get(0),
 				file: file,
-				play: !mChat.pageIsUnloading && mChat.cached('sound').hasClass('mchat-sound-on')
+				play: !mChat.pageIsUnloading && mChat.cached('sound').hasClass('mchat-nav-item-enabled')
 			};
 			$(mChat).trigger('mchat_sound_before', [data]);
 			if (data.play && data.audio && data.audio.duration) {
@@ -680,7 +689,7 @@ jQuery(function($) {
 			if (!mChat.cache) {
 				mChat.cache = {};
 			}
-			if (!mChat.cache[name]) {
+			if (!mChat.cache.hasOwnProperty(name)) {
 				mChat.cache[name] = $('#mchat-' + name);
 			}
 			return mChat.cache[name];
@@ -702,12 +711,6 @@ jQuery(function($) {
 		if (!mChat.messageTop) {
 			mChat.cached('messages').delay(1).scrollTop(mChat.cached('messages')[0].scrollHeight);
 		}
-
-		var playSound = mChat.playSound && !mChat.storage.get('no_sound');
-		mChat.cached('sound').toggleClass('mchat-sound-on', playSound).toggleClass('mchat-sound-off', !playSound);
-
-		var enterSubmits = mChat.maxInputHeight && !mChat.storage.get('no_enter');
-		mChat.cached('enter').toggleClass('mchat-enter-submit', enterSubmits).toggleClass('mchat-enter-linebreak', !enterSubmits);
 
 		$.each(mChat.removeBBCodes.split('|'), function(i, bbcode) {
 			var bbCodeClass = '.bbcode-' + bbcode.replaceMany({
@@ -755,6 +758,11 @@ jQuery(function($) {
 			mChat.cached('input').on('focus', function() {
 				setTimeout(mChat.updateCharCount, 1);
 			});
+		}
+
+		mChat.registerNavItem('sound', mChat.playSound);
+		if (mChat.maxInputHeight) {
+			mChat.registerNavItem('enter', true);
 		}
 	}
 
