@@ -360,6 +360,7 @@ jQuery(function($) {
 			});
 		},
 		rules: function() {
+			$('.mchat-nav-link-title').each(phpbb.toggleDropdown);
 			popup(this.href, 450, 275);
 		},
 		whois: function() {
