@@ -61,6 +61,7 @@
 	{% if MCHAT_DISPLAY_INDEX_WHOIS %}
 		{% INCLUDE '@dmzx_mchat/mchat_whois.html' %}
 	{% endif %}
+	{% EVENT dmzx_mchat_panel_whois_after %}
 	{% if MCHAT_ALLOW_USE and MCHAT_CHARACTER_COUNT and MCHAT_PAGE != 'archive' %}
 		<div id="mchat-character-count" class="invisible">{{ MCHAT_CHARACTER_COUNT }}</div>
 	{% endif %}
