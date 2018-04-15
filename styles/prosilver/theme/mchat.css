@@ -362,6 +362,7 @@
 
 #mchat-legend {
 	clear: both;
+	margin: 10px 0;
 }
 
 .mchat-static, #mchat-stats, #mchat-whois, #mchat-refresh, #mchat-legend {
