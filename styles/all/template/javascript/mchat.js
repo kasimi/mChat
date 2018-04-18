@@ -230,7 +230,8 @@ jQuery(function($) {
 				$.titleAlert(mChat.lang.newMessageAlert, data);
 			}
 		},
-		toggle: function(name) {
+		toggle: function() {
+			var name = $(this).data('mchat-element');
 			var $elem = mChat.cached(name);
 			$elem.stop().slideToggle(200, function() {
 				if ($elem.is(':visible')) {
@@ -722,7 +723,10 @@ jQuery(function($) {
 
 		var $colourPalette = $('#mchat-bbcodes').find('#colour_palette');
 		$colourPalette.appendTo($colourPalette.parent()).wrap('<div id="mchat-colour"></div>').show();
-		$('#bbpalette,#abbc3_bbpalette,#color_wheel').prop('onclick', null).attr('data-mchat-toggle', 'colour');
+		$('#bbpalette,#abbc3_bbpalette,#color_wheel').prop('onclick', null).attr({
+			'data-mchat-action': 'toggle',
+			'data-mchat-element': 'colour'
+		});
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
 			if (mChat.storage.get('show_' + elem)) {
@@ -797,9 +801,6 @@ jQuery(function($) {
 		e.preventDefault();
 		var action = $(this).data('mchat-action');
 		mChat[action].call(this, e);
-	}).on('click', '[data-mchat-toggle]', function() {
-		var elem = $(this).data('mchat-toggle');
-		mChat.toggle(elem);
 	}).on('click', '.mchat-panel-buttons button', function() {
 		var $this = $(this).blur();
 		if ($this.hasClass('mchat-button-down')) {
