@@ -869,7 +869,7 @@ class mchat
 
 		if ($this->auth->acl_get('u_mchat_use'))
 		{
-			add_form_key('mchat');
+			add_form_key('mchat', '_DMZX_MCHAT');
 		}
 
 		/**
