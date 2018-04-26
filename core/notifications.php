@@ -255,7 +255,7 @@ class notifications
 		// Quick'n'dirty check if BBCodes are in the message
 		if (strpos($row['message'], '[') !== false)
 		{
-			generate_text_for_storage($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'], true, true, true);
+			generate_text_for_storage($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'], true, true, true, true, true, true, true, 'mchat');
 		}
 
 		return $row;
@@ -274,7 +274,7 @@ class notifications
 	}
 
 	/**
-	 * Inserts a message with posting information into the database
+	 * Inserts a message with login information into the database
 	 *
 	 * @param bool $is_hidden
 	 */
@@ -284,7 +284,7 @@ class notifications
 	}
 
 	/**
-	 * Inserts a message with posting information into the database
+	 * Inserts a message with posting or login information into the database
 	 *
 	 * @param string $mode One of post|quote|edit|reply|login
 	 * @param int $forum_id
