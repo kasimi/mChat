@@ -5,7 +5,7 @@
 {% if definition.MCHAT_NAVLINK_DISPLAY %}
 <li data-skip-responsive="true">
 	<div class="mchat-nav-container dropdown-container">
-		<a href="#" title="{{ MCHAT_TITLE_HINT }}" class="mchat-nav-link-title dropdown-trigger" role="menuitem">
+		<a href="{{ U_MCHAT_CUSTOM_PAGE ?: '#' }}" title="{{ MCHAT_TITLE_HINT }}" class="mchat-nav-link-title dropdown-trigger" role="menuitem">
 			<i class="icon fa fa-weixin fa-fw" aria-hidden="true"></i><span class="mchat-nav-link">{{ MCHAT_TITLE }}</span><i class="icon fa fa-caret-down mchat-nav-caret" aria-hidden="true"></i>
 		</a>
 		<div class="dropdown">
