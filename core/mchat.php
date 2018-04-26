@@ -1392,7 +1392,7 @@ class mchat
 		}
 
 		$uid = $bitfield = $options = '';
-		generate_text_for_storage($message, $uid, $bitfield, $options, $mchat_bbcode, $mchat_magic_urls, $mchat_smilies, $mchat_img, $mchat_flash, $mchat_quote, $mchat_url);
+		generate_text_for_storage($message, $uid, $bitfield, $options, $mchat_bbcode, $mchat_magic_urls, $mchat_smilies, $mchat_img, $mchat_flash, $mchat_quote, $mchat_url, 'mchat');
 
 		return [
 			'message'			=> str_replace("'", '&#39;', $message),
