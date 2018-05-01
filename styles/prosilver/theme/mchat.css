@@ -45,6 +45,7 @@
 #mchat-confirm textarea {
 	width: 100%;
 	height: 100px;
+	background-color: inherit;
 }
 
 #mchat-messages {
@@ -240,6 +241,7 @@
 	resize: none;
 	border: none;
 	border-right: 35px solid transparent;
+	background-color: inherit;
 }
 
 #mchat-input:focus, .mchat-input-control > *:focus {
