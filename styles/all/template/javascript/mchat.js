@@ -270,7 +270,6 @@ jQuery(function($) {
 			var originalInputValue = mChat.cleanMessage($input.val()).trim();
 			var messageLength = originalInputValue.length;
 			if (!messageLength) {
-				phpbb.alert(mChat.lang.err, mChat.lang.noMessageInput);
 				return;
 			}
 			if (mChat.mssgLngth && messageLength > mChat.mssgLngth) {
