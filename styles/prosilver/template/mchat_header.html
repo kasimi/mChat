@@ -1,22 +1,7 @@
 <dl class="row-item">
 	<dt>
-		<span class="mchat-title">
-		{% if MCHAT_PAGE == 'archive' %}
-			<a href="{{ U_MCHAT_ARCHIVE }}" title="{{ lang('MCHAT_ARCHIVE_PAGE') }}">{{ lang('MCHAT_ARCHIVE_PAGE') }}</a>
-		{% elseif U_MCHAT_CUSTOM_PAGE %}
-			<a href="{{ U_MCHAT_CUSTOM_PAGE }}" title="{{ lang('MCHAT_TITLE') }}">{{ lang('MCHAT_TITLE') }}</a>
-		{% else %}
-			{{ lang('MCHAT_TITLE') }}
-		{% endif %}
-		</span>
-		{% if MCHAT_PAGE != 'archive' %}
-			<span id="mchat-status">
-				<span class="mchat-status mchat-status-ok"><i class="icon fa fa-check" title="{{ lang('MCHAT_OK') }}"></i></span>
-				<span class="mchat-status mchat-status-load hidden"><i class="icon fa fa-refresh fa-spin" title="{{ lang('LOADING') }}"></i></span>
-				<span class="mchat-status mchat-status-paused hidden"><i class="icon fa fa-pause" title="{{ lang('MCHAT_PAUSE') }}"></i></span>
-				<span class="mchat-status mchat-status-error hidden"><i class="icon fa fa-times" title="{{ lang('ERROR') }}"></i></span>
-			</span>
-		{% endif %}
+		{% INCLUDE '@dmzx_mchat/mchat_title.html' %}
+		{% INCLUDE '@dmzx_mchat/mchat_status.html' %}
 	</dt>
 	<dd></dd>
 </dl>
