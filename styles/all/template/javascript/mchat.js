@@ -344,7 +344,7 @@ jQuery(function($) {
 			if (mChat.liveUpdates) {
 				data.log = mChat.logId;
 			}
-			mChat.status('loading');
+			mChat.status('load');
 			return mChat.ajaxRequest(message ? 'add' : 'refresh', !!message, data).done(function(json) {
 				$(mChat).trigger('mchat_response_handle_data_before', [json]);
 				if (json.add) {
@@ -561,17 +561,12 @@ jQuery(function($) {
 		status: function(status) {
 			var data = {
 				status: status,
-				all: ['ok', 'loading', 'idle', 'error'],
-				container: mChat.cached('body')
+				container: mChat.cached('status')
 			};
 			$(mChat).trigger('mchat_status_before', [data]);
-			var i = data.all.indexOf(data.status);
-			if (i > -1) {
-				data.all.splice(i, 1);
-				data.container.addClass('mchat-status-' + data.status);
-				for (var j = 0; j < data.all.length; j++) {
-					data.container.removeClass('mchat-status-' + data.all[j]);
-				}
+			var $activeStatus = data.container.find('.mchat-status-' + data.status).removeClass('hidden');
+			if ($activeStatus.length) {
+				data.container.find('.mchat-status').not($activeStatus).addClass('hidden');
 			}
 		},
 		pauseSession: function() {
@@ -611,7 +606,7 @@ jQuery(function($) {
 					mChat.whois();
 				}
 			}
-			mChat.status('idle');
+			mChat.status('paused');
 		},
 		updateCharCount: function() {
 			var count = mChat.cleanMessage(mChat.cached('input').val()).length;

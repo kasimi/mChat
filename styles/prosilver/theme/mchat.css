@@ -261,40 +261,28 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 32px;
+	width: 30px;
 	height: 100%;
 	top: 0;
 	right: 0;
-}
-
-.mchat-input-control::before {
-	content: '';
-	display: block;
-	position: absolute;
-	width: 2px;
-	height: 50%;
-	top: 25%;
-	left: 0;
 }
 
 .mchat-input-control button:hover .icon {
 	color: #1198D9;
 }
 
-.mchat-status-ok .mchat-input-control::before {
-	background: #D3D3D3;
+#mchat-status {
+	display: inline-block;
 }
 
-.mchat-status-loading .mchat-input-control::before {
-	background: #ADD8E6;
+.mchat-status {
+	position: absolute;
+	top: 8%;
+	margin-left: 2px;
 }
 
-.mchat-status-idle .mchat-input-control::before {
-	background: #FFA500;
-}
-
-.mchat-status-error .mchat-input-control::before {
-	background: #F00;
+.fa-spin::before {
+	padding-left: 2px;
 }
 
 .mchat-button-add {
@@ -302,7 +290,7 @@
 	padding: 5px;
 }
 
-.mchat-button-add .icon {
+.mchat-input-control button .icon {
 	font-size: 15px;
 }
 
