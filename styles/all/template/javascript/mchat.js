@@ -116,7 +116,7 @@ jQuery(function($) {
 			$(mChat).trigger('mchat_send_request_before', [mode, data]);
 			$.ajax({
 				url: mChat.actionUrls[mode],
-				timeout: Math.min(mChat.refreshTime, 10000),
+				timeout: Math.min(mChat.refreshTime, 10000) - 100,
 				type: 'POST',
 				dataType: 'json',
 				data: data,
@@ -335,17 +335,21 @@ jQuery(function($) {
 			});
 		},
 		refresh: function(message) {
+			var isAdd = typeof message !== 'undefined';
+			if (!isAdd) {
+				mChat.sessionLength += mChat.refreshTime;
+				if (mChat.sessionLength >= mChat.timeout) {
+					mChat.endSession();
+					return;
+				}
+			}
 			var data = {
-				last: mChat.messageIds.length ? mChat.messageIds.max() : 0
+				last: mChat.messageIds.length ? mChat.messageIds.max() : 0,
+				log: mChat.liveUpdates ? mChat.logId : undefined,
+				message: isAdd ? message : undefined
 			};
-			if (message) {
-				data.message = message;
-			}
-			if (mChat.liveUpdates) {
-				data.log = mChat.logId;
-			}
 			mChat.status('load');
-			return mChat.ajaxRequest(message ? 'add' : 'refresh', !!message, data).done(function(json) {
+			return mChat.ajaxRequest(isAdd ? 'add' : 'refresh', isAdd, data).done(function(json) {
 				$(mChat).trigger('mchat_response_handle_data_before', [json]);
 				if (json.add) {
 					mChat.addMessages($(json.add));
@@ -552,12 +556,6 @@ jQuery(function($) {
 			var selector = '.mchat-time[data-mchat-relative-update]';
 			clearInterval($message.find(selector).addBack(selector).data('mchat-relative-interval'));
 		},
-		countDown: function() {
-			mChat.sessionTime -= 1;
-			if (mChat.sessionTime < 1) {
-				mChat.endSession();
-			}
-		},
 		status: function(status) {
 			var data = {
 				status: status,
@@ -571,40 +569,28 @@ jQuery(function($) {
 		},
 		pauseSession: function() {
 			clearInterval(mChat.refreshInterval);
-			if (mChat.timeout) {
-				clearInterval(mChat.sessionCountdown);
-			}
+			mChat.refreshInterval = false;
 			if (mChat.whoisRefresh) {
 				clearInterval(mChat.whoisInterval);
+				mChat.whoisInterval = false;
 			}
 		},
 		resetSession: function() {
-			if (mChat.page !== 'archive') {
-				clearInterval(mChat.refreshInterval);
-				mChat.refreshInterval = setInterval(mChat.refresh, mChat.refreshTime);
-				if (mChat.timeout) {
-					mChat.sessionTime = mChat.timeout / 1000;
-					clearInterval(mChat.sessionCountdown);
-					mChat.sessionCountdown = setInterval(mChat.countDown, 1000);
-				}
-				if (mChat.whoisRefresh) {
-					clearInterval(mChat.whoisInterval);
-					mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
-				}
-				mChat.status('ok');
+			if (mChat.page === 'archive') {
+				return;
 			}
+			mChat.pauseSession();
+			mChat.sessionLength = 0;
+			mChat.refreshInterval = setInterval(mChat.refresh, mChat.refreshTime);
+			if (mChat.whoisRefresh) {
+				mChat.whoisInterval = setInterval(mChat.whois, mChat.whoisRefresh);
+			}
+			mChat.status('ok');
 		},
 		endSession: function(skipUpdateWhois) {
-			clearInterval(mChat.refreshInterval);
-			mChat.refreshInterval = false;
-			if (mChat.timeout) {
-				clearInterval(mChat.sessionCountdown);
-			}
-			if (mChat.whoisRefresh) {
-				clearInterval(mChat.whoisInterval);
-				if (!skipUpdateWhois) {
-					mChat.whois();
-				}
+			mChat.pauseSession();
+			if (mChat.whoisRefresh && !skipUpdateWhois) {
+				mChat.whois();
 			}
 			mChat.status('paused');
 		},
