@@ -1,11 +1,10 @@
 {% if MCHAT_PAGE == 'archive' or not (MCHAT_ALLOW_USE and S_BBCODE_ALLOWED) %}
 	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/editor.js' %}
 {% endif %}
-
-{% INCLUDEJS '@dmzx_mchat/javascript/jquery.titlealert.min.js' %}
 {% if MCHAT_MAX_INPUT_HEIGHT %}
 	{% INCLUDEJS '@dmzx_mchat/javascript/autosize.min.js' %}
 {% endif %}
+{% INCLUDEJS '@dmzx_mchat/javascript/jquery.titlealert.min.js' %}
 {% INCLUDEJS '@dmzx_mchat/javascript/mchat.js' %}
 
 <script>
