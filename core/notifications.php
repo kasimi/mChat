@@ -180,11 +180,13 @@ class notifications
 			return [];
 		}
 
-		$sql = 'SELECT p.post_id, p.post_subject, f.forum_id, f.forum_name
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-				WHERE p.forum_id = f.forum_id
-					AND ' . $this->db->sql_in_set('p.post_id', $post_ids);
+		$sql_array = [
+			'SELECT'	=> 'p.post_id, p.post_subject, f.forum_id, f.forum_name',
+			'FROM'		=> [POSTS_TABLE => 'p', FORUMS_TABLE => 'f'],
+			'WHERE'		=> 'p.forum_id = f.forum_id AND ' . $this->db->sql_in_set('p.post_id', $post_ids),
+		];
 
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);

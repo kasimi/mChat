@@ -173,9 +173,7 @@ class functions
 
 		$sql_array = [
 			'SELECT'	=> 'u.user_id, u.username, u.user_colour, s.session_viewonline',
-			'FROM'		=> [
-				$this->mchat_settings->get_table_mchat_sessions() => 'ms'
-			],
+			'FROM'		=> [$this->mchat_settings->get_table_mchat_sessions() => 'ms'],
 			'LEFT_JOIN'	=> [
 				[
 					'FROM'	=> [SESSIONS_TABLE => 's'],
@@ -531,7 +529,7 @@ class functions
 		$sql_array = [
 			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour',
 			'FROM'		=> [GROUPS_TABLE => 'g'],
-			'WHERE'		=> 'group_legend <> 0',
+			'WHERE'		=> 'g.group_legend <> 0',
 			'ORDER_BY'	=> 'g.' . $order_legend . ' ASC',
 		];
 
@@ -577,10 +575,13 @@ class functions
 	 */
 	public function mchat_foes()
 	{
-		$sql = 'SELECT zebra_id
-			FROM ' . ZEBRA_TABLE . '
-			WHERE foe = 1
-				AND user_id = ' . (int) $this->user->data['user_id'];
+		$sql_array = [
+			'SELECT'	=> 'z.zebra_id',
+			'FROM'		=> [ZEBRA_TABLE => 'z'],
+			'WHERE'		=> 'z.foe = 1 AND z.user_id = ' . (int) $this->user->data['user_id'],
+		];
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
@@ -625,10 +626,14 @@ class functions
 			return false;
 		}
 
-		$sql = 'SELECT message_time
-			FROM ' . $this->mchat_settings->get_table_mchat() . '
-			WHERE user_id = ' . (int) $this->user->data['user_id'] . '
-			ORDER BY message_time DESC';
+		$sql_array = [
+			'SELECT'	=> 'm.message_time',
+			'FROM'		=> [$this->mchat_settings->get_table_mchat() => 'm'],
+			'WHERE'		=> 'm.user_id = ' . (int) $this->user->data['user_id'],
+			'ORDER_BY'	=> 'm.message_time DESC',
+		];
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query_limit($sql, 1);
 		$message_time = (int) $this->db->sql_fetchfield('message_time');
 		$this->db->sql_freeresult($result);
@@ -644,9 +649,13 @@ class functions
 	 */
 	public function mchat_author_for_message($message_id)
 	{
-		$sql = 'SELECT m.user_id, m.message_time, m.post_id
-			FROM ' . $this->mchat_settings->get_table_mchat() . ' m
-			WHERE m.message_id = ' . (int) $message_id;
+		$sql_array = [
+			'SELECT'	=> 'm.user_id, m.message_time, m.post_id',
+			'FROM'		=> [$this->mchat_settings->get_table_mchat() => 'm'],
+			'WHERE'		=> 'm.message_id = ' . (int) $message_id,
+		];
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
