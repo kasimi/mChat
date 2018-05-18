@@ -749,15 +749,13 @@ jQuery(function($) {
 		mChat.cached('form').submit(function(e) {
 			e.preventDefault();
 		}).keypress(function(e) {
-			if (e.which === 10 || e.which === 13) {
-				if (mChat.cached('input').is(e.target)) {
-					var isCtrl = e.ctrlKey || e.metaKey;
-					if (!mChat.maxInputHeight || !isCtrl === !mChat.storage.get('no_enter')) {
-						e.preventDefault();
-						mChat.add();
-					} else if (mChat.maxInputHeight && isCtrl) {
-						mChat.appendText('\n');
-					}
+			if ((e.which === 10 || e.which === 13) && mChat.cached('input').is(e.target)) {
+				var isCtrl = e.ctrlKey || e.metaKey;
+				if (!mChat.maxInputHeight || !isCtrl === !mChat.storage.get('no_enter')) {
+					e.preventDefault();
+					mChat.add();
+				} else if (mChat.maxInputHeight && isCtrl) {
+					mChat.appendText('\n');
 				}
 			}
 		});
@@ -768,14 +766,14 @@ jQuery(function($) {
 				setTimeout(mChat.updateCharCount, 1);
 			});
 		}
-
-		mChat.registerNavItem('sound', mChat.playSound);
-		if (mChat.maxInputHeight) {
-			mChat.registerNavItem('enter', true);
-		}
 	}
 
 	mChat.startRelativeTimeUpdate(mChat.cached('messages'));
+
+	mChat.registerNavItem('sound', mChat.playSound);
+	if (mChat.maxInputHeight) {
+		mChat.registerNavItem('enter', true);
+	}
 
 	$(window).on('beforeunload', function() {
 		mChat.pageIsUnloading = true;
