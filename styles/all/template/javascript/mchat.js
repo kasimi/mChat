@@ -148,6 +148,7 @@ jQuery(function($) {
 			if (mChat.pageIsUnloading) {
 				return;
 			}
+			mChat.skipNextRefresh = true;
 			if (typeof console !== 'undefined' && console.log) {
 				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown + ' (' + xhr.responseText + ')');
 			}
@@ -340,6 +341,9 @@ jQuery(function($) {
 				mChat.sessionLength += mChat.refreshTime;
 				if (mChat.sessionLength >= mChat.timeout) {
 					mChat.endSession();
+					return;
+				} else if (mChat.skipNextRefresh) {
+					mChat.skipNextRefresh = false;
 					return;
 				}
 			}
