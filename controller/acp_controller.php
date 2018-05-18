@@ -201,8 +201,8 @@ class acp_controller
 			'MCHAT_VERSION'							=> $this->settings->cfg('mchat_version'),
 			'MCHAT_FOUNDER'							=> $is_founder,
 			'S_MCHAT_PRUNE_MODE_OPTIONS'			=> $this->get_prune_mode_options($this->settings->cfg('mchat_prune_mode')),
-			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->lang->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'bbcodes'], true, $this->user->session_id) . '">', '</a>'),
-			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->lang->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'board', 'mode' => 'load'], true, $this->user->session_id) . '">', '</a>', $this->settings->cfg('session_length')),
+			'L_MCHAT_BBCODES_DISALLOWED_EXPLAIN'	=> $this->lang->lang('MCHAT_BBCODES_DISALLOWED_EXPLAIN', '<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'bbcodes']) . '">', '</a>'),
+			'L_MCHAT_TIMEOUT_EXPLAIN'				=> $this->lang->lang('MCHAT_TIMEOUT_EXPLAIN','<a href="' . append_sid($this->settings->url('adm/index'), ['i' => 'board', 'mode' => 'load']) . '">', '</a>', $this->settings->cfg('session_length')),
 			'U_ACTION'								=> $u_action,
 		];
 
