@@ -221,6 +221,10 @@ class notifications
 	protected function process_notification($row, $type, $lang_key, $post_data = null)
 	{
 		$lang_args = [];
+		$replacements = [];
+
+		$post_subject_placeholder = '%POST_SUBJECT%';
+		$forum_name_placeholder = '%FORUM_NAME%';
 
 		if ($type == self::POST)
 		{
@@ -239,8 +243,13 @@ class notifications
 					'f' => $forum_id,
 				]);
 
-				$lang_args[] = '[url=' . $viewtopic_url . ']' . $post_data['post_subject'] . '[/url]';
-				$lang_args[] = '[url=' . $viewforum_url . ']' . $post_data['forum_name'] . '[/url]';
+				$lang_args[] = '[url=' . $viewtopic_url . ']' . $post_subject_placeholder . '[/url]';
+				$lang_args[] = '[url=' . $viewforum_url . ']' . $forum_name_placeholder . '[/url]';
+
+				$replacements = [
+					$post_subject_placeholder	=> $post_data['post_subject'],
+					$forum_name_placeholder		=> $post_data['forum_name'],
+				];
 			}
 			else
 			{
@@ -259,6 +268,8 @@ class notifications
 		{
 			generate_text_for_storage($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options'], true, true, true, true, true, true, true, 'mchat');
 		}
+
+		$row['message'] = strtr($row['message'], $replacements);
 
 		return $row;
 	}
