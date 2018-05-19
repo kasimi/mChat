@@ -12,13 +12,19 @@
 	visibility: hidden;
 }
 
-.mchat-nav-container .dropdown-trigger i {
+.mchat-nav-link {
 	margin-left: 2px;
-	vertical-align: text-bottom;
 }
 
 .mchat-nav-caret {
-	padding-left: 3px;
+	margin-left: 5px;
+}
+
+.mchat-header .list-inner {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: left;
 }
 
 .mchat-wrapper li.header dd {
@@ -26,6 +32,7 @@
 }
 
 #mchat-body {
+	position: relative;
 	overflow: hidden;
 	width: 100%;
 }
@@ -62,7 +69,6 @@
 
 .mchat-message {
 	padding: 5px !important;
-	overflow: hidden;
 }
 
 .mchat-message-flash {
@@ -267,18 +273,26 @@
 	right: 0;
 }
 
+.mchat-input-control button {
+ 	background: transparent;
+	border: 0;
+}
+
 .mchat-input-control button:hover .icon {
 	color: #1198D9;
 }
 
 #mchat-status {
-	display: inline-block;
+	display: inline;
+	margin-left: 6px;
+	text-indent: 0;
 }
 
 .mchat-status {
 	position: absolute;
-	top: 8%;
-	margin-left: 2px;
+	top: calc(50% - 1px);
+	transform: translateY(-50%);
+	text-indent: 0;
 }
 
 .fa-spin::before {
@@ -380,6 +394,10 @@
 
 	#mchat-body {
 		overflow: visible;
+	}
+
+	.mchat-wrapper .list-inner {
+		display: inherit !important;
 	}
 
 	.mchat-wrapper .mchat-buttons > li {
