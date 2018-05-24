@@ -183,6 +183,15 @@ class acp_controller
 		{
 			if ($is_founder && $this->request->is_set_post('mchat_purge') && $this->request->variable('mchat_purge_confirm', false) && check_form_key('acp_mchat'))
 			{
+				/**
+				 * Event that is triggered right before all mChat messages are
+				 * deleted when using the Delete all messages button in the ACP
+				 *
+				 * @event dmzx.mchat.purge_before
+				 * @since 2.1.0-RC1
+				 */
+				$this->dispatcher->dispatch('dmzx.mchat.purge_before');
+
 				$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat());
 				$this->db->sql_query('DELETE FROM ' . $this->settings->get_table_mchat_log());
 				$this->cache->destroy('sql', $this->settings->get_table_mchat_log());
