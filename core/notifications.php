@@ -313,7 +313,7 @@ class notifications
 			'login' => 'mchat_posts_login',
 		];
 
-		$is_mode_enabled = !empty($mode_config[$mode]) && $this->mchat_settings->cfg($mode_config[$mode]) && (!$this->mchat_settings->cfg('mchat_posts_auth_check') || $this->auth->acl_get('u_mchat_use'));
+		$is_mode_enabled = !empty($mode_config[$mode]) && $this->mchat_settings->cfg($mode_config[$mode]) && (!$this->mchat_settings->cfg('mchat_posts_auth_check') || $this->can_use_mchat());
 
 		$sql_array = [
 			'forum_id'		=> (int) $forum_id,
@@ -351,6 +351,24 @@ class notifications
 			$sql = 'INSERT INTO ' .	$this->mchat_settings->get_table_mchat() . ' ' . $this->db->sql_build_array('INSERT', $sql_array);
 			$this->db->sql_query($sql);
 		}
+	}
+
+	/**
+	 * The user might have just logged in successfully in which case the permissions haven't been updated yet.
+	 * Let's do that here so that notifications are recorded correctly.
+	 *
+	 * @return bool
+	 */
+	protected function can_use_mchat()
+	{
+		if ($this->auth->acl_get('u_mchat_use'))
+		{
+			return true;
+		}
+
+		$auth = new auth();
+		$auth->acl($this->user->data);
+		return $auth->acl_get('u_mchat_use');
 	}
 
 	/**
