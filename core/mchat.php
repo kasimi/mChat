@@ -501,7 +501,7 @@ class mchat
 
 		$this->mchat_functions->mchat_action('del', null, $message_id);
 
-		$response = ['del' => true];
+		$response = ['del' => $message_id];
 
 		/**
 		 * Event that is triggered after an mChat message was deleted

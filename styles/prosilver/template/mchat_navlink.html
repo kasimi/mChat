@@ -40,7 +40,7 @@
 					<li class="separator"></li>
 					{% EVENT dmzx_mchat_nav_items_sound_before %}
 					{% if MCHAT_SOUND_ENABLED %}
-						<li id="mchat-sound" class="mchat-nav-item-enabled" data-mchat-action="toggleSound">
+						<li id="mchat-sound" class="mchat-nav-item-enabled" data-mchat-action="toggle_sound">
 							<a href="#" title="{{ lang('MCHAT_USESOUND') }}" role="menuitem">
 								<span class="mchat-nav-item-enabled"><i class="icon fa fa-volume-up fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_SOUND_ON') }}</span>
 								<span class="mchat-nav-item-disabled"><i class="icon fa fa-volume-off fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_SOUND_OFF') }}</span>
@@ -49,7 +49,7 @@
 					{% endif %}
 					{% EVENT dmzx_mchat_nav_items_sound_after %}
 					{% if MCHAT_ALLOW_USE and MCHAT_MAX_INPUT_HEIGHT %}
-						<li id="mchat-enter" class="mchat-nav-item-enabled" data-mchat-action="toggleEnter">
+						<li id="mchat-enter" class="mchat-nav-item-enabled" data-mchat-action="toggle_enter">
 							<a href="#" title="{{ lang('MCHAT_ENTER') }}" role="menuitem">
 								<span class="mchat-nav-item-enabled"><i class="icon fa fa-chevron-right fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_SUBMIT') }}</span>
 								<span class="mchat-nav-item-disabled"><i class="icon fa fa-chevron-down fa-fw" aria-hidden="true"></i>{{ lang('MCHAT_ENTER_LINEBREAK') }}</span>
