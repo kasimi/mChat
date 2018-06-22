@@ -3,8 +3,8 @@
 	"type": "phpbb-extension",
 	"description": "mChat",
 	"homepage": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
-	"version": "2.1.0-RC1",
-	"time": "2018-04-04",
+	"version": "2.1.0",
+	"time": "2018-06-22",
 	"keywords": ["phpbb", "extension", "mchat"],
 	"license": "GPL-2.0-only",
 	"authors": [
