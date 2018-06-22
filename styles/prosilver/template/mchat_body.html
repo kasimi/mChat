@@ -77,9 +77,11 @@
 			</div>
 
 			{% if MCHAT_STATIC_MESS and MCHAT_PAGE != 'archive' %}
+				{% EVENT dmzx_mchat_static_container_before %}
 				<ul class="topiclist forums mchat-static-container">
 					<li class="row mchat-static">{{ MCHAT_STATIC_MESS }}</li>
 				</ul>
+				{% EVENT dmzx_mchat_static_container_after %}
 			{% endif %}
 
 			<div id="mchat-main"{% if MCHAT_MESSAGE_TOP %} class="mchat-messages-top"{% endif %}>
