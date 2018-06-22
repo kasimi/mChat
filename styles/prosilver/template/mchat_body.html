@@ -76,13 +76,13 @@
 				</fieldset>
 			</div>
 
-			<div id="mchat-main"{% if MCHAT_MESSAGE_TOP %} class="mchat-messages-top"{% endif %}>
-				{% if MCHAT_STATIC_MESS and MCHAT_PAGE != 'archive' %}
-					<ul class="topiclist forums mchat-static-container">
-						<li class="row mchat-static">{{ MCHAT_STATIC_MESS }}</li>
-					</ul>
-				{% endif %}
+			{% if MCHAT_STATIC_MESS and MCHAT_PAGE != 'archive' %}
+				<ul class="topiclist forums mchat-static-container">
+					<li class="row mchat-static">{{ MCHAT_STATIC_MESS }}</li>
+				</ul>
+			{% endif %}
 
+			<div id="mchat-main"{% if MCHAT_MESSAGE_TOP %} class="mchat-messages-top"{% endif %}>
 				{% EVENT dmzx_mchat_messages_container_before %}
 
 				<ul id="mchat-messages" class="topiclist forums">

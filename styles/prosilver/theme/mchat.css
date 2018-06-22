@@ -206,7 +206,7 @@
 
 #mchat-panel {
 	text-align: center;
-	max-height: initial;
+	max-height: none;
 	overflow: hidden;
 	padding: 5px;
 	margin: 0;
