@@ -314,12 +314,6 @@ class mchat
 			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
-		// Fix avatars & smilies
-		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
-		{
-			define('PHPBB_USE_BOARD_URL_PATH', true);
-		}
-
 		$this->lang->add_lang('mchat', 'dmzx/mchat');
 	}
 
@@ -763,6 +757,7 @@ class mchat
 
 		$this->template->assign_vars([
 			'MCHAT_PAGE'					=> $page,
+			'MCHAT_CURRENT_URL'				=> '.' . $this->user->page['script_path'] . $this->user->page['page'],
 			'MCHAT_ALLOW_SMILES'			=> $this->mchat_settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies'),
 			'MCHAT_MESSAGE_TOP'				=> $this->mchat_settings->cfg('mchat_message_top'),
 			'MCHAT_INDEX_HEIGHT'			=> $this->mchat_settings->cfg('mchat_index_height'),
@@ -1016,19 +1011,11 @@ class mchat
 			}
 		}
 
-		$board_url = generate_board_url() . '/';
-
 		$rows = $this->mchat_notifications->process($rows);
 
 		foreach ($rows as $row)
 		{
 			$username_full = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], $this->lang->lang('GUEST'));
-
-			// Fix profile link root path by replacing relative paths with absolute board URL
-			if ($this->request->is_ajax())
-			{
-				$username_full = preg_replace('#(?<=href=")[\./]+?/(?=\w)#', $board_url, $username_full);
-			}
 
 			if (in_array($row['user_id'], $this->foes))
 			{

@@ -106,9 +106,10 @@ jQuery(function($) {
 				return;
 			}
 			var deferred = $.Deferred();
-			if (sendHiddenFields) {
-				$.extend(data, mChat.hiddenFields);
-			}
+			$.extend(data,
+				{_referer: mChat.currentUrl},
+				sendHiddenFields ? mChat.hiddenFields : {}
+			);
 			$(mChat).trigger('mchat_send_request_before', [mode, data]);
 			$.ajax({
 				url: mChat.actionUrls[mode],

@@ -18,6 +18,7 @@
 			{% endfor %}
 		},
 		page			: '{{ MCHAT_PAGE | escape('js') }}',
+		currentUrl		: '{{ MCHAT_CURRENT_URL | escape('js') }}',
 		cookie			: '{{ COOKIE_NAME | escape('js') }}',
 		playSound		: {{ MCHAT_SOUND ? 'true' : 'false' }},
 		messageTop		: {{ MCHAT_MESSAGE_TOP ? 'true' : 'false' }},
