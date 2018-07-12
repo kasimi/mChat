@@ -649,12 +649,6 @@ jQuery(function($) {
 		ip: function() {
 			popup(this.href, 750, 500);
 		},
-		custom: function() {
-			window.location.href = this.href;
-		},
-		archive: function() {
-			window.location.href = this.href;
-		},
 		setText: function(text) {
 			mChat.cached('input').val('');
 			mChat.appendText(text);
