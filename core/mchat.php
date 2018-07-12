@@ -764,7 +764,6 @@ class mchat
 		$this->template->assign_vars([
 			'MCHAT_PAGE'					=> $page,
 			'MCHAT_ALLOW_SMILES'			=> $this->mchat_settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies'),
-			'MCHAT_INPUT_AREA'				=> $this->mchat_settings->cfg('mchat_input_area'),
 			'MCHAT_MESSAGE_TOP'				=> $this->mchat_settings->cfg('mchat_message_top'),
 			'MCHAT_INDEX_HEIGHT'			=> $this->mchat_settings->cfg('mchat_index_height'),
 			'MCHAT_CUSTOM_HEIGHT'			=> $this->mchat_settings->cfg('mchat_custom_height'),
