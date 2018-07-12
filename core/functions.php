@@ -454,7 +454,7 @@ class functions
 				$message_ids = [$message_ids];
 			}
 
-			$sql_where_message_id[] = $this->db->sql_in_set('m.message_id', array_map('intval', $message_ids));
+			$sql_where_message_id[] = $this->db->sql_in_set('m.message_id', $message_ids);
 		}
 
 		$sql_where_ary = array_filter([
