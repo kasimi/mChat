@@ -851,11 +851,8 @@ class mchat
 			$cc_fid = 'mchat';
 			$template_data = array_merge($template_data, [
 				'MCHAT_IS_COLLAPSIBLE'	=> true,
-				'S_MCHAT_HIDDEN'		=> in_array($cc_fid, $this->cc_operator->get_user_categories()),
-				'U_MCHAT_COLLAPSE_URL'	=> $this->helper->route('phpbb_collapsiblecategories_main_controller', [
-					'forum_id'	=> $cc_fid,
-					'hash'		=> generate_link_hash('collapsible_' . $cc_fid),
-				]),
+				'S_MCHAT_HIDDEN'		=> $this->cc_operator->is_collapsed($cc_fid),
+				'U_MCHAT_COLLAPSE_URL'	=> $this->cc_operator->get_collapsible_link($cc_fid),
 			]);
 		}
 
