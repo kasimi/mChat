@@ -755,7 +755,7 @@ class mchat
 		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') ?: $this->mchat_settings->cfg('mchat_static_message');
 		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || $this->mchat_settings->cfg('mchat_navbar_link_count');
 
-		$this->template->assign_vars([
+		$template_data = [
 			'MCHAT_PAGE'					=> $page,
 			'MCHAT_CURRENT_URL'				=> '.' . $this->user->page['script_path'] . $this->user->page['page'],
 			'MCHAT_ALLOW_SMILES'			=> $this->mchat_settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies'),
@@ -778,12 +778,12 @@ class mchat
 			'MCHAT_MAX_INPUT_HEIGHT'		=> $this->mchat_settings->cfg('mchat_max_input_height'),
 			'MCHAT_MAX_MESSAGE_LENGTH'		=> $this->mchat_settings->cfg('mchat_max_message_lngth'),
 			'COOKIE_NAME'					=> $this->mchat_settings->cfg('cookie_name', true) . '_',
-		]);
+		];
 
 		// The template needs some language variables if we display relative time for messages
 		if ($this->mchat_settings->cfg('mchat_relative_time'))
 		{
-			$this->template->assign_var('MCHAT_MINUTES_AGO_LIMIT', $this->get_relative_minutes_limit());
+			$template_data['MCHAT_MINUTES_AGO_LIMIT'] = $this->get_relative_minutes_limit();
 		}
 
 		// Get actions which the user is allowed to perform on the current page
@@ -835,21 +835,21 @@ class mchat
 			extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_pagination_before', compact($vars)));
 
 			$this->pagination->generate_template_pagination($archive_url, 'pagination', 'start', $total_messages, $limit, $start);
-			$this->template->assign_var('MCHAT_TOTAL_MESSAGES', $this->lang->lang('MCHAT_TOTALMESSAGES', $total_messages));
+			$template_data['MCHAT_TOTAL_MESSAGES'] = $this->lang->lang('MCHAT_TOTALMESSAGES', $total_messages);
 		}
 
 		// Render legend
 		if ($page !== 'index')
 		{
 			$legend = $this->mchat_functions->mchat_legend();
-			$this->template->assign_var('LEGEND', implode($this->lang->lang('COMMA_SEPARATOR'), $legend));
+			$template_data['LEGEND'] = implode($this->lang->lang('COMMA_SEPARATOR'), $legend);
 		}
 
 		// Make mChat collapsible
 		if ($page === 'index' && $this->cc_operator !== null)
 		{
 			$cc_fid = 'mchat';
-			$this->template->assign_vars([
+			$template_data = array_merge($template_data, [
 				'MCHAT_IS_COLLAPSIBLE'	=> true,
 				'S_MCHAT_HIDDEN'		=> in_array($cc_fid, $this->cc_operator->get_user_categories()),
 				'U_MCHAT_COLLAPSE_URL'	=> $this->helper->route('phpbb_collapsiblecategories_main_controller', [
@@ -870,15 +870,20 @@ class mchat
 		 * Event that is triggered after mChat was rendered
 		 *
 		 * @event dmzx.mchat.render_page_after
-		 * @var string	page	The page that was rendered, one of index|custom|archive
-		 * @var array	actions	Array containing URLs to actions the user is allowed to perform
+		 * @var string	page			The page that was rendered, one of index|custom|archive
+		 * @var array	actions			Array containing URLs to actions the user is allowed to perform
+		 * @var array	template_data	The data that is about to be assigned to the template
 		 * @since 2.0.0-RC6
+		 * @changed 2.1.1 Added template_data
 		 */
 		$vars = [
 			'page',
 			'actions',
+			'template_data',
 		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_after', compact($vars)));
+
+		$this->template->assign_vars($template_data);
 	}
 
 	/**
