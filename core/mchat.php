@@ -1021,6 +1021,7 @@ class mchat
 			$message_for_edit = generate_text_for_edit($row['message'], $row['bbcode_uid'], $row['bbcode_options']);
 
 			$template_data = [
+				'MCHAT_USER_ID'				=> $row['user_id'],
 				'MCHAT_ALLOW_EDIT'			=> $this->auth_message('edit', $row['user_id'], $row['message_time']),
 				'MCHAT_ALLOW_DEL'			=> $this->auth_message('delete', $row['user_id'], $row['message_time']),
 				'MCHAT_USER_AVATAR'			=> $user_avatars[$row['user_id']],
