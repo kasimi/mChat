@@ -397,14 +397,19 @@ class functions
 	/**
 	 * Returns the total number of messages
 	 *
+	 * @param string $sql_where
+	 * @param string $sql_order_by
 	 * @return int
 	 */
-	public function mchat_total_message_count()
+	public function mchat_total_message_count($sql_where = '', $sql_order_by = '')
 	{
+		$sql_where_array = array_filter([$sql_where, $this->mchat_notifications->get_sql_where()]);
+
 		$sql_array = [
 			'SELECT'	=> 'COUNT(*) AS rows_total',
 			'FROM'		=> [$this->mchat_settings->get_table_mchat() => 'm'],
-			'WHERE'		=> $this->mchat_notifications->get_sql_where(),
+			'WHERE'		=> $sql_where_array ? ('(' . implode(') AND (', $sql_where_array) . ')') : '',
+			'ORDER_BY'	=> $sql_order_by,
 		];
 
 		/**

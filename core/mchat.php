@@ -751,6 +751,9 @@ class mchat
 		// Add lang file
 		$this->lang->add_lang('posting');
 
+		$is_archive = $page == 'archive';
+		$jump_to_id = $is_archive ? $this->request->variable('jumpto', 0) : 0;
+
 		// If the static message is not empty in the language file, use it, else ise the static message in the database
 		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') ?: $this->mchat_settings->cfg('mchat_static_message');
 		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || $this->mchat_settings->cfg('mchat_navbar_link_count');
@@ -777,6 +780,7 @@ class mchat
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'MCHAT_MAX_INPUT_HEIGHT'		=> $this->mchat_settings->cfg('mchat_max_input_height'),
 			'MCHAT_MAX_MESSAGE_LENGTH'		=> $this->mchat_settings->cfg('mchat_max_message_lngth'),
+			'MCHAT_JUMP_TO'					=> $jump_to_id,
 			'COOKIE_NAME'					=> $this->mchat_settings->cfg('cookie_name', true) . '_',
 		];
 
@@ -790,9 +794,9 @@ class mchat
 		$actions = array_keys(array_filter([
 			'edit'		=> $this->auth_message('edit', true, time()),
 			'del'		=> $this->auth_message('delete', true, time()),
-			'refresh'	=> $page !== 'archive' && $this->auth->acl_get('u_mchat_view'),
-			'add'		=> $page !== 'archive' && $this->auth->acl_get('u_mchat_use'),
-			'whois'		=> $page !== 'archive' && $whois_refresh,
+			'refresh'	=> !$is_archive && $this->auth->acl_get('u_mchat_view'),
+			'add'		=> !$is_archive && $this->auth->acl_get('u_mchat_use'),
+			'whois'		=> !$is_archive && $whois_refresh,
 		]));
 
 		foreach ($actions as $action)
@@ -804,14 +808,33 @@ class mchat
 		}
 
 		$limit = $this->mchat_settings->cfg('mchat_message_num_' . $page);
-		$start = $page === 'archive' ? $this->request->variable('start', 0) : 0;
+
+		if ($is_archive)
+		{
+			if ($jump_to_id)
+			{
+				$sql_where_jump_to_id = 'm.message_id > ' . (int) $jump_to_id;
+				$sql_order_by = 'm.message_id ASC';
+				$num_subsequent_messages = $this->mchat_functions->mchat_total_message_count($sql_where_jump_to_id, $sql_order_by);
+				$start = (int) floor($num_subsequent_messages / $limit) * $limit;
+			}
+			else
+			{
+				$start = $this->request->variable('start', 0);
+			}
+		}
+		else
+		{
+			$start = 0;
+		}
+
 		$rows = $this->mchat_functions->mchat_get_messages([], 0, $limit, $start);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows, $page);
 
 		// Render pagination
-		if ($page === 'archive')
+		if ($is_archive)
 		{
 			$archive_url = $this->helper->route('dmzx_mchat_page_archive_controller');
 			$total_messages = $this->mchat_functions->mchat_total_message_count();
