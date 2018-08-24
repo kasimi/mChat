@@ -847,13 +847,18 @@ class mchat
 			 * @var int		total_messages	Total number of messages
 			 * @var int		limit			Number of messages to display per page
 			 * @var int		start			The message which should be considered currently active, used to determine the page we're on
+			 * @var int		jump_to_id		The ID of the message that is being jumped to in the archive, usually when a user clicked on a quote reference
+			 * @var array	template_data	The data that is about to be assigned to the template
 			 * @since 2.0.0-RC6
+			 * @changed 2.1.1 added jump_to_id, template_data
 			 */
 			$vars = [
 				'archive_url',
 				'total_messages',
 				'limit',
 				'start',
+				'jump_to_id',
+				'template_data',
 			];
 			extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_pagination_before', compact($vars)));
 
