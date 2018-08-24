@@ -828,7 +828,36 @@ class mchat
 			$start = 0;
 		}
 
-		$rows = $this->mchat_functions->mchat_get_messages([], 0, $limit, $start);
+		$message_ids = [];
+		$last_id = 0;
+
+		/**
+		 * Event to modify arguments before fetching messages from the database
+		 *
+		 * @event dmzx.mchat.render_page_get_messages_before
+		 * @var string	page			The page that is rendered, one of index|custom|archive
+		 * @var array	message_ids		IDs of specific messages to fetch, should be an empty array
+		 * @var int		last_id			The ID of the latest message that the user has, should be 0
+		 * @var int		limit			Number of messages to display per page
+		 * @var int		start			The message which should be considered currently active, used to determine the page we're on
+		 * @var int		jump_to_id		The ID of the message that is being jumped to in the archive, usually when a user clicked on a quote reference
+		 * @var array	actions			Array containing URLs to actions the user is allowed to perform (read only)
+		 * @var array	template_data	The data that is about to be assigned to the template
+		 * @since 2.1.1
+		 */
+		$vars = [
+			'page',
+			'message_ids',
+			'last_id',
+			'limit',
+			'start',
+			'jump_to_id',
+			'actions',
+			'template_data'
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_get_messages_before', compact($vars)));
+
+		$rows = $this->mchat_functions->mchat_get_messages($message_ids, $last_id, $limit, $start);
 
 		$this->assign_global_template_data();
 		$this->assign_messages($rows, $page);
@@ -896,7 +925,7 @@ class mchat
 		 *
 		 * @event dmzx.mchat.render_page_after
 		 * @var string	page			The page that was rendered, one of index|custom|archive
-		 * @var array	actions			Array containing URLs to actions the user is allowed to perform
+		 * @var array	actions			Array containing URLs to actions the user is allowed to perform (read only)
 		 * @var array	template_data	The data that is about to be assigned to the template
 		 * @since 2.0.0-RC6
 		 * @changed 2.1.1 Added template_data
