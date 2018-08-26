@@ -145,6 +145,10 @@
 	font-size: 1.2em;
 }
 
+.mchat-text .postlink {
+	display: unset;
+}
+
 .mchat-notification-message .mchat-text {
 	font-style: italic;
 }
