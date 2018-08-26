@@ -455,7 +455,7 @@ jQuery(function($) {
 								} else {
 									animateOptions.complete = function() {
 										var scrollHeight = container.get(0).scrollHeight;
-										if (container.scrollTop() + container.height() < scrollHeight) {
+										if (container.scrollTop() + container.innerHeight() < scrollHeight) {
 											container.animate({scrollTop: scrollHeight}, animateOptions);
 										}
 									};
