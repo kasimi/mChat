@@ -640,20 +640,20 @@ jQuery(function($) {
 		fixJumpToUrl: function() {
 			var $message = $(this);
 			var $elem = $message.find('blockquote [data-post-id]');
+			var messageId = $elem.data('post-id');
 			var data = {
 				message: $message,
 				elem: $elem,
-				getUrl: function() {
-					var messageId = this.elem.data('post-id');
-					mChat.getArchiveQuoteUrl(messageId)
-				}
+				url: mChat.getArchiveQuoteUrl(messageId)
 			};
 			$(mChat).trigger('mchat_fix_jump_to_url_before', [data]);
-			data.elem.attr('href', data.getUrl());
+			if (data.url) {
+				data.elem.attr('href', data.url);
+			}
 		},
 		getArchiveQuoteUrl: function(messageId) {
 			var archiveUrl = $('.mchat-nav-archive').find('a').prop('href');
-			return mChat.addUrlParam(archiveUrl, 'jumpto=' + messageId)
+			return archiveUrl ? mChat.addUrlParam(archiveUrl, 'jumpto=' + messageId) : false;
 		},
 		jumpToMessage: function() {
 			var messageId = $(this).data('post-id');
@@ -669,7 +669,10 @@ jQuery(function($) {
 						data.message.offset();
 						data.message.addClass('mchat-message-flash');
 					} else {
-						window.open(mChat.getArchiveQuoteUrl(data.messageId), '_blank');
+						var url = mChat.getArchiveQuoteUrl(data.messageId);
+						if (url) {
+							window.open(url, '_blank');
+						}
 					}
 				}
 			};
