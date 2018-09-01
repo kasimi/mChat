@@ -23,6 +23,7 @@ use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\textformatter\parser_interface;
 use phpbb\user;
+use rmcgirr83\authorizedforurls\event\listener as authorizedforurls;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class mchat
@@ -72,6 +73,9 @@ class mchat
 	/** @var cc_operator */
 	protected $cc_operator;
 
+	/** @var authorizedforurls */
+	protected $authorized_for_urls;
+
 	/** @var boolean */
 	protected $remove_disallowed_bbcodes = false;
 
@@ -102,6 +106,7 @@ class mchat
 	 * @param manager				$extension_manager
 	 * @param parser_interface		$textformatter_parser
 	 * @param cc_operator			$cc_operator
+	 * @param authorizedforurls		$authorized_for_urls
 	 */
 	public function __construct(
 		functions $mchat_functions,
@@ -118,7 +123,8 @@ class mchat
 		dispatcher_interface $dispatcher,
 		manager $extension_manager,
 		parser_interface $textformatter_parser,
-		cc_operator $cc_operator = null
+		cc_operator $cc_operator = null,
+		authorizedforurls $authorized_for_urls = null
 	)
 	{
 		$this->mchat_functions		= $mchat_functions;
@@ -136,6 +142,7 @@ class mchat
 		$this->extension_manager	= $extension_manager;
 		$this->textformatter_parser	= $textformatter_parser;
 		$this->cc_operator			= $cc_operator;
+		$this->authorized_for_urls	= $authorized_for_urls;
 	}
 
 	/**
@@ -1413,6 +1420,19 @@ class mchat
 			if (utf8_strlen($message_without_entities) > $this->mchat_settings->cfg('mchat_max_message_lngth'))
 			{
 				throw new http_exception(400, 'MCHAT_MESS_LONG', [$this->mchat_settings->cfg('mchat_max_message_lngth')]);
+			}
+		}
+
+		// Compatibility with Authorized for URLs by RMcGirr83 - requires at least 1.0.5
+		// https://www.phpbb.com/customise/db/extension/authorized_for_urls_2/
+		if ($this->authorized_for_urls !== null && is_callable([$this->authorized_for_urls, 'check_text']))
+		{
+			$authorized_for_urls_lang_args = $this->authorized_for_urls->check_text($message, true);
+
+			if ($authorized_for_urls_lang_args)
+			{
+				$authorized_for_urls_lang_key = array_shift($authorized_for_urls_lang_args);
+				throw new http_exception(400, $authorized_for_urls_lang_key, $authorized_for_urls_lang_args);
 			}
 		}
 
