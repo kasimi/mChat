@@ -420,12 +420,12 @@ class functions
 		 * @var string	sql_where		Additional SQL where condition passed to this method
 		 * @var string	sql_order_by	Additional SQL order by statement passed to this method
 		 * @since 2.0.0-RC6
-		 * @changed 2.1.1 Added sql_where_array, sql_where, sql_order_by
+		 * @changed 2.1.1 Added sql_where, sql_order_by
 		 */
 		$vars = [
 			'sql_array',
 			'sql_where',
-			'sql_order_by'
+			'sql_order_by',
 		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.total_message_count_modify_sql', compact($vars)));
 
