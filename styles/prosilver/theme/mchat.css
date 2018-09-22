@@ -149,6 +149,10 @@
 	display: unset;
 }
 
+.mchat-text .text-strong {
+	color: unset;
+}
+
 .mchat-notification-message .mchat-text {
 	font-style: italic;
 }
