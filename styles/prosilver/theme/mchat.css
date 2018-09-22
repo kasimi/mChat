@@ -388,12 +388,14 @@
 	float: left;
 }
 
-.mchat-copyright {
-	position: relative;
-	top: 1px;
-	font-weight: bold;
-	font-size: 1.1em;
-	cursor: help;
+.mchat-copyright.footer-row {
+	font-size: 10px;
+	line-height: 1.8;
+	margin: 0;
+}
+
+.footer-row + br {
+	display: none;
 }
 
 .mchat-static {
