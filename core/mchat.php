@@ -571,6 +571,7 @@ class mchat
 			unset($logs['latest']);
 
 			$log_edit_del_ids = $logs;
+			unset($logs);
 		}
 		else
 		{
