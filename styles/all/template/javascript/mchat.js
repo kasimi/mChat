@@ -597,7 +597,6 @@ jQuery(function($) {
 		},
 		updateCharCount: function() {
 			var count = mChat.cleanMessage(mChat.cached('input').val()).length;
-			var exceedCount = Math.max(mChat.mssgLngth - count, -999);
 			if (mChat.showCharCount) {
 				var charCount = mChat.lang.charCount.format({current: count, max: mChat.mssgLngth});
 				var $elem = mChat.cached('character-count').html(charCount).toggleClass('invisible', count === 0);
@@ -605,9 +604,12 @@ jQuery(function($) {
 					$elem.toggleClass('error', count > mChat.mssgLngth);
 				}
 			}
-			mChat.cached('exceed-character-count').text(exceedCount).toggleClass('hidden', exceedCount >= 0);
-			mChat.cached('input').parent().toggleClass('mchat-input-error', exceedCount < 0);
-			mChat.cached('add').toggleClass('hidden', exceedCount < 0);
+			if (mChat.mssgLngth) {
+				var exceedCount = mChat.mssgLngth - count;
+				mChat.cached('exceed-character-count').text(exceedCount).toggleClass('hidden', exceedCount >= 0);
+				mChat.cached('input').parent().toggleClass('mchat-input-error', exceedCount < 0);
+				mChat.cached('add').toggleClass('hidden', exceedCount < 0);
+			}
 		},
 		cleanMessage: function(message) {
 			if (!mChat.maxInputHeight) {
