@@ -348,7 +348,7 @@ jQuery(function($) {
 			}
 			var data = {
 				last: mChat.messageIds.length ? mChat.messageIds.max() : 0,
-				log: mChat.liveUpdates ? mChat.logId : undefined,
+				log: mChat.logId,
 				message: isAdd ? message : undefined
 			};
 			mChat.status('load');

@@ -773,7 +773,6 @@ class mchat
 			'MCHAT_MESSAGE_TOP'				=> $this->mchat_settings->cfg('mchat_message_top'),
 			'MCHAT_INDEX_HEIGHT'			=> $this->mchat_settings->cfg('mchat_index_height'),
 			'MCHAT_CUSTOM_HEIGHT'			=> $this->mchat_settings->cfg('mchat_custom_height'),
-			'MCHAT_LIVE_UPDATES'			=> $this->mchat_settings->cfg('mchat_live_updates'),
 			'MCHAT_LOCATION'				=> $this->mchat_settings->cfg('mchat_location'),
 			'MCHAT_CHARACTER_COUNT'			=> $this->mchat_settings->cfg('mchat_character_count'),
 			'MCHAT_SOUND'					=> $this->mchat_settings->cfg('mchat_sound'),
