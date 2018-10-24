@@ -1096,7 +1096,7 @@ class mchat
 				'MCHAT_USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $this->lang->lang('GUEST')),
 				'MCHAT_USERNAME_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour'], $this->lang->lang('GUEST')),
 				'MCHAT_WHOIS_USER'			=> $this->lang->lang('MCHAT_WHOIS_USER', $row['user_ip']),
-				'MCHAT_U_IP'				=> $this->helper->route('dmzx_mchat_page_whois_controller', ['ip' => $row['user_ip']]),
+				'MCHAT_U_IP'				=> $this->auth->acl_get('u_mchat_ip') ? $this->helper->route('dmzx_mchat_page_whois_controller', ['ip' => $row['user_ip']]) : false,
 				'MCHAT_U_PERMISSIONS'		=> append_sid($this->mchat_settings->url('adm/index', true), ['i' => 'permissions', 'mode' => 'setting_user_global', rawurlencode('user_id[0]') => $row['user_id']], true, $this->user->session_id),
 				'MCHAT_MESSAGE'				=> generate_text_for_display($row['message'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
 				'MCHAT_TIME'				=> $minutes_ago === -1 ? $datetime : $this->lang->lang('MCHAT_MINUTES_AGO', $minutes_ago),
