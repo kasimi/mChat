@@ -480,6 +480,27 @@ class settings
 	}
 
 	/**
+	 * @return string
+	 */
+	public function get_current_page()
+	{
+		$page = $this->user->page['page_name'];
+
+		// Remove app.php if URL rewriting is enabled in the ACP
+		if ($this->config['enable_mod_rewrite'])
+		{
+			$app_php = 'app.' . $this->php_ext . '/';
+
+			if (($app_position = strpos($page, $app_php)) !== false)
+			{
+				$page = substr($page, $app_position + strlen($app_php));
+			}
+		}
+
+		return generate_board_url() . '/' . $page;
+	}
+
+	/**
 	 * @param string $path
 	 * @param bool $absolute_url
 	 * @param bool $append_ext

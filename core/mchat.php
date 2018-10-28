@@ -762,13 +762,13 @@ class mchat
 		$is_archive = $page == 'archive';
 		$jump_to_id = $is_archive ? $this->request->variable('jumpto', 0) : 0;
 
-		// If the static message is not empty in the language file, use it, else ise the static message in the database
+		// If the static message is not empty in the language file, use it, else use the static message in the database
 		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') ?: $this->mchat_settings->cfg('mchat_static_message');
 		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || $this->mchat_settings->cfg('mchat_navbar_link_count');
 
 		$template_data = [
 			'MCHAT_PAGE'					=> $page,
-			'MCHAT_CURRENT_URL'				=> '.' . $this->user->page['script_path'] . $this->user->page['page'],
+			'MCHAT_CURRENT_URL'				=> $this->mchat_settings->get_current_page(),
 			'MCHAT_ALLOW_SMILES'			=> $this->mchat_settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies'),
 			'MCHAT_MESSAGE_TOP'				=> $this->mchat_settings->cfg('mchat_message_top'),
 			'MCHAT_INDEX_HEIGHT'			=> $this->mchat_settings->cfg('mchat_index_height'),
