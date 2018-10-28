@@ -168,7 +168,7 @@ class settings
 			'mchat_live_updates'			=> ['default' => 1],
 			'mchat_log_enabled'				=> ['default' => 1],
 			'mchat_max_input_height'		=> ['default' => 150,	'validation' => ['num', false, 0, 1000]],
-			'mchat_max_message_lngth'		=> ['default' => 500,	'validation' => ['num', false, 0, 1000]],
+			'mchat_max_message_lngth'		=> ['default' => 500],
 			'mchat_message_num_archive'		=> ['default' => 25,	'validation' => ['num', false, 10, 100]],
 			'mchat_message_num_custom'		=> ['default' => 10],
 			'mchat_message_num_index'		=> ['default' => 10],
