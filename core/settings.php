@@ -185,7 +185,7 @@ class settings
 			'mchat_prune_gc'				=> ['default' => strtotime('1 day', 0)],
 			'mchat_prune_mode'				=> ['default' => 0],
 			'mchat_prune_num'				=> ['default' => 0],
-			'mchat_refresh'					=> ['default' => 10,	'validation' => ['num', false, 5, 60]],
+			'mchat_refresh'					=> ['default' => 10,	'validation' => ['num', false, 2, 3600]],
 			'mchat_timeout'					=> ['default' => 0,		'validation' => ['num', false, 0, (int) $this->cfg('session_length')]],
 			'mchat_whois_refresh'			=> ['default' => 60,	'validation' => ['num', false, 10, 300]],
 		];
