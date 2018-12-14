@@ -827,7 +827,8 @@ jQuery(function($) {
 		mChat.cached('form').submit(function(e) {
 			e.preventDefault();
 		}).keypress(function(e) {
-			if ((e.which === 10 || e.which === 13) && mChat.cached('input').is(e.target)) {
+			var isEnter = e.which === 10 || e.which === 13;
+			if (isEnter && mChat.cached('input').is(e.target)) {
 				var isCtrl = e.ctrlKey || e.metaKey;
 				if (!mChat.maxInputHeight || !isCtrl === !mChat.storage.get('no_enter')) {
 					e.preventDefault();
