@@ -358,12 +358,20 @@
 	display: none;
 }
 
+#mchat-bbcodes #colour_palette {
+	user-select: none;
+}
+
 #mchat-bbcodes #colour_palette label {
 	display: none;
 }
 
 #mchat-bbcodes #colour_palette table {
 	margin: 0 auto 5px;
+}
+
+#mchat-bbcodes #colour_palette a {
+	cursor: pointer;
 }
 
 #mchat-bbcodes #colour_palette td a.remember-color {
