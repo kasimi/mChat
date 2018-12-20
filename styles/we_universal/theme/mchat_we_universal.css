@@ -15,3 +15,7 @@
 .mchat-nav::before {
 	content: none !important;
 }
+
+#mchat-panel .inputbox {
+	height: unset;
+}
