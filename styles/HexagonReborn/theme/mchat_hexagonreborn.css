@@ -11,15 +11,15 @@
 
 
 .mchat-button-down {
-    line-height: 1.6;
+	line-height: 1.6;
 }
 
 .mchat-button-down .icon {
-    padding: 2px;
+	padding: 2px;
 }
 .mchat-button-is-down {
-    border-style: none;
+	border-style: none;
 }
 .mchat-input-control button:hover .icon {
-    color: #de7300;
+	color: #de7300;
 }

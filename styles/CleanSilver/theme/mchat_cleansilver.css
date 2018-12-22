@@ -9,12 +9,14 @@
  *
  */
 
-.mchat-panel-buttons .icon.fa.fa-smile-o {padding: 3px;}
+.mchat-panel-buttons .icon.fa.fa-smile-o {
+	padding: 3px;
+}
 
 .mchat-wrapper li.header dd {
 	width: 95px;
 }
 
 .mchat-wrapper li.header dd.lastpost {
-    width: 250px;
+	width: 250px;
 }
