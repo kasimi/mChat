@@ -20,3 +20,7 @@
 .mchat-wrapper li.header dd.lastpost {
 	width: 250px;
 }
+
+.mchat-button-is-down {
+	border-style: none;
+}
