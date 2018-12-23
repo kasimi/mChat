@@ -9,7 +9,6 @@
  *
  */
 
-
 .mchat-button-down {
 	line-height: 1.6;
 }
@@ -17,9 +16,11 @@
 .mchat-button-down .icon {
 	padding: 2px;
 }
+
 .mchat-button-is-down {
 	border-style: none;
 }
+
 .mchat-input-control button:hover .icon {
 	color: #de7300;
 }

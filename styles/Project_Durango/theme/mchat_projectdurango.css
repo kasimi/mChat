@@ -9,7 +9,6 @@
  *
  */
 
-
 .mchat-panel-buttons .button {
 	border-color: #3a3a3a;
 	background: #3a3a3a;
@@ -57,6 +56,7 @@ ul.mchat-buttons .fa {
 #mchat-main {
 	border-top: 4px solid #107c10;
 }
+
 #mchat-messages li.row:hover {
 	background: #c2c2c2;
 }
@@ -72,6 +72,7 @@ ul.mchat-buttons .fa {
 #mchat-confirm textarea {
 	color: #f1f1f1;
 }
+
 #mchat-panel {
 	background-color: #6b6b6b;
 }
