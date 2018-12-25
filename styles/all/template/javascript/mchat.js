@@ -335,6 +335,9 @@ jQuery(function($) {
 			mChat.resetSession();
 		},
 		refresh: function(message) {
+			if (mChat.pageIsUnloading) {
+				return $.when();
+			}
 			var isAdd = typeof message !== 'undefined';
 			if (!isAdd) {
 				mChat.sessionLength += mChat.refreshTime;
@@ -854,6 +857,9 @@ jQuery(function($) {
 
 	$(window).on('beforeunload', function() {
 		mChat.pageIsUnloading = true;
+		if (mChat.page !== 'archive') {
+			mChat.pauseSession();
+		}
 	});
 
 	$('#phpbb').on('click', '[data-mchat-action]', function(e) {
