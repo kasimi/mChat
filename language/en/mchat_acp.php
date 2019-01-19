@@ -106,7 +106,7 @@ $lang = array_merge($lang, [
 	'MCHAT_CUSTOM_PAGE'								=> 'Enable mChat page',
 	'MCHAT_CUSTOM_HEIGHT'							=> 'mChat page height',
 	'MCHAT_CUSTOM_HEIGHT_EXPLAIN'					=> '<em>You are limited from 50 to 1000. Default is 350.</em>',
-	'MCHAT_BBCODES_DISALLOWED'						=> 'Disallowed BBCdes',
+	'MCHAT_BBCODES_DISALLOWED'						=> 'Disallowed BBCodes',
 	'MCHAT_BBCODES_DISALLOWED_EXPLAIN'				=> 'Here you can input the BBCodes that are <strong>not</strong> to be used in a message.<br>Separate BBCodes with a vertical bar, for example:<br>b|i|u|code|list|list=|flash|quote and/or a %1$scustom BBCode tag name%2$s.',
 	'MCHAT_STATIC_MESSAGE'							=> 'Static message',
 	'MCHAT_STATIC_MESSAGE_EXPLAIN'					=> 'Here you can define a static message. HTML code is allowed. Set to empty to disable the display.<br>This message can be translated: edit the MCHAT_STATIC_MESSAGE language key in /ext/dmzx/mchat/language/XX/mchat.php.',
