@@ -164,6 +164,7 @@ class settings
 			'mchat_custom_page'				=> ['default' => 1],
 			'mchat_edit_delete_limit'		=> ['default' => 0],
 			'mchat_flood_time'				=> ['default' => 0,		'validation' => ['num', false, 0, 3600]],
+			'mchat_flood_messages'			=> ['default' => 0,		'validation' => ['num', false, 0, 100]],
 			'mchat_index_height'			=> ['default' => 250,	'validation' => ['num', false, 50, 1000]],
 			'mchat_live_updates'			=> ['default' => 1],
 			'mchat_log_enabled'				=> ['default' => 1],
