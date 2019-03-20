@@ -7,7 +7,7 @@
 			{% EVENT dmzx_mchat_controls_before %}
 			<div class="mchat-controls">
 				<div class="mchat-input-container inputbox">
-					<textarea id="mchat-input" name="message" class="no-auto-resize {{ MCHAT_MAX_INPUT_HEIGHT ? 'mchat-multi-line' : 'mchat-single-line' }}" rows="1" autocomplete="off"></textarea>
+					<textarea id="mchat-input" name="message" class="no-auto-resize {{ MCHAT_MAX_INPUT_HEIGHT ? 'mchat-multi-line' : 'mchat-single-line' }}" rows="1" autocomplete="on" spellcheck="true"></textarea>
 					<div class="mchat-input-control">
 						<button type="button" class="mchat-button-add" id="mchat-add" data-mchat-action="add" title="{{ lang('MCHAT_ADD') }}">
 							<i class="icon icon-lightgray fa fa-chevron-right fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('MCHAT_ADD') }}</span>
