@@ -46,7 +46,7 @@
 			{% if MCHAT_ALLOW_SMILES and loops.smiley|length %}
 				<div id="mchat-smilies" class="hidden">
 					{% for smiley in loops.smiley %}
-						<a href="#" data-smiley-code="{{ smiley.A_SMILEY_CODE }}" data-mchat-action="smiley">
+						<a href="#" data-smiley-code="{{ smiley.SMILEY_CODE | escape }}" data-mchat-action="smiley">
 							<img src="{{ smiley.SMILEY_IMG }}" width="{{ smiley.SMILEY_WIDTH }}" height="{{ smiley.SMILEY_HEIGHT }}" alt="{{ smiley.SMILEY_CODE }}" title="{{ smiley.SMILEY_DESC }}">
 						</a>
 					{% endfor %}
