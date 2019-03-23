@@ -67,9 +67,6 @@ class mchat
 	/** @var manager */
 	protected $extension_manager;
 
-	/** @var parser_interface */
-	protected $textformatter_parser;
-
 	/** @var cc_operator */
 	protected $cc_operator;
 
@@ -104,7 +101,6 @@ class mchat
 	 * @param request_interface		$request
 	 * @param dispatcher_interface	$dispatcher
 	 * @param manager				$extension_manager
-	 * @param parser_interface		$textformatter_parser
 	 * @param cc_operator			$cc_operator
 	 * @param authorizedforurls		$authorized_for_urls
 	 */
@@ -122,7 +118,6 @@ class mchat
 		request_interface $request,
 		dispatcher_interface $dispatcher,
 		manager $extension_manager,
-		parser_interface $textformatter_parser,
 		cc_operator $cc_operator = null,
 		authorizedforurls $authorized_for_urls = null
 	)
@@ -140,7 +135,6 @@ class mchat
 		$this->request				= $request;
 		$this->dispatcher			= $dispatcher;
 		$this->extension_manager	= $extension_manager;
-		$this->textformatter_parser	= $textformatter_parser;
 		$this->cc_operator			= $cc_operator;
 		$this->authorized_for_urls	= $authorized_for_urls;
 	}
@@ -1462,9 +1456,12 @@ class mchat
 			$mchat_quote	&= !in_array('quote', $disallowed_bbcodes);
 			$mchat_url		&= !in_array('url', $disallowed_bbcodes);
 
+			global $phpbb_container;
+			$textformatter_parser = $phpbb_container->get('text_formatter.parser');
+
 			foreach ($disallowed_bbcodes as $bbcode)
 			{
-				$this->textformatter_parser->disable_bbcode($bbcode);
+				$textformatter_parser->disable_bbcode($bbcode);
 			}
 		}
 

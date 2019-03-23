@@ -54,9 +54,6 @@ class notifications
 	/** @var dispatcher_interface */
 	protected $dispatcher;
 
-	/** @var parser_interface */
-	protected $textformatter_parser;
-
 	/**
 	 * Constructor
 	 *
@@ -66,7 +63,6 @@ class notifications
 	 * @param auth					$auth
 	 * @param db_interface			$db
 	 * @param dispatcher_interface	$dispatcher
-	 * @param parser_interface		$textformatter_parser
 	 */
 	public function __construct(
 		settings $mchat_settings,
@@ -74,8 +70,7 @@ class notifications
 		language $lang,
 		auth $auth,
 		db_interface $db,
-		dispatcher_interface $dispatcher,
-		parser_interface $textformatter_parser
+		dispatcher_interface $dispatcher
 	)
 	{
 		$this->mchat_settings		= $mchat_settings;
@@ -84,7 +79,6 @@ class notifications
 		$this->auth					= $auth;
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
-		$this->textformatter_parser	= $textformatter_parser;
 	}
 
 	/**
@@ -130,11 +124,14 @@ class notifications
 			'MCHAT_NEW_LOGIN',
 		];
 
+		global $phpbb_container;
+		$textformatter_parser = $phpbb_container->get('text_formatter.parser');
+
 		$notification_langs = array_merge(
 			// Raw notification messages in phpBB < 3.2
 			array_combine($notification_lang, $notification_lang),
 			// XML notification messages in phpBB >= 3.2
-			array_combine(array_map([$this->textformatter_parser, 'parse'], $notification_lang), $notification_lang)
+			array_combine(array_map([$textformatter_parser, 'parse'], $notification_lang), $notification_lang)
 		);
 
 		$notifications = [];
@@ -315,12 +312,15 @@ class notifications
 
 		$is_mode_enabled = !empty($mode_config[$mode]) && $this->mchat_settings->cfg($mode_config[$mode]) && (!$this->mchat_settings->cfg('mchat_posts_auth_check') || $this->can_use_mchat());
 
+		global $phpbb_container;
+		$textformatter_parser = $phpbb_container->get('text_formatter.parser');
+
 		$sql_array = [
 			'forum_id'		=> (int) $forum_id,
 			'post_id'		=> (int) $post_id,
 			'user_id'		=> (int) $this->user->data['user_id'],
 			'user_ip'		=> $this->user->ip,
-			'message'		=> $this->textformatter_parser->parse('MCHAT_NEW_' . strtoupper($mode)),
+			'message'		=> $textformatter_parser->parse('MCHAT_NEW_' . strtoupper($mode)),
 			'message_time'	=> time(),
 		];
 

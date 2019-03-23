@@ -38,7 +38,6 @@ services:
             - '@auth'
             - '@dbal.conn'
             - '@dispatcher'
-            - '@text_formatter.parser'
 
     dmzx.mchat.log:
         class: dmzx\mchat\core\log
@@ -65,7 +64,6 @@ services:
             - '@request'
             - '@dispatcher'
             - '@ext.manager'
-            - '@text_formatter.parser'
             - '@?phpbb.collapsiblecategories.operator'
             - '@?rmcgirr83.authorizedforurls.listener'
 
@@ -83,7 +81,6 @@ services:
             - '@cache.driver'
             - '@dispatcher'
             - '@group_helper'
-            - '@text_formatter.parser'
 
     dmzx.mchat.settings:
         class: dmzx\mchat\core\settings
