@@ -1,7 +1,7 @@
 {
     "stable": {
         "2.0": {
-            "current": "2.1.2",
+            "current": "2.1.3",
             "download": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
             "announcement": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
             "eol": null,
@@ -10,7 +10,7 @@
     },
     "unstable": {
         "2.0": {
-            "current": "2.1.2",
+            "current": "2.1.3",
             "download": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
             "announcement": "https://www.phpbb.com/customise/db/extension/mchat_extension/",
             "eol": null,
