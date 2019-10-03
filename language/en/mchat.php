@@ -73,7 +73,10 @@ $lang = array_merge($lang, [
 	'MCHAT_ENTER'					=> 'Use Ctrl/Cmd + Enter for the alternative action',
 	'MCHAT_ENTER_SUBMIT'			=> 'Enter sends the message',
 	'MCHAT_ENTER_LINEBREAK'			=> 'Enter adds a new line',
-	'MCHAT_COLLAPSE_TITLE'			=> 'Toggle visibility of mChat',
+	'MCHAT_COLLAPSE_TITLE'			=> [
+		0 => 'Hide mChat',
+		1 => 'Show mChat',
+	],
 	'MCHAT_WHO_IS_REFRESH_EXPLAIN'	=> 'Refreshes every <strong>%1$d</strong> seconds',
 	'MCHAT_MINUTES_AGO'				=> [
 		0 => 'just now',
