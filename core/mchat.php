@@ -1054,8 +1054,8 @@ class mchat
 				$user_avatars[$row['user_id']] = !$display_avatar || !$row['user_avatar'] ? '' : phpbb_get_user_avatar([
 					'avatar'		=> $row['user_avatar'],
 					'avatar_type'	=> $row['user_avatar_type'],
-					'avatar_width'	=> $row['user_avatar_width'] >= $row['user_avatar_height'] ? 40 : 0,
-					'avatar_height'	=> $row['user_avatar_width'] >= $row['user_avatar_height'] ? 0 : 40,
+					'avatar_width'	=> $row['user_avatar_width'] >= $row['user_avatar_height'] ? 36 : 0,
+					'avatar_height'	=> $row['user_avatar_width'] >= $row['user_avatar_height'] ? 0 : 36,
 				]);
 			}
 		}

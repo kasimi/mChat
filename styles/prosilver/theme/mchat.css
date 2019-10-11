@@ -118,7 +118,7 @@
 
 .mchat-avatar {
 	float: left;
-	width: 40px;
+	width: 36px;
 	margin-right: 5px;
 }
 
@@ -164,7 +164,7 @@
 .mchat-text {
 	clear: both;
 	overflow: hidden;
-	padding: 2px 5px;
+	padding: 0 5px;
 	font-size: 1.2em;
 }
 
