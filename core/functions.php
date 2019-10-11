@@ -212,7 +212,7 @@ class functions
 		{
 			if (!$row['session_viewonline'])
 			{
-				if (!$can_view_hidden && $row['user_id'] !== $this->user->data['user_id'])
+				if (!$can_view_hidden && $row['user_id'] != $this->user->data['user_id'])
 				{
 					continue;
 				}
@@ -324,7 +324,7 @@ class functions
 			$sql_array['WHERE'] = $this->db->sql_in_set('m.user_id', $user_ids);
 			$offset = 0;
 		}
-		else if ($this->mchat_settings->prune_modes[$prune_mode] === 'messages')
+		else if ($this->mchat_settings->prune_modes[$prune_mode] == 'messages')
 		{
 			// Skip fixed number of messages, delete all others
 			$sql_array['ORDER_BY'] = 'm.message_id DESC';
