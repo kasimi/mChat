@@ -734,6 +734,21 @@ class mchat
 			$template_data['MCHAT_TITLE_HINT'] = strip_tags($active_users['users_total']);
 		}
 
+		/**
+		 * Event that is triggered before data for the navigation bar is assigned to the template
+		 *
+		 * @event dmzx.mchat.header_link_template_data
+		 * @var array	template_data	The data that is abbout to be assigned to the template
+		 * @var array	active_users	Array containing information about active users. Available array keys:
+		 *           					online_userlist, users_count_title, users_total, refresh_message
+		 * @since 2.1.4-RC1
+		 */
+		$vars = [
+			'template_data',
+			'active_users',
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.header_link_template_data', compact($vars)));
+
 		$this->template->assign_vars($template_data);
 	}
 
