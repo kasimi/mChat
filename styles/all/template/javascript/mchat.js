@@ -737,6 +737,10 @@ jQuery(function($) {
 		.each(mChat.fixJumpToUrl)
 		.map(function() { return $(this).data('mchat-id'); }).get();
 
+	if (!mChat.messageIds.length) {
+		mChat.messageIds.push(mChat.latestMessageId);
+	}
+
 	mChat.hiddenFields = {};
 	mChat.cached('form').find('input[type=hidden]').each(function() {
 		mChat.hiddenFields[this.name] = this.value;

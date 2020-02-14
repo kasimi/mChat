@@ -879,10 +879,28 @@ class mchat
 		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_get_messages_before', compact($vars)));
 
-		$rows = $this->mchat_functions->mchat_get_messages($message_ids, $last_id, $limit, $start);
-
 		$this->assign_global_template_data();
-		$this->assign_messages($rows, $page);
+
+		// Always fetch at least one message so that we can extract the latest_message_id
+		$soft_limit = max(1, $limit);
+
+		$rows = $this->mchat_functions->mchat_get_messages($message_ids, $last_id, $soft_limit, $start);
+
+		if ($limit)
+		{
+			$this->assign_messages($rows, $page);
+		}
+
+		// Pass the latest_message_id to the template so that we know later where to start looking for new messages
+		$latest_message_id = 0;
+
+		if ($rows)
+		{
+			$latest_message = reset($rows);
+			$latest_message_id = $latest_message['message_id'];
+		}
+
+		$template_data['MCHAT_LATEST_MESSAGE_ID'] = $latest_message_id;
 
 		// Render pagination
 		if ($is_archive)
