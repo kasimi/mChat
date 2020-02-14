@@ -781,6 +781,8 @@ class mchat
 		$static_message = $this->lang->lang('MCHAT_STATIC_MESSAGE') ?: $this->mchat_settings->cfg('mchat_static_message');
 		$whois_refresh = $this->mchat_settings->cfg('mchat_whois_index') || $this->mchat_settings->cfg('mchat_navbar_link_count');
 
+		$total_messages = $this->mchat_functions->mchat_total_message_count();
+
 		$template_data = [
 			'MCHAT_PAGE'					=> $page,
 			'MCHAT_CURRENT_URL'				=> $this->mchat_settings->get_current_page(),
@@ -802,6 +804,7 @@ class mchat
 			'MCHAT_STATIC_MESS'				=> htmlspecialchars_decode($static_message),
 			'MCHAT_MAX_INPUT_HEIGHT'		=> $this->mchat_settings->cfg('mchat_max_input_height'),
 			'MCHAT_MAX_MESSAGE_LENGTH'		=> $this->mchat_settings->cfg('mchat_max_message_lngth'),
+			'MCHAT_TOTAL_MESSAGES'			=> $total_messages,
 			'MCHAT_JUMP_TO'					=> $jump_to_id,
 			'COOKIE_NAME'					=> $this->mchat_settings->cfg('cookie_name', true) . '_',
 		];
@@ -865,7 +868,9 @@ class mchat
 		 * @var int		jump_to_id		The ID of the message that is being jumped to in the archive, usually when a user clicked on a quote reference
 		 * @var array	actions			Array containing URLs to actions the user is allowed to perform (read only)
 		 * @var array	template_data	The data that is about to be assigned to the template
+		 * @var int		total_messages	Total number of messages
 		 * @since 2.1.1
+		 * @changed 2.1.4-RC1 added total_messages
 		 */
 		$vars = [
 			'page',
@@ -906,14 +911,13 @@ class mchat
 		if ($is_archive)
 		{
 			$archive_url = $this->helper->route('dmzx_mchat_page_archive_controller');
-			$total_messages = $this->mchat_functions->mchat_total_message_count();
 
 			/**
 			 * Event to modify mChat pagination on the archive page
 			 *
 			 * @event dmzx.mchat.render_page_pagination_before
 			 * @var string	archive_url		Pagination base URL
-			 * @var int		total_messages	Total number of messages
+			 * @var int		total_messages	Total number of messages in the mChat table
 			 * @var int		limit			Number of messages to display per page
 			 * @var int		start			The message which should be considered currently active, used to determine the page we're on
 			 * @var int		jump_to_id		The ID of the message that is being jumped to in the archive, usually when a user clicked on a quote reference

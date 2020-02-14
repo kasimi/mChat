@@ -90,7 +90,7 @@
 				<ul id="mchat-messages" class="topiclist forums">
 					{% if loops.mchatrow|length %}
 						{% INCLUDE '@dmzx_mchat/mchat_messages.html' %}
-					{% else %}
+					{% elseif not MCHAT_TOTAL_MESSAGES %}
 						<li class="row mchat-static mchat-no-messages">{{ lang('MCHAT_NOMESSAGE') }}</li>
 					{% endif %}
 				</ul>
