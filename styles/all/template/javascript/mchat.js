@@ -776,10 +776,9 @@ jQuery(function($) {
 		});
 
 		$.each(['userlist', 'smilies', 'bbcodes', 'colour'], function(i, elem) {
-			if (mChat.storage.get('show_' + elem)) {
-				$('.mchat-button-' + elem).addClass('mchat-button-is-down');
-				mChat.cached(elem).toggle();
-			}
+			var isVisible = mChat.storage.get('show_' + elem) === 'yes';
+			$('.mchat-button-' + elem).toggleClass('mchat-button-is-down', isVisible);
+			mChat.cached(elem).toggle(isVisible);
 		});
 
 		var toggleRememberColor = function() {
