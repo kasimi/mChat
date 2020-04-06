@@ -130,6 +130,20 @@ class notifications
 			'MCHAT_NEW_LOGIN',
 		];
 
+		/**
+		 * Event that allows to modify rows and language keys before checking for notifications
+		 *
+		 * @event dmzx.mchat.process_notifications_before
+		 * @var array	rows				Message rows about to be checked for notifications
+		 * @var array	notification_lang	Unprocessed language keys of valid/known notifications
+		 * @since 2.1.4-RC1
+		 */
+		$vars = [
+			'rows',
+			'notification_lang',
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.process_notifications_before', compact($vars)));
+
 		$notification_langs = array_merge(
 			// Raw notification messages in phpBB < 3.2
 			array_combine($notification_lang, $notification_lang),
