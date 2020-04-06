@@ -499,6 +499,7 @@ class functions
 		 * @var int		offset		SQL offset
 		 * @var	array	sql_array	Array containing the SQL query data
 		 * @since 2.0.0-RC6
+		 * @deprecated 2.1.4-RC1, to be removed in 2.1.0.
 		 */
 		$vars = [
 			'message_ids',
