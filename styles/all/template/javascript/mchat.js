@@ -114,7 +114,7 @@ jQuery(function($) {
 			$.ajax({
 				url: mChat.actionUrls[mode],
 				timeout: Math.min(mChat.refreshTime, 10000) - 100,
-				type: 'POST',
+				method: 'POST',
 				dataType: 'json',
 				data: data,
 				context: {
@@ -250,7 +250,7 @@ jQuery(function($) {
 				var $input = $confirmFields.find(':input:visible:enabled:first');
 				if ($input.length) {
 					var value = $input.val();
-					$input.focus().val('').val(value);
+					$input.trigger('focus').val('').val(value);
 				}
 			}, 1);
 			phpbb.confirm(data.container.show(), function(success) {
@@ -288,7 +288,7 @@ jQuery(function($) {
 				mChat.setText(originalInputValue);
 			}).always(function() {
 				$add.prop('disabled', false);
-				$input.delay(1).focus();
+				$input.delay(1).trigger('focus');
 			});
 		},
 		edit: function() {
@@ -393,12 +393,12 @@ jQuery(function($) {
 		whoisDone: function(json) {
 			var $whois = $(json.container);
 			var $userlist = $whois.find('#mchat-userlist');
-			if (mChat.storage.get('show_userlist')) {
-				$userlist.show();
-			}
 			mChat.cached('whois').replaceWith($whois);
 			mChat.cache.whois = $whois;
 			mChat.cache.userlist = $userlist;
+			if (mChat.storage.get('show_userlist')) {
+				$userlist.show();
+			}
 			if (mChat.page === 'custom') {
 				mChat.cached('refresh-pending').hide();
 				mChat.cached('refresh-explain').show();
@@ -830,9 +830,9 @@ jQuery(function($) {
 			});
 		}
 
-		mChat.cached('form').submit(function(e) {
+		mChat.cached('form').on('submit', function(e) {
 			e.preventDefault();
-		}).keypress(function(e) {
+		}).on('keypress', function(e) {
 			var isEnter = e.which === 10 || e.which === 13;
 			if (isEnter && mChat.cached('input').is(e.target)) {
 				var isCtrl = e.ctrlKey || e.metaKey;
@@ -873,7 +873,7 @@ jQuery(function($) {
 		e.preventDefault();
 		mChat.jumpToMessage.call(this);
 	}).on('click', '.mchat-panel-buttons button', function() {
-		var $this = $(this).blur();
+		var $this = $(this).trigger('blur');
 		if ($this.hasClass('mchat-button-down')) {
 			$this.toggleClass('mchat-button-is-down');
 		}
