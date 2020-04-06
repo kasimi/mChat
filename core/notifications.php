@@ -178,6 +178,24 @@ class notifications
 			$rows[$i] = $this->process_notification($rows[$i], $type, $lang_key, $post_data);
 		}
 
+		/**
+		 * Event that allows to modify rows after processing their notifications
+		 *
+		 * @event dmzx.mchat.process_notifications_after
+		 * @var array	rows					Message rows about to be checked for notifications
+		 * @var array	notification_lang		Unprocessed language keys of valid/known notifications
+		 * @var array	notification_langs		Processed language keys of valid/known notifications
+		 * @var array	notification_post_data	Post data of notifications found in the rows array
+		 * @since 2.1.4-RC1
+		 */
+		$vars = [
+			'rows',
+			'notification_lang',
+			'notification_langs',
+			'notification_post_data',
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.process_notifications_after', compact($vars)));
+
 		return $rows;
 	}
 
@@ -221,7 +239,6 @@ class notifications
 
 		return $post_subjects + $missing_post_subjects;
 	}
-
 
 	/**
 	 * Converts the message field of the post row so that it can be passed to generate_text_for_display()
