@@ -123,6 +123,10 @@ class acp_controller
 				}
 			}
 
+			// Enable Emojis and rich text in Rules and Static Message
+			$mchat_new_config['mchat_rules'] = utf8_encode_ncr($mchat_new_config['mchat_rules']);
+			$mchat_new_config['mchat_static_message'] = utf8_encode_ncr($mchat_new_config['mchat_static_message']);
+
 			// Remove leading & trailing | characters to not break allowed BBCodes
 			$mchat_new_config['mchat_bbcode_disallowed'] = trim($mchat_new_config['mchat_bbcode_disallowed'], '|');
 
