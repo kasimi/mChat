@@ -524,6 +524,26 @@ class functions
 			}
 		}
 
+		/**
+		 * Event to modify message rows before being processed and displayed
+		 *
+		 * @event dmzx.mchat.get_messages_modify_rowset
+		 * @var array	message_ids	IDs of specific messages to fetch, e.g. for fetching edited messages
+		 * @var int		last_id		The ID of the latest message that the user has, for fetching new messages
+		 * @var int		total		SQL limit
+		 * @var int		offset		SQL offset
+		 * @var	array	rows		Array containing message data
+		 * @since 2.1.4-RC1
+		 */
+		$vars = [
+			'message_ids',
+			'last_id',
+			'total',
+			'offset',
+			'rows',
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.get_messages_modify_rowset', compact($vars)));
+
 		return $rows;
 	}
 
