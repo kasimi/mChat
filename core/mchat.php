@@ -1272,8 +1272,26 @@ class mchat
 	 */
 	protected function assign_bbcodes_smilies()
 	{
+		$display_bbcodes = $this->mchat_settings->cfg('allow_bbcode') && $this->auth->acl_get('u_mchat_bbcode');
+
+		$display_smilies = $this->mchat_settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies') && !$this->smilies_generated;
+
+		/**
+		 * Event to decide whether or to display BBCodes or smilies
+		 *
+		 * @event dmzx.mchat.assign_bbcodes_smilies_before
+		 * @var bool	display_bbcodes		Whether or not to render BBCodes
+		 * @var bool	display_smilies		Whether or not to render smilies
+		 * @since 2.1.4-RC1
+		 */
+		$vars = [
+			'display_bbcodes',
+			'display_smilies',
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.assign_bbcodes_smilies_before', compact($vars)));
+
 		// Display BBCodes
-		if ($this->mchat_settings->cfg('allow_bbcode') && $this->auth->acl_get('u_mchat_bbcode'))
+		if ($display_bbcodes)
 		{
 			$bbcode_template_vars = [
 				'quote'	=> [
@@ -1312,7 +1330,7 @@ class mchat
 		}
 
 		// Display smilies
-		if ($this->mchat_settings->cfg('allow_smilies') && $this->auth->acl_get('u_mchat_smilies') && !$this->smilies_generated)
+		if ($display_smilies)
 		{
 			$this->mchat_settings->include_functions('posting', 'generate_smilies');
 
