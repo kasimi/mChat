@@ -1523,6 +1523,30 @@ class mchat
 			}
 		}
 
+		/**
+		 * Event to modify the raw mChat message before it is processed
+		 *
+		 * @event dmzx.mchat.process_message_before
+		 * @var string	message					The raw message as entered by the user
+		 * @var string	message_without_bbcode	The message stripped of all BBCode tags
+		 * @var array	disallowed_bbcodes		The list of disallowed BBCode tags
+		 * @var bool	mchat_img				Whether or not the img BBCode is allowed
+		 * @var	bool	mchat_flash				Whether or not the flash BBCode is allowed
+		 * @var bool	mchat_quote				Whether or not the quote BBCode is allowed
+		 * @var bool	mchat_url				Whether or not the url BBCode is allowed
+		 * @since 2.1.4-RC1
+		 */
+		$vars = [
+			'message',
+			'message_without_bbcode',
+			'disallowed_bbcodes',
+			'mchat_img',
+			'mchat_flash',
+			'mchat_quote',
+			'mchat_url',
+		];
+		extract($this->dispatcher->trigger_event('dmzx.mchat.process_message_before', compact($vars)));
+
 		$uid = $bitfield = $options = '';
 		generate_text_for_storage($message, $uid, $bitfield, $options, $mchat_bbcode, $mchat_magic_urls, $mchat_smilies, $mchat_img, $mchat_flash, $mchat_quote, $mchat_url, 'mchat');
 
