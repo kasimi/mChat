@@ -84,6 +84,7 @@ class main_listener implements EventSubscriberInterface
 			'core.page_header'							=> 'add_page_header_link',
 			'core.index_modify_page_title'				=> 'display_mchat_on_index',
 			'core.submit_post_end'						=> 'insert_posting',
+			'core.delete_posts_after'					=> 'delete_posts_after',
 			'core.display_custom_bbcodes_modify_sql'	=> [['remove_disallowed_bbcodes'], ['pm_compose_add_quote']],
 			'core.generate_smilies_after'				=> 'generate_smilies_after',
 			'core.user_add_modify_data'					=> 'user_registration_set_default_values',
@@ -139,6 +140,14 @@ class main_listener implements EventSubscriberInterface
 	public function insert_posting(data $event)
 	{
 		$this->mchat_notifications->insert_post($event['mode'], $event['data']['forum_id'], $event['data']['post_id']);
+	}
+
+	/**
+	 * @param data $event
+	 */
+	public function delete_posts_after(data $event)
+	{
+		$this->mchat_notifications->delete_post_notifications($event['post_ids']);
 	}
 
 	/**

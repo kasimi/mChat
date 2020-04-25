@@ -430,4 +430,19 @@ class notifications
 
 		return '';
 	}
+
+	/**
+	 * Delete post notification messages, for example when disapproving posts
+	 *
+	 * @param array $post_ids
+	 */
+	public function delete_post_notifications($post_ids)
+	{
+		if ($post_ids)
+		{
+			$sql = 'DELETE FROM ' . $this->mchat_settings->get_table_mchat() . '
+		 		WHERE forum_id <> 0 AND ' . $this->db->sql_in_set('post_id', $post_ids);
+			$this->db->sql_query($sql);
+		}
+	}
 }
