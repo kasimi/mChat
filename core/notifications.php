@@ -119,9 +119,8 @@ class notifications
 	 */
 	public function process($rows)
 	{
-		// All language keys of valid notifications for which we need to fetch post information
-		// from the database. We need to check for them here because notifications in < 2.0.0-RC6
-		// are plain text and don't need to be processed.
+		// All language keys of valid notifications. We need to check for them here because
+		// notifications in < 2.0.0-RC6 are plain text and don't need to be processed.
 		$notification_lang = [
 			'MCHAT_NEW_POST',
 			'MCHAT_NEW_QUOTE',
@@ -223,21 +222,13 @@ class notifications
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		$post_subjects = [];
-
-		foreach ($rows as $row)
-		{
-			$post_subjects[$row['post_id']] = [
-				'post_subject'	=> $row['post_subject'],
-				'forum_id'		=> $row['forum_id'],
-				'forum_name'	=> $row['forum_name'],
-			];
-		}
+		$existing_post_ids = array_column($rows, 'post_id');
+		$existing_posts = array_combine($existing_post_ids, $rows);
 
 		// Map IDs of missing posts to null
-		$missing_post_subjects = array_fill_keys(array_diff($post_ids, array_keys($post_subjects)), null);
+		$missing_posts = array_fill_keys(array_diff($post_ids, $existing_post_ids), null);
 
-		return $post_subjects + $missing_post_subjects;
+		return $existing_posts + $missing_posts;
 	}
 
 	/**
