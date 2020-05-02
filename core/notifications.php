@@ -436,4 +436,18 @@ class notifications
 			$this->db->sql_query($sql);
 		}
 	}
+
+	/**
+	 * Change the user to which a post notification belongs
+	 *
+	 * @param int $post_id
+	 * @param int $user_id
+	 */
+	public function update_post_notification_user($post_id, $user_id)
+	{
+		$sql = 'UPDATE ' . $this->mchat_settings->get_table_mchat() . '
+			SET user_id = ' . (int) $user_id . '
+			WHERE forum_id <> 0 AND post_id = ' . (int) $post_id;
+		$this->db->sql_query($sql);
+	}
 }
