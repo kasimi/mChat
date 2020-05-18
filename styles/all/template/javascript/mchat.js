@@ -207,7 +207,7 @@ jQuery(function($) {
 		},
 		sound: function(file) {
 			var data = {
-				audio: mChat.cached('sound-' + file).get(0),
+				audio: mChat.cached('sound-' + file)[0],
 				file: file,
 				play: !mChat.pageIsUnloading && mChat.cached('sound').hasClass('mchat-nav-item-enabled')
 			};
@@ -411,82 +411,70 @@ jQuery(function($) {
 			}
 		},
 		addMessages: function($messages) {
-			var playSound = true;
 			mChat.cached('messages').find('.mchat-no-messages').remove();
-			$messages.reverse(mChat.messageTop).hide().each(function(i) {
-				var $message = $(this);
-				var dataAddMessageBefore = {
-					message: $message,
-					delay: mChat.refreshInterval ? 400 : 0,
-					abort: $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1,
-					playSound: playSound
-				};
-				$(mChat).trigger('mchat_add_message_before', [dataAddMessageBefore]);
-				if (dataAddMessageBefore.abort) {
-					return;
-				}
-				if (dataAddMessageBefore.playSound) {
-					mChat.sound('add');
-					mChat.titleAlert();
-					playSound = false;
-				}
-				mChat.messageIds.push($message.data('mchat-id'));
-				mChat.fixJumpToUrl.call($message);
-				setTimeout(function() {
-					var dataAddMessageAnimateBefore = {
-						container: mChat.cached('messages'),
-						message: $message,
-						add: function() {
-							if (mChat.messageTop) {
-								this.container.prepend(this.message);
-							} else {
-								this.container.append(this.message);
-							}
-						},
-						show: function() {
-							var container = this.container;
-							var scrollTop = container.scrollTop();
-							var scrollLeeway = 20;
-							if (mChat.messageTop && scrollTop <= scrollLeeway || !mChat.messageTop && scrollTop >= container.get(0).scrollHeight - container.height() - scrollLeeway) {
-								var animateOptions = {
-									duration: dataAddMessageBefore.delay - 10,
-									easing: 'swing'
-								};
-								this.message.slideDown(animateOptions);
-								if (mChat.messageTop) {
-									container.animate({scrollTop: 0}, animateOptions);
-								} else {
-									animateOptions.complete = function() {
-										var scrollHeight = container.get(0).scrollHeight;
-										if (container.scrollTop() + container.innerHeight() < scrollHeight) {
-											container.animate({scrollTop: scrollHeight}, animateOptions);
-										}
-									};
-									animateOptions.complete();
-								}
-							} else {
-								this.message.show();
-								if (mChat.messageTop) {
-									this.container.scrollTop(scrollTop + this.message.outerHeight());
-								}
-							}
-							this.message.addClass('mchat-message-flash');
+			$messages.reverse(mChat.messageTop).hide().each(this.addMessage);
+		},
+		addMessage: function(index) {
+			var $message = $(this);
+			var dataAddMessageBefore = {
+				message: $message,
+				delay: mChat.refreshInterval ? 400 : 0,
+				abort: $.inArray($message.data('mchat-id'), mChat.messageIds) !== -1,
+				playSound: index === 0,
+				titleAlert: index === 0
+			};
+			$(mChat).trigger('mchat_add_message_before', [dataAddMessageBefore]);
+			if (dataAddMessageBefore.abort) {
+				return;
+			}
+			if (dataAddMessageBefore.playSound) {
+				mChat.sound('add');
+			}
+			if (dataAddMessageBefore.titleAlert) {
+				mChat.titleAlert();
+			}
+			mChat.messageIds.push($message.data('mchat-id'));
+			mChat.fixJumpToUrl.call($message);
+			var dataAddMessageAnimateBefore = {
+				container: mChat.cached('messages'),
+				message: $message,
+				add: function() {
+					if (mChat.messageTop) {
+						this.container.prepend(this.message);
+					} else {
+						this.container.append(this.message);
+					}
+				},
+				show: function() {
+					var scrollLeeway = 20;
+					var scrollTop = this.container.scrollTop();
+					var scrollHeight = this.container[0].scrollHeight;
+					this.message.show();
+					this.message.addClass('mchat-message-flash');
+					if (mChat.messageTop) {
+						if (scrollTop <= scrollLeeway)  {
+							this.container.scrollTop(0);
 						}
-					};
-					$(mChat).trigger('mchat_add_message_animate_before', [dataAddMessageAnimateBefore]);
-					dataAddMessageAnimateBefore.add();
-					dataAddMessageAnimateBefore.show();
-				}, i * dataAddMessageBefore.delay);
-				if (mChat.editDeleteLimit && $message.data('mchat-edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
-					var id = $message.prop('id');
-					setTimeout(function() {
-						$('#' + id).find('[data-mchat-action="edit"], [data-mchat-action="del"]').fadeOut(function() {
-							$(this).closest('li').remove();
-						});
-					}, mChat.editDeleteLimit);
+					} else {
+						var height = this.container.height();
+						if (scrollHeight - height - scrollTop <= scrollLeeway) {
+							this.container.scrollTop(scrollHeight);
+						}
+					}
 				}
-				mChat.startRelativeTimeUpdate.call($message);
-			});
+			};
+			$(mChat).trigger('mchat_add_message_animate_before', [dataAddMessageAnimateBefore]);
+			dataAddMessageAnimateBefore.add();
+			dataAddMessageAnimateBefore.show();
+			if (mChat.editDeleteLimit && $message.data('mchat-edit-delete-limit') && $message.find('[data-mchat-action="edit"], [data-mchat-action="del"]').length > 0) {
+				var id = $message.prop('id');
+				setTimeout(function() {
+					$('#' + id).find('[data-mchat-action="edit"], [data-mchat-action="del"]').fadeOut(function() {
+						$(this).closest('li').remove();
+					});
+				}, mChat.editDeleteLimit);
+			}
+			mChat.startRelativeTimeUpdate.call($message);
 		},
 		updateMessages: function($messages) {
 			var playSound = true;
