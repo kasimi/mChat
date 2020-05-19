@@ -733,6 +733,10 @@ class mchat
 			$template_data['MCHAT_TITLE'] = $active_users['users_count_title'];
 			$template_data['MCHAT_TITLE_HINT'] = strip_tags($active_users['users_total']);
 		}
+		else
+		{
+			$active_users = [];
+		}
 
 		/**
 		 * Event that is triggered before data for the navigation bar is assigned to the template
@@ -741,6 +745,8 @@ class mchat
 		 * @var array	template_data	The data that is abbout to be assigned to the template
 		 * @var array	active_users	Array containing information about active users. Available array keys:
 		 *           					online_userlist, users_count_title, users_total, refresh_message
+		 * 								Note:	This array is empty if the number of active chat sessions is not
+		 * 										displayed in the navbar.
 		 * @since 2.1.4-RC1
 		 */
 		$vars = [
