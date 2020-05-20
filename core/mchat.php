@@ -887,6 +887,7 @@ class mchat
 			'jump_to_id',
 			'actions',
 			'template_data',
+			'total_messages',
 		];
 		extract($this->dispatcher->trigger_event('dmzx.mchat.render_page_get_messages_before', compact($vars)));
 
