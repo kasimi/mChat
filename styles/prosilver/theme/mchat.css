@@ -164,7 +164,7 @@
 .mchat-text {
 	clear: both;
 	overflow: hidden;
-	padding: 0 5px;
+	padding: 0 5px 1px;
 	font-size: 1.2em;
 }
 
