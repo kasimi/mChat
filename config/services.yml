@@ -12,6 +12,7 @@ services:
             - '@user'
             - '@language'
             - '@dbal.conn'
+            - '@config_text'
             - '@cache.driver'
             - '@request'
             - '@dispatcher'

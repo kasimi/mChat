@@ -131,6 +131,10 @@ $lang = array_merge($lang, [
 	'MCHAT_PURGE_CONFIRM'							=> 'Confirm deleting all messages',
 	'MCHAT_PURGED'									=> 'All mChat messages have been successfully deleted.',
 
+	'MCHAT_REPARSER_STATUS'							=> 'Message reparser status',
+	'MCHAT_REPARSER_ACTIVE'							=> 'active',
+	'MCHAT_REPARSER_FINISHED'						=> 'finished',
+
 	// '%1$s' contains 'Retain posts' and 'Delete posts' respectively
 	'MCHAT_RETAIN_MESSAGES'							=> '%1$s and retain mChat messages',
 	'MCHAT_DELETE_MESSAGES'							=> '%1$s and delete mChat messages',
