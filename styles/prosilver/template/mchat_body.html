@@ -49,7 +49,9 @@
 						data-hidden="{{ S_MCHAT_HIDDEN }}"
 						data-ajax="phpbb_collapse"
 						data-overlay="true"
-						title="{{ lang('MCHAT_COLLAPSE_TITLE') }}"></a>
+						title="{{ lang('MCHAT_COLLAPSE_TITLE') }}">
+						<i class="fa {% if S_MCHAT_HIDDEN %}fa-plus-square{% else %}fa-minus-square{% endif %}"></i>
+					</a>
 				{% endif %}
 			</li>
 		</ul>
